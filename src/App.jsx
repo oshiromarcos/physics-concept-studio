@@ -522,7 +522,13 @@ function WireResistancePage() {
   const [diameter, setDiameter] = useState(0.45);
   const [materialKey, setMaterialKey] = useState("constantan");
   const [testVoltage, setTestVoltage] = useState(3);
-  const [studentMode, setStudentMode] = useState(false);
+  const [revealedValues, setRevealedValues] = useState({
+    resistance: true,
+    current: true,
+    area: true,
+    resistivity: true,
+    ruleResistance: true,
+  });
   const [prediction, setPrediction] = useState("");
   const [checkResult, setCheckResult] = useState(null);
 
@@ -560,12 +566,25 @@ function WireResistancePage() {
     });
   }, [length, material.resistivity]);
 
+  function flipValue(key) {
+    setRevealedValues((currentValues) => ({
+      ...currentValues,
+      [key]: !currentValues[key],
+    }));
+  }
+
   function reset() {
     setLength(1.2);
     setDiameter(0.45);
     setMaterialKey("constantan");
     setTestVoltage(3);
-    setStudentMode(false);
+    setRevealedValues({
+      resistance: true,
+      current: true,
+      area: true,
+      resistivity: true,
+      ruleResistance: true,
+    });
     setPrediction("");
     setCheckResult(null);
   }
@@ -607,15 +626,38 @@ function WireResistancePage() {
                 resistance={resistance}
                 current={current}
                 testVoltage={testVoltage}
-                studentMode={studentMode}
               />
             </div>
 
             <div className="summary-grid four">
-              <ValueBox label="Resistance" value={studentMode ? "?" : resistance.toFixed(2)} unit="Ω" />
-              <ValueBox label="Current" value={studentMode ? "?" : (current * 1000).toFixed(1)} unit="mA" />
-              <ValueBox label="Area" value={studentMode ? "?" : areaMm2.toFixed(3)} unit="mm²" />
-              <ValueBox label="Resistivity" value={studentMode ? "?" : resistivityScale.toFixed(1)} unit="×10⁻⁸ Ωm" />
+              <FlipValueBox
+                label="Resistance"
+                value={resistance.toFixed(2)}
+                unit="Ω"
+                revealed={revealedValues.resistance}
+                onFlip={() => flipValue("resistance")}
+              />
+              <FlipValueBox
+                label="Current"
+                value={(current * 1000).toFixed(1)}
+                unit="mA"
+                revealed={revealedValues.current}
+                onFlip={() => flipValue("current")}
+              />
+              <FlipValueBox
+                label="Area"
+                value={areaMm2.toFixed(3)}
+                unit="mm²"
+                revealed={revealedValues.area}
+                onFlip={() => flipValue("area")}
+              />
+              <FlipValueBox
+                label="Resistivity"
+                value={resistivityScale.toFixed(1)}
+                unit="×10⁻⁸ Ωm"
+                revealed={revealedValues.resistivity}
+                onFlip={() => flipValue("resistivity")}
+              />
             </div>
           </div>
         </div>
@@ -698,11 +740,6 @@ function WireResistancePage() {
               <input type="range" min="1" max="6" step="0.5" value={testVoltage} onChange={(event) => setTestVoltage(Number(event.target.value))} />
             </div>
 
-            <label className="switch-row">
-              Student mode
-              <input type="checkbox" checked={studentMode} onChange={(event) => setStudentMode(event.target.checked)} />
-            </label>
-
             <button className="button-light full" onClick={reset}>↺ Reset</button>
           </div>
         </div>
@@ -715,9 +752,12 @@ function WireResistancePage() {
             <h3>Resistance of a wire</h3>
             <div className="formula-box">
               R = ρL / A
-              <div className="formula-result">
-                R = {studentMode ? "?" : resistance.toFixed(2)} Ω
-              </div>
+              <button
+                className={revealedValues.ruleResistance ? "formula-result flip-result revealed" : "formula-result flip-result"}
+                onClick={() => flipValue("ruleResistance")}
+              >
+                R = {revealedValues.ruleResistance ? resistance.toFixed(2) : "?"} Ω
+              </button>
             </div>
             <p className="subtitle">
               Resistance increases with length and resistivity, but decreases when cross-sectional area gets larger.
@@ -753,11 +793,9 @@ function WireResistancePage() {
                   {checkResult.correct ? "correct" : "check again"}
                 </span>
 
-                {!studentMode && (
-                  <p className="subtitle">
-                    Correct value: R = {resistance.toFixed(2)} Ω
-                  </p>
-                )}
+                <p className="subtitle">
+                  Correct value: R = {resistance.toFixed(2)} Ω
+                </p>
               </div>
             )}
           </div>
@@ -1258,16 +1296,15 @@ function WireResistanceDiagram({
   resistance,
   current,
   testVoltage,
-  studentMode,
 }) {
   const wireStart = 230;
   const wireMaxWidth = 420;
   const wireWidth = 60 + (length / 2.5) * wireMaxWidth;
   const wireEnd = wireStart + wireWidth;
   const wireThickness = 4 + (diameter / 1.2) * 16;
-  const resistanceLabel = studentMode ? "? Ω" : `${resistance.toFixed(2)} Ω`;
-  const currentLabel = studentMode ? "? mA" : `${(current * 1000).toFixed(1)} mA`;
-  const voltageLabel = studentMode ? "? V" : `${testVoltage.toFixed(1)} V`;
+  const resistanceLabel = `${resistance.toFixed(2)} Ω`;
+  const currentLabel = `${(current * 1000).toFixed(1)} mA`;
+  const voltageLabel = `${testVoltage.toFixed(1)} V`;
 
   return (
     <svg viewBox="0 0 850 390" width="100%" height="100%">
@@ -1513,6 +1550,16 @@ function ValueBox({ label, value, unit }) {
       <div className="value-number">{value}</div>
       <div className="value-unit">{unit}</div>
     </div>
+  );
+}
+
+function FlipValueBox({ label, value, unit, revealed, onFlip }) {
+  return (
+    <button className={revealed ? "value-box flip-value revealed" : "value-box flip-value"} onClick={onFlip}>
+      <div className="value-label">{label}</div>
+      <div className="value-number">{revealed ? value : "?"}</div>
+      <div className="value-unit">{unit}</div>
+    </button>
   );
 }
 
@@ -1789,6 +1836,24 @@ function StyleBlock() {
         text-align: center;
       }
 
+      .flip-value {
+        min-height: 104px;
+        color: #30271e;
+        transition: border-color 0.2s, background 0.2s, transform 0.2s;
+      }
+
+      .flip-value:hover,
+      .flip-result:hover {
+        border-color: #a9c6d0;
+        background: #eef6f8;
+      }
+
+      .flip-value:not(.revealed),
+      .flip-result:not(.revealed) {
+        background: #fff7d8;
+        border-color: #e3d39b;
+      }
+
       .value-label {
         font-size: 12px;
         color: #6f624d;
@@ -1835,12 +1900,24 @@ function StyleBlock() {
       }
 
       .formula-result {
+        display: block;
+        width: 100%;
         margin-top: 10px;
         padding-top: 10px;
         border-top: 1px solid #e1d7bf;
         font-family: Arial, sans-serif;
         font-size: 28px;
         font-weight: 900;
+      }
+
+      .flip-result {
+        border-right: 0;
+        border-bottom: 0;
+        border-left: 0;
+        border-radius: 0;
+        background: transparent;
+        color: #30271e;
+        text-align: left;
       }
 
       .task-box {
