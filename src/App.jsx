@@ -535,7 +535,7 @@ function WireResistancePage() {
   const maxGraphResistance = material.resistivity * 2.5 / area;
   const graphMax = Math.max(1, Math.ceil(maxGraphResistance / 5) * 5);
 
-  const graphPoints = useMemo(() => {
+  const lengthGraphPoints = useMemo(() => {
     return Array.from({ length: 25 }, (_, index) => {
       const sampleLength = 0.1 + index * 0.1;
       const sampleResistance = material.resistivity * sampleLength / area;
@@ -546,13 +546,25 @@ function WireResistancePage() {
     });
   }, [area, graphMax, material.resistivity]);
 
-  const graphPath = graphPoints
-    .map((point, index) => `${index === 0 ? "M" : "L"} ${point.x} ${point.y}`)
-    .join(" ");
-  const activePoint = {
-    x: 48 + ((length - 0.1) / 2.4) * 418,
-    y: 248 - (resistance / graphMax) * 188,
-  };
+  const diameterGraphMax = Math.max(1, Math.ceil((material.resistivity * length / (Math.PI * ((0.2 / 1000) / 2) ** 2)) / 5) * 5);
+  const diameterGraphPoints = useMemo(() => {
+    return Array.from({ length: 21 }, (_, index) => {
+      const sampleDiameter = 0.2 + index * 0.05;
+      const sampleArea = Math.PI * ((sampleDiameter / 1000) / 2) ** 2;
+      const sampleResistance = material.resistivity * length / sampleArea;
+
+      return {
+        x: 48 + (index / 20) * 418,
+        y: 248 - (sampleResistance / diameterGraphMax) * 188,
+      };
+    });
+  }, [diameterGraphMax, length, material.resistivity]);
+
+  const materialGraphValues = wireMaterials.map((item) => ({
+    ...item,
+    resistance: item.resistivity * length / area,
+  }));
+  const materialGraphMax = Math.max(1, Math.ceil(Math.max(...materialGraphValues.map((item) => item.resistance)) / 5) * 5);
 
   function reset() {
     setLength(1.2);
@@ -618,45 +630,37 @@ function WireResistancePage() {
 
         <div className="card">
           <div className="card-content">
-            <h3>Live graph: resistance against length</h3>
+            <h3>Live graphs: what changes the resistance?</h3>
             <p className="subtitle">
-              For one material and one diameter, resistance is directly proportional to length.
+              Change one variable at a time: longer wire raises resistance, thicker wire lowers it, and material changes the slope.
             </p>
 
-            <div className="graph-area">
-              <svg viewBox="0 0 520 290" width="100%" height="270">
-                <rect width="520" height="290" fill="#f8f4e8" />
-                <line x1="48" y1="248" x2="490" y2="248" stroke="#30271e" strokeWidth="3" />
-                <line x1="48" y1="248" x2="48" y2="35" stroke="#30271e" strokeWidth="3" />
-
-                {[0, 1, 2, 3, 4, 5].map((n) => (
-                  <g key={n}>
-                    <line x1={48 + n * 83.6} y1="248" x2={48 + n * 83.6} y2="253" stroke="#30271e" />
-                    <text x={48 + n * 83.6} y="270" textAnchor="middle" fill="#6f624d" fontSize="10">
-                      {(n * 0.5).toFixed(1)}
-                    </text>
-                  </g>
-                ))}
-
-                {[0, 1, 2, 3, 4, 5].map((n) => (
-                  <g key={n}>
-                    <line x1="43" y1={248 - n * 37.6} x2="48" y2={248 - n * 37.6} stroke="#30271e" />
-                    <text x="34" y={252 - n * 37.6} textAnchor="end" fill="#6f624d" fontSize="10">
-                      {((graphMax / 5) * n).toFixed(graphMax < 10 ? 1 : 0)}
-                    </text>
-                  </g>
-                ))}
-
-                <text x="268" y="284" textAnchor="middle" fill="#30271e" fontSize="12">
-                  Length / m
-                </text>
-                <text x="14" y="144" textAnchor="middle" fill="#30271e" fontSize="12" transform="rotate(-90 14 144)">
-                  Resistance / Ω
-                </text>
-
-                <path d={graphPath} fill="none" stroke={material.color} strokeWidth="5" strokeLinecap="round" />
-                <circle cx={activePoint.x} cy={activePoint.y} r="9" fill="#fff7d8" stroke="#30271e" strokeWidth="3" />
-              </svg>
+            <div className="tri-graphs">
+              <WireLineGraph
+                title="R against length"
+                xLabel="Length / m"
+                yMax={graphMax}
+                points={lengthGraphPoints}
+                activeX={48 + ((length - 0.1) / 2.4) * 418}
+                activeY={248 - (resistance / graphMax) * 188}
+                color={material.color}
+                xTick={(n) => (n * 0.5).toFixed(1)}
+              />
+              <WireLineGraph
+                title="R against diameter"
+                xLabel="Diameter / mm"
+                yMax={diameterGraphMax}
+                points={diameterGraphPoints}
+                activeX={48 + ((diameter - 0.2) / 1.0) * 418}
+                activeY={248 - (resistance / diameterGraphMax) * 188}
+                color="#4b8aa0"
+                xTick={(n) => (0.2 + n * 0.2).toFixed(1)}
+              />
+              <WireMaterialGraph
+                values={materialGraphValues}
+                activeKey={materialKey}
+                yMax={materialGraphMax}
+              />
             </div>
           </div>
         </div>
@@ -722,6 +726,9 @@ function WireResistancePage() {
             <h3>Resistance of a wire</h3>
             <div className="formula-box">
               R = ρL / A
+              <div className="formula-result">
+                R = {studentMode ? "?" : resistance.toFixed(2)} Ω
+              </div>
             </div>
             <p className="subtitle">
               Resistance increases with length and resistivity, but decreases when cross-sectional area gets larger.
@@ -1127,6 +1134,101 @@ function VoltageShareGraph({ title, yLabel, ratio, supplyVoltage, points, color 
   );
 }
 
+function WireLineGraph({ title, xLabel, yMax, points, activeX, activeY, color, xTick }) {
+  const graphPath = points
+    .map((point, index) => `${index === 0 ? "M" : "L"} ${point.x} ${point.y}`)
+    .join(" ");
+
+  return (
+    <div className="graph-area compact">
+      <div className="graph-title">{title}</div>
+      <svg viewBox="0 0 520 290" width="100%" height="235">
+        <rect width="520" height="290" fill="#f8f4e8" />
+        <line x1="48" y1="248" x2="490" y2="248" stroke="#30271e" strokeWidth="3" />
+        <line x1="48" y1="248" x2="48" y2="35" stroke="#30271e" strokeWidth="3" />
+
+        {[0, 1, 2, 3, 4, 5].map((n) => (
+          <g key={n}>
+            <line x1={48 + n * 83.6} y1="248" x2={48 + n * 83.6} y2="253" stroke="#30271e" />
+            <text x={48 + n * 83.6} y="270" textAnchor="middle" fill="#6f624d" fontSize="10">
+              {xTick(n)}
+            </text>
+          </g>
+        ))}
+
+        {[0, 1, 2, 3, 4, 5].map((n) => (
+          <g key={n}>
+            <line x1="43" y1={248 - n * 37.6} x2="48" y2={248 - n * 37.6} stroke="#30271e" />
+            <text x="34" y={252 - n * 37.6} textAnchor="end" fill="#6f624d" fontSize="10">
+              {((yMax / 5) * n).toFixed(yMax < 10 ? 1 : 0)}
+            </text>
+          </g>
+        ))}
+
+        <text x="268" y="284" textAnchor="middle" fill="#30271e" fontSize="12">
+          {xLabel}
+        </text>
+        <text x="14" y="144" textAnchor="middle" fill="#30271e" fontSize="12" transform="rotate(-90 14 144)">
+          R / Ω
+        </text>
+
+        <path d={graphPath} fill="none" stroke={color} strokeWidth="5" strokeLinecap="round" />
+        <circle cx={activeX} cy={activeY} r="9" fill="#fff7d8" stroke="#30271e" strokeWidth="3" />
+      </svg>
+    </div>
+  );
+}
+
+function WireMaterialGraph({ values, activeKey, yMax }) {
+  return (
+    <div className="graph-area compact">
+      <div className="graph-title">R by material</div>
+      <svg viewBox="0 0 520 290" width="100%" height="235">
+        <rect width="520" height="290" fill="#f8f4e8" />
+        <line x1="48" y1="248" x2="490" y2="248" stroke="#30271e" strokeWidth="3" />
+        <line x1="48" y1="248" x2="48" y2="35" stroke="#30271e" strokeWidth="3" />
+
+        {[0, 1, 2, 3, 4, 5].map((n) => (
+          <g key={n}>
+            <line x1="43" y1={248 - n * 37.6} x2="48" y2={248 - n * 37.6} stroke="#30271e" />
+            <text x="34" y={252 - n * 37.6} textAnchor="end" fill="#6f624d" fontSize="10">
+              {((yMax / 5) * n).toFixed(yMax < 10 ? 1 : 0)}
+            </text>
+          </g>
+        ))}
+
+        {values.map((item, index) => {
+          const barHeight = (item.resistance / yMax) * 188;
+          const x = 78 + index * 100;
+          const isActive = item.key === activeKey;
+
+          return (
+            <g key={item.key}>
+              <rect
+                x={x}
+                y={248 - barHeight}
+                width="48"
+                height={barHeight}
+                rx="8"
+                fill={item.color}
+                stroke={isActive ? "#30271e" : "transparent"}
+                strokeWidth="4"
+              />
+              <text x={x + 24} y="270" textAnchor="middle" fill="#6f624d" fontSize="10">
+                {item.name}
+              </text>
+            </g>
+          );
+        })}
+
+        <text x="14" y="144" textAnchor="middle" fill="#30271e" fontSize="12" transform="rotate(-90 14 144)">
+          R / Ω
+        </text>
+      </svg>
+    </div>
+  );
+}
+
 function PotentialDividerDiagram({
   supplyVoltage,
   rTop,
@@ -1245,10 +1347,7 @@ function WireResistanceDiagram({
       <text x="173" y="124" fill="#30271e" fontSize="16" fontWeight="800">+</text>
       <text x="163" y="174" fill="#30271e" fontSize="16" fontWeight="800">−</text>
 
-      <path d="M135 120 V92 H190" fill="none" stroke="#30271e" strokeWidth="8" strokeLinecap="round" />
-      <circle cx="220" cy="92" r="27" fill="#fff" stroke="#30271e" strokeWidth="4" />
-      <text x="220" y="101" textAnchor="middle" fill="#30271e" fontSize="26" fontWeight="900">A</text>
-      <path d={`M247 92 H${wireStart}`} fill="none" stroke="#30271e" strokeWidth="8" strokeLinecap="round" />
+      <path d={`M135 120 V92 H${wireStart}`} fill="none" stroke="#30271e" strokeWidth="8" strokeLinecap="round" />
 
       <line
         x1={wireStart}
@@ -1262,16 +1361,19 @@ function WireResistanceDiagram({
       <line x1={wireStart} y1="74" x2={wireStart} y2="110" stroke="#30271e" strokeWidth="4" />
       <line x1={wireEnd} y1="74" x2={wireEnd} y2="110" stroke="#30271e" strokeWidth="4" />
 
-      <path d={`M${wireEnd} 92 H730 V300 H135 V168`} fill="none" stroke="#30271e" strokeWidth="8" strokeLinecap="round" />
+      <path d={`M${wireEnd} 92 H730 V300 H522`} fill="none" stroke="#30271e" strokeWidth="8" strokeLinecap="round" />
+      <circle cx="492" cy="300" r="27" fill="#fff" stroke="#30271e" strokeWidth="4" />
+      <text x="492" y="309" textAnchor="middle" fill="#30271e" fontSize="26" fontWeight="900">A</text>
+      <path d="M465 300 H135 V168" fill="none" stroke="#30271e" strokeWidth="8" strokeLinecap="round" />
 
-      <path d="M180 92 H207" stroke="#30271e" strokeWidth="3" markerEnd="url(#arrowWire)" />
+      <path d="M180 92 H220" stroke="#30271e" strokeWidth="3" markerEnd="url(#arrowWire)" />
       <path d={`M${wireEnd + 24} 92 H${wireEnd + 64}`} stroke="#30271e" strokeWidth="3" markerEnd="url(#arrowWire)" />
-      <path d="M620 300 H575" stroke="#30271e" strokeWidth="3" markerEnd="url(#arrowWire)" />
+      <path d="M625 300 H570" stroke="#30271e" strokeWidth="3" markerEnd="url(#arrowWire)" />
 
-      <path d={`M${wireStart} 126 V166 H330`} fill="none" stroke="#4b8aa0" strokeWidth="2.5" strokeLinecap="round" />
-      <path d={`M${wireEnd} 126 V166 H390`} fill="none" stroke="#4b8aa0" strokeWidth="2.5" strokeLinecap="round" />
-      <circle cx="360" cy="166" r="28" fill="#fff" stroke="#30271e" strokeWidth="4" />
-      <text x="360" y="175" textAnchor="middle" fill="#30271e" fontSize="24" fontWeight="900">V</text>
+      <path d={`M${wireStart} 126 V206 H330`} fill="none" stroke="#4b8aa0" strokeWidth="2.5" strokeLinecap="round" />
+      <path d={`M${wireEnd} 126 V206 H390`} fill="none" stroke="#4b8aa0" strokeWidth="2.5" strokeLinecap="round" />
+      <circle cx="360" cy="206" r="28" fill="#fff" stroke="#30271e" strokeWidth="4" />
+      <text x="360" y="215" textAnchor="middle" fill="#30271e" fontSize="24" fontWeight="900">V</text>
 
       <line x1={wireStart} y1="142" x2={wireEnd} y2="142" stroke="#d6c9aa" strokeWidth="5" strokeLinecap="round" />
       {Array.from({ length: 6 }, (_, index) => (
@@ -1287,24 +1389,21 @@ function WireResistanceDiagram({
         </g>
       ))}
 
-      <text x={(wireStart + wireEnd) / 2} y="172" textAnchor="middle" fill="#6f624d" fontSize="13" fontWeight="800">
+      <text x={(wireStart + wireEnd) / 2} y="174" textAnchor="middle" fill="#6f624d" fontSize="13" fontWeight="800">
         L = {length.toFixed(2)} m
       </text>
       <text x={(wireStart + wireEnd) / 2} y="56" textAnchor="middle" fill="#30271e" fontSize="14" fontWeight="900">
         diameter = {diameter.toFixed(2)} mm
       </text>
 
-      <text x="185" y="134" fill="#6f624d" fontSize="13" fontWeight="800">
+      <text x="440" y="346" textAnchor="middle" fill="#6f624d" fontSize="13" fontWeight="800">
         I = {currentLabel}
       </text>
-      <text x="398" y="174" fill="#6f624d" fontSize="13" fontWeight="800">
+      <text x="360" y="252" textAnchor="middle" fill="#6f624d" fontSize="13" fontWeight="800">
         V = {voltageLabel}
       </text>
-      <text x="540" y="222" fill="#30271e" fontSize="16" fontWeight="900">
+      <text x="590" y="222" fill="#30271e" fontSize="20" fontWeight="900">
         R = {resistanceLabel}
-      </text>
-      <text x="540" y="246" fill="#6f624d" fontSize="13" fontWeight="800">
-        R = ρL / A
       </text>
     </svg>
   );
@@ -1794,6 +1893,15 @@ function StyleBlock() {
         margin: 12px 0;
       }
 
+      .formula-result {
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px solid #e1d7bf;
+        font-family: Arial, sans-serif;
+        font-size: 28px;
+        font-weight: 900;
+      }
+
       .task-box {
         background: #fff7d8;
         border: 1px solid #e3d39b;
@@ -1859,6 +1967,13 @@ function StyleBlock() {
         margin-top: 12px;
       }
 
+      .tri-graphs {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 12px;
+      }
+
       @media (max-width: 1100px) {
         .main-grid {
           grid-template-columns: 1fr;
@@ -1882,7 +1997,8 @@ function StyleBlock() {
         .summary-grid,
         .summary-grid.four,
         .check-grid,
-        .split-graphs {
+        .split-graphs,
+        .tri-graphs {
           grid-template-columns: 1fr;
         }
       }
