@@ -1,5 +1,123 @@
 import { useMemo, useState } from "react";
 
+const topics = [
+  { key: "ohms-law", title: "Ohm’s Law", subtitle: "V, I and R" },
+  { key: "series-parallel", title: "Series & Parallel", subtitle: "Resistor networks" },
+  { key: "potential-divider", title: "Potential Dividers", subtitle: "Shared voltage" },
+  { key: "wire-resistance", title: "Resistance of a Wire", subtitle: "R = ρL/A" },
+];
+
+const predictionSets = {
+  "ohms-law": [
+    {
+      question: "If resistance doubles while voltage stays the same, what happens to current?",
+      options: ["It halves", "It doubles", "It stays the same"],
+      answer: 0,
+    },
+    {
+      question: "If voltage increases and resistance is fixed, what happens to current?",
+      options: ["It increases", "It decreases", "It becomes zero"],
+      answer: 0,
+    },
+    {
+      question: "For a fixed resistor, what graph shape should I against V have?",
+      options: ["A straight line", "A curve flattening out", "A horizontal line"],
+      answer: 0,
+    },
+    {
+      question: "If current increases, what happens to power at the same voltage?",
+      options: ["Power increases", "Power decreases", "Power is unchanged"],
+      answer: 0,
+    },
+    {
+      question: "Which equation matches Ohm’s law?",
+      options: ["I = V / R", "I = R / V", "I = V × R"],
+      answer: 0,
+    },
+  ],
+  "series-parallel": [
+    {
+      question: "In series, adding another resistor makes total resistance...",
+      options: ["Larger", "Smaller", "Unchanged"],
+      answer: 0,
+    },
+    {
+      question: "In parallel, adding another branch makes total resistance...",
+      options: ["Smaller", "Larger", "Unchanged"],
+      answer: 0,
+    },
+    {
+      question: "In a series circuit, the current through each resistor is...",
+      options: ["The same", "Different in each resistor", "Always zero"],
+      answer: 0,
+    },
+    {
+      question: "In a parallel circuit, the potential difference across each branch is...",
+      options: ["The same", "Shared unevenly", "Always half the supply"],
+      answer: 0,
+    },
+    {
+      question: "In parallel, total current is...",
+      options: ["The sum of branch currents", "Less than every branch current", "Always 1 A"],
+      answer: 0,
+    },
+  ],
+  "potential-divider": [
+    {
+      question: "If R2 gets larger while R1 stays fixed, V2 becomes...",
+      options: ["Larger", "Smaller", "Unchanged"],
+      answer: 0,
+    },
+    {
+      question: "In a two-resistor divider, Vs is equal to...",
+      options: ["V1 + V2", "V1 − V2", "V1 × V2"],
+      answer: 0,
+    },
+    {
+      question: "If R1 and R2 are equal, V1 and V2 are...",
+      options: ["Equal", "Always zero", "Unrelated"],
+      answer: 0,
+    },
+    {
+      question: "The same series current flows through...",
+      options: ["R1 and R2", "Only R1", "Only R2"],
+      answer: 0,
+    },
+    {
+      question: "If supply voltage doubles and resistors stay fixed, V2...",
+      options: ["Doubles", "Halves", "Stays the same"],
+      answer: 0,
+    },
+  ],
+  "wire-resistance": [
+    {
+      question: "If wire length doubles, resistance should...",
+      options: ["Double", "Halve", "Stay the same"],
+      answer: 0,
+    },
+    {
+      question: "If wire diameter increases, resistance should...",
+      options: ["Decrease", "Increase", "Stay fixed"],
+      answer: 0,
+    },
+    {
+      question: "A material with higher resistivity gives...",
+      options: ["Higher resistance", "Lower resistance", "No change"],
+      answer: 0,
+    },
+    {
+      question: "In R = ρL/A, increasing cross-sectional area makes R...",
+      options: ["Smaller", "Larger", "Negative"],
+      answer: 0,
+    },
+    {
+      question: "At fixed voltage, a larger wire resistance gives...",
+      options: ["Less current", "More current", "The same current"],
+      answer: 0,
+    },
+  ],
+};
+
 export default function App() {
   const [page, setPage] = useState("series-parallel");
 
@@ -18,13 +136,10 @@ export default function App() {
               </p>
             </div>
           </div>
+          <TopicSelector page={page} setPage={setPage} />
         </header>
 
         <main className="main-grid">
-          <aside>
-            <Navigation page={page} setPage={setPage} />
-          </aside>
-
           {page === "ohms-law" && <OhmsLawPage />}
           {page === "series-parallel" && <SeriesParallelPage />}
           {page === "potential-divider" && <PotentialDividerPage />}
@@ -35,47 +150,23 @@ export default function App() {
   );
 }
 
-function Navigation({ page, setPage }) {
+function TopicSelector({ page, setPage }) {
   return (
-    <>
-      <div className="card">
-        <div className="card-content">
-          <div className="small-title">TOPICS</div>
-
+    <div className="topic-panel">
+      <div className="small-title">TOPICS</div>
+      <div className="topic-grid">
+        {topics.map((topic) => (
           <button
-            className={page === "ohms-law" ? "topic active topic-button" : "topic topic-button"}
-            onClick={() => setPage("ohms-law")}
+            key={topic.key}
+            className={page === topic.key ? "topic active topic-button" : "topic topic-button"}
+            onClick={() => setPage(topic.key)}
           >
-            <div className="topic-title">Ohm’s Law</div>
-            <div className="topic-subtitle">V, I and R relationship</div>
+            <div className="topic-title">{topic.title}</div>
+            <div className="topic-subtitle">{topic.subtitle}</div>
           </button>
-
-          <button
-            className={page === "series-parallel" ? "topic active topic-button" : "topic topic-button"}
-            onClick={() => setPage("series-parallel")}
-          >
-            <div className="topic-title">Series & Parallel</div>
-            <div className="topic-subtitle">Equivalent resistance tester</div>
-          </button>
-
-          <button
-            className={page === "potential-divider" ? "topic active topic-button" : "topic topic-button"}
-            onClick={() => setPage("potential-divider")}
-          >
-            <div className="topic-title">Potential Dividers</div>
-            <div className="topic-subtitle">Output voltage from a ratio</div>
-          </button>
-
-          <button
-            className={page === "wire-resistance" ? "topic active topic-button" : "topic topic-button"}
-            onClick={() => setPage("wire-resistance")}
-          >
-            <div className="topic-title">Resistance of a Wire</div>
-            <div className="topic-subtitle">Length, area, and material</div>
-          </button>
-        </div>
+        ))}
       </div>
-    </>
+    </div>
   );
 }
 
@@ -132,11 +223,7 @@ function OhmsLawPage() {
                 </p>
               </div>
 
-              <div className="prompt-box">
-                <strong>Predict first:</strong>
-                <br />
-                What happens to current when resistance doubles?
-              </div>
+              <PredictionQuiz topic="ohms-law" />
             </div>
 
             <div className="simulation">
@@ -369,11 +456,7 @@ function PotentialDividerPage() {
                 </p>
               </div>
 
-              <div className="prompt-box">
-                <strong>Predict first:</strong>
-                <br />
-                If the lower resistor gets larger, should the output voltage rise or fall?
-              </div>
+              <PredictionQuiz topic="potential-divider" />
             </div>
 
             <div className="simulation">
@@ -611,11 +694,7 @@ function WireResistancePage() {
                 </p>
               </div>
 
-              <div className="prompt-box">
-                <strong>Predict first:</strong>
-                <br />
-                If the diameter doubles, what should happen to the resistance?
-              </div>
+              <PredictionQuiz topic="wire-resistance" />
             </div>
 
             <div className="simulation">
@@ -887,11 +966,7 @@ function SeriesParallelPage() {
                 </p>
               </div>
 
-              <div className="prompt-box">
-                <strong>Predict first:</strong>
-                <br />
-                In {mode}, does adding another resistor make the total resistance larger or smaller?
-              </div>
+              <PredictionQuiz topic="series-parallel" />
             </div>
 
             <div className="mode-buttons">
@@ -1543,6 +1618,56 @@ function ResistorBox({ x, y, label }) {
   );
 }
 
+function PredictionQuiz({ topic }) {
+  const questions = predictionSets[topic];
+  const [questionIndex, setQuestionIndex] = useState(0);
+  const [selectedIndex, setSelectedIndex] = useState(null);
+  const question = questions[questionIndex];
+
+  function nextQuestion() {
+    setQuestionIndex((current) => (current + 1) % questions.length);
+    setSelectedIndex(null);
+  }
+
+  return (
+    <div className="quiz-box">
+      <div className="quiz-head">
+        <strong>Predict first</strong>
+        <button className="quiz-next" onClick={nextQuestion}>
+          New
+        </button>
+      </div>
+
+      <div className="quiz-question">{question.question}</div>
+
+      <div className="quiz-options">
+        {question.options.map((option, index) => {
+          const isSelected = selectedIndex === index;
+          const isCorrect = question.answer === index;
+          const showCorrect = selectedIndex !== null && isCorrect;
+
+          return (
+            <button
+              key={option}
+              className={
+                showCorrect
+                  ? "quiz-option correct"
+                  : isSelected
+                    ? "quiz-option chosen"
+                    : "quiz-option"
+              }
+              onClick={() => setSelectedIndex(index)}
+            >
+              <span>{option}</span>
+              {showCorrect && <span className="checkmark">✓</span>}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 function ValueBox({ label, value, unit }) {
   return (
     <div className="value-box">
@@ -1592,7 +1717,7 @@ function StyleBlock() {
       .header {
         display: flex;
         justify-content: space-between;
-        align-items: center;
+        align-items: stretch;
         gap: 16px;
         margin-bottom: 18px;
       }
@@ -1627,7 +1752,7 @@ function StyleBlock() {
 
       .subtitle {
         color: #6f624d;
-        font-size: 14px;
+        font-size: 16px;
         margin-top: 6px;
         line-height: 1.45;
       }
@@ -1638,7 +1763,7 @@ function StyleBlock() {
         padding: 11px 16px;
         cursor: pointer;
         font-weight: 700;
-        font-size: 14px;
+        font-size: 16px;
       }
 
       .button-dark {
@@ -1658,7 +1783,7 @@ function StyleBlock() {
 
       .main-grid {
         display: grid;
-        grid-template-columns: 250px 1fr 330px;
+        grid-template-columns: minmax(0, 1fr) 360px;
         gap: 16px;
       }
 
@@ -1676,20 +1801,34 @@ function StyleBlock() {
 
       .small-title {
         font-family: monospace;
-        font-size: 12px;
+        font-size: 13px;
         letter-spacing: 0.16em;
         color: #5e523f;
-        margin-bottom: 12px;
+        margin-bottom: 10px;
         font-weight: 800;
+      }
+
+      .topic-panel {
+        width: min(590px, 44vw);
+        background: rgba(255,255,255,0.74);
+        border: 1px solid #ddd2b8;
+        border-radius: 22px;
+        box-shadow: 0 10px 30px rgba(48,39,30,0.07);
+        padding: 14px;
+      }
+
+      .topic-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
       }
 
       .topic {
         width: 100%;
         display: block;
         text-align: left;
-        padding: 12px;
-        border-radius: 16px;
-        margin-bottom: 9px;
+        padding: 10px 12px;
+        border-radius: 14px;
         background: rgba(255,255,255,0.45);
         border: 1px solid transparent;
         color: #30271e;
@@ -1710,11 +1849,11 @@ function StyleBlock() {
 
       .topic-title {
         font-weight: 800;
-        font-size: 14px;
+        font-size: 15px;
       }
 
       .topic-subtitle {
-        font-size: 12px;
+        font-size: 13px;
         color: #6f624d;
         margin-top: 3px;
       }
@@ -1741,7 +1880,7 @@ function StyleBlock() {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        font-size: 14px;
+        font-size: 16px;
         margin: 12px 0;
       }
 
@@ -1761,7 +1900,7 @@ function StyleBlock() {
         border: 1px solid #d6c9aa;
         border-radius: 12px;
         padding: 10px;
-        font-size: 15px;
+        font-size: 17px;
         background: #fffdf6;
         color: #30271e;
       }
@@ -1771,7 +1910,7 @@ function StyleBlock() {
         border: 1px solid #d6c9aa;
         border-radius: 12px;
         padding: 10px;
-        font-size: 15px;
+        font-size: 17px;
         background: #fffdf6;
         color: #30271e;
       }
@@ -1784,7 +1923,7 @@ function StyleBlock() {
         display: flex;
         justify-content: space-between;
         margin-bottom: 8px;
-        font-size: 14px;
+        font-size: 16px;
       }
 
       .studio-top {
@@ -1795,18 +1934,75 @@ function StyleBlock() {
       }
 
       .studio-title {
-        font-size: clamp(30px, 4vw, 44px);
+        font-size: clamp(34px, 4vw, 50px);
       }
 
-      .prompt-box {
-        max-width: 260px;
+      .quiz-box {
+        width: min(360px, 40%);
         background: #fff7d8;
         border: 1px solid #e3d39b;
         border-radius: 16px;
         padding: 12px;
-        font-size: 13px;
         color: #5f5444;
         line-height: 1.45;
+      }
+
+      .quiz-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        color: #30271e;
+        font-size: 15px;
+        margin-bottom: 8px;
+      }
+
+      .quiz-next {
+        padding: 6px 10px;
+        border-radius: 10px;
+        background: rgba(255,255,255,0.72);
+        border: 1px solid #e3d39b;
+        color: #30271e;
+        font-size: 13px;
+      }
+
+      .quiz-question {
+        font-size: 15px;
+        margin-bottom: 10px;
+      }
+
+      .quiz-options {
+        display: grid;
+        gap: 7px;
+      }
+
+      .quiz-option {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 8px 10px;
+        border-radius: 12px;
+        border: 1px solid #e3d39b;
+        background: #fffdf6;
+        color: #30271e;
+        text-align: left;
+        font-size: 14px;
+      }
+
+      .quiz-option.chosen {
+        background: #f6ead0;
+      }
+
+      .quiz-option.correct {
+        background: #e6f3e8;
+        border-color: #8ac198;
+      }
+
+      .checkmark {
+        color: #1f6b43;
+        font-size: 18px;
+        font-weight: 900;
       }
 
       .simulation {
@@ -1832,7 +2028,7 @@ function StyleBlock() {
         background: #f8f4e8;
         border: 1px solid #e1d7bf;
         border-radius: 18px;
-        padding: 16px 8px;
+        padding: 18px 10px;
         text-align: center;
       }
 
@@ -1855,25 +2051,25 @@ function StyleBlock() {
       }
 
       .value-label {
-        font-size: 12px;
+        font-size: 15px;
         color: #6f624d;
       }
 
       .value-number {
-        font-size: 25px;
+        font-size: 32px;
         font-weight: 900;
         margin: 4px 0;
       }
 
       .value-unit {
-        font-size: 12px;
+        font-size: 16px;
       }
 
       .data-table {
         width: 100%;
         border-collapse: collapse;
         margin-top: 14px;
-        font-size: 13px;
+        font-size: 16px;
       }
 
       .data-table th,
@@ -1894,7 +2090,7 @@ function StyleBlock() {
         border-radius: 18px;
         padding: 14px;
         font-family: Georgia, serif;
-        font-size: 20px;
+        font-size: 24px;
         line-height: 1.5;
         margin: 12px 0;
       }
@@ -1925,7 +2121,7 @@ function StyleBlock() {
         border: 1px solid #e3d39b;
         border-radius: 16px;
         padding: 12px;
-        font-size: 14px;
+        font-size: 16px;
         line-height: 1.45;
       }
 
@@ -1944,7 +2140,7 @@ function StyleBlock() {
         margin-top: 12px;
         border-radius: 14px;
         padding: 12px;
-        font-size: 14px;
+        font-size: 16px;
         background: #f8f4e8;
         border: 1px solid #e1d7bf;
       }
@@ -1974,7 +2170,7 @@ function StyleBlock() {
       .graph-title {
         padding: 12px 14px 0;
         color: #30271e;
-        font-size: 14px;
+        font-size: 16px;
         font-weight: 900;
       }
 
@@ -2004,8 +2200,16 @@ function StyleBlock() {
           grid-template-columns: 1fr;
         }
 
-        .prompt-box {
-          display: none;
+        .header {
+          flex-direction: column;
+        }
+
+        .topic-panel {
+          width: 100%;
+        }
+
+        .quiz-box {
+          width: 100%;
         }
       }
 
@@ -2017,6 +2221,14 @@ function StyleBlock() {
         .header {
           flex-direction: column;
           align-items: flex-start;
+        }
+
+        .topic-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .studio-top {
+          flex-direction: column;
         }
 
         .summary-grid,
