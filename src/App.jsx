@@ -319,47 +319,25 @@ function PotentialDividerPage() {
   const [supplyVoltage, setSupplyVoltage] = useState(9);
   const [rTop, setRTop] = useState(3000);
   const [rBottom, setRBottom] = useState(6000);
-  const [loadResistance, setLoadResistance] = useState(12000);
-  const [useLoad, setUseLoad] = useState(false);
   const [studentMode, setStudentMode] = useState(false);
   const [prediction, setPrediction] = useState("");
   const [checkResult, setCheckResult] = useState(null);
 
-  const effectiveBottom = useLoad ? 1 / (1 / rBottom + 1 / loadResistance) : rBottom;
-  const totalResistance = rTop + effectiveBottom;
+  const totalResistance = rTop + rBottom;
   const circuitCurrent = supplyVoltage / totalResistance;
-  const outputVoltage = supplyVoltage * (effectiveBottom / totalResistance);
-  const topVoltage = supplyVoltage - outputVoltage;
-  const loadCurrent = useLoad ? outputVoltage / loadResistance : 0;
-  const dividerRatio = effectiveBottom / totalResistance;
+  const v1 = circuitCurrent * rTop;
+  const v2 = circuitCurrent * rBottom;
+  const voltageSum = v1 + v2;
+  const v1Ratio = rTop / totalResistance;
+  const v2Ratio = rBottom / totalResistance;
 
-  const voltageSegments = useMemo(() => {
-    return Array.from({ length: 25 }, (_, index) => {
-      const voltage = 3 + index * 0.5;
-      const vout = voltage * dividerRatio;
-
-      return {
-        x: 48 + (index / 24) * 418,
-        y: 248 - (vout / 12) * 188,
-      };
-    });
-  }, [dividerRatio]);
-
-  const graphPath = voltageSegments
-    .map((point, index) => `${index === 0 ? "M" : "L"} ${point.x} ${point.y}`)
-    .join(" ");
-
-  const activePoint = {
-    x: 48 + ((supplyVoltage - 3) / 12) * 418,
-    y: 248 - (outputVoltage / 12) * 188,
-  };
+  const v1Segments = useVoltageGraphPoints(v1Ratio);
+  const v2Segments = useVoltageGraphPoints(v2Ratio);
 
   function reset() {
     setSupplyVoltage(9);
     setRTop(3000);
     setRBottom(6000);
-    setLoadResistance(12000);
-    setUseLoad(false);
     setStudentMode(false);
     setPrediction("");
     setCheckResult(null);
@@ -367,10 +345,10 @@ function PotentialDividerPage() {
 
   function checkAnswer() {
     const predictedVoltage = Number(prediction);
-    const tolerance = Math.max(0.05, outputVoltage * 0.025);
+    const tolerance = Math.max(0.05, v2 * 0.025);
 
     setCheckResult({
-      correct: Math.abs(predictedVoltage - outputVoltage) <= tolerance,
+      correct: Math.abs(predictedVoltage - v2) <= tolerance,
     });
   }
 
@@ -383,7 +361,7 @@ function PotentialDividerPage() {
               <div>
                 <h2 className="studio-title">Potential Divider</h2>
                 <p className="subtitle">
-                  Split a supply voltage between two resistors and read the output from the centre tap.
+                  Watch one series current create separate potential differences across R1 and R2.
                 </p>
               </div>
 
@@ -399,20 +377,18 @@ function PotentialDividerPage() {
                 supplyVoltage={supplyVoltage}
                 rTop={rTop}
                 rBottom={rBottom}
-                loadResistance={loadResistance}
-                useLoad={useLoad}
-                outputVoltage={outputVoltage}
-                topVoltage={topVoltage}
+                v1={v1}
+                v2={v2}
                 circuitCurrent={circuitCurrent}
-                loadCurrent={loadCurrent}
                 studentMode={studentMode}
               />
             </div>
 
-            <div className="summary-grid">
-              <ValueBox label="Output voltage" value={studentMode ? "?" : outputVoltage.toFixed(2)} unit="V" />
-              <ValueBox label="Divider current" value={studentMode ? "?" : (circuitCurrent * 1000).toFixed(2)} unit="mA" />
-              <ValueBox label="Output ratio" value={studentMode ? "?" : dividerRatio.toFixed(3)} unit="Vout/Vs" />
+            <div className="summary-grid four">
+              <ValueBox label="Supply voltage" value={studentMode ? "?" : supplyVoltage.toFixed(2)} unit="V" />
+              <ValueBox label="V1 across R1" value={studentMode ? "?" : v1.toFixed(2)} unit="V" />
+              <ValueBox label="V2 across R2" value={studentMode ? "?" : v2.toFixed(2)} unit="V" />
+              <ValueBox label="V1 + V2" value={studentMode ? "?" : voltageSum.toFixed(2)} unit="V" />
             </div>
           </div>
         </div>
@@ -421,46 +397,28 @@ function PotentialDividerPage() {
 
         <div className="card">
           <div className="card-content">
-            <h3>Live graph: output voltage against supply voltage</h3>
+            <h3>Live graphs: component voltage against supply voltage</h3>
             <p className="subtitle">
-              The slope is the divider ratio. A load across the output pulls the effective lower resistance down.
+              Each line changes slope when R1 or R2 changes because the supply voltage is shared in proportion to resistance.
             </p>
 
-            <div className="graph-area">
-              <svg viewBox="0 0 520 290" width="100%" height="270">
-                <rect width="520" height="290" fill="#f8f4e8" />
-
-                <line x1="48" y1="248" x2="490" y2="248" stroke="#30271e" strokeWidth="3" />
-                <line x1="48" y1="248" x2="48" y2="35" stroke="#30271e" strokeWidth="3" />
-
-                {[0, 1, 2, 3, 4].map((n) => (
-                  <g key={n}>
-                    <line x1={48 + n * 104.5} y1="248" x2={48 + n * 104.5} y2="253" stroke="#30271e" />
-                    <text x={48 + n * 104.5} y="270" textAnchor="middle" fill="#6f624d" fontSize="10">
-                      {3 + n * 3}
-                    </text>
-                  </g>
-                ))}
-
-                {[0, 1, 2, 3, 4].map((n) => (
-                  <g key={n}>
-                    <line x1="43" y1={248 - n * 47} x2="48" y2={248 - n * 47} stroke="#30271e" />
-                    <text x="34" y={252 - n * 47} textAnchor="end" fill="#6f624d" fontSize="10">
-                      {n * 3}
-                    </text>
-                  </g>
-                ))}
-
-                <text x="268" y="284" textAnchor="middle" fill="#30271e" fontSize="12">
-                  Supply voltage / V
-                </text>
-                <text x="14" y="144" textAnchor="middle" fill="#30271e" fontSize="12" transform="rotate(-90 14 144)">
-                  Output voltage / V
-                </text>
-
-                <path d={graphPath} fill="none" stroke="#4b8aa0" strokeWidth="5" strokeLinecap="round" />
-                <circle cx={activePoint.x} cy={activePoint.y} r="9" fill="#c45b41" />
-              </svg>
+            <div className="split-graphs">
+              <VoltageShareGraph
+                title="V1 against supply voltage"
+                yLabel="V1 / V"
+                ratio={v1Ratio}
+                supplyVoltage={supplyVoltage}
+                points={v1Segments}
+                color="#4b8aa0"
+              />
+              <VoltageShareGraph
+                title="V2 against supply voltage"
+                yLabel="V2 / V"
+                ratio={v2Ratio}
+                supplyVoltage={supplyVoltage}
+                points={v2Segments}
+                color="#c45b41"
+              />
             </div>
           </div>
         </div>
@@ -483,13 +441,6 @@ function PotentialDividerPage() {
             <KiloOhmSlider label="R2 lower" value={rBottom} setValue={setRBottom} />
 
             <label className="switch-row">
-              Add output load
-              <input type="checkbox" checked={useLoad} onChange={(event) => setUseLoad(event.target.checked)} />
-            </label>
-
-            {useLoad && <KiloOhmSlider label="Load" value={loadResistance} setValue={setLoadResistance} />}
-
-            <label className="switch-row">
               Student mode
               <input type="checkbox" checked={studentMode} onChange={(event) => setStudentMode(event.target.checked)} />
             </label>
@@ -505,10 +456,10 @@ function PotentialDividerPage() {
             <div className="small-title">RULE</div>
             <h3>Potential divider</h3>
             <div className="formula-box">
-              V<sub>out</sub> = V<sub>s</sub> × R<sub>2</sub> / (R<sub>1</sub> + R<sub>2</sub>)
+              V<sub>s</sub> = V<sub>1</sub> + V<sub>2</sub> + V<sub>3</sub>...
             </div>
             <p className="subtitle">
-              The output is the fraction of the supply that appears across the lower resistor.
+              In a series circuit, the supply potential difference is shared across the components.
             </p>
           </div>
         </div>
@@ -520,12 +471,12 @@ function PotentialDividerPage() {
             <div className="small-title">STUDENT TESTER</div>
 
             <div className="task-box">
-              Predict the output voltage at the centre tap, then check your answer.
+              Predict V2 across R2, then check your answer.
             </div>
 
             <div className="check-grid single">
               <div>
-                <p className="subtitle">Predicted Vout / V</p>
+                <p className="subtitle">Predicted V2 / V</p>
                 <input type="number" value={prediction} onChange={(event) => setPrediction(event.target.value)} placeholder="e.g. 6.00" />
               </div>
             </div>
@@ -536,14 +487,14 @@ function PotentialDividerPage() {
 
             {checkResult && (
               <div className="feedback">
-                Output voltage:{" "}
+                V2 across R2:{" "}
                 <span className={checkResult.correct ? "good" : "bad"}>
                   {checkResult.correct ? "correct" : "check again"}
                 </span>
 
                 {!studentMode && (
                   <p className="subtitle">
-                    Correct value: Vout = {outputVoltage.toFixed(2)} V
+                    Correct value: V2 = {v2.toFixed(2)} V
                   </p>
                 )}
               </div>
@@ -847,23 +798,83 @@ function KiloOhmSlider({ label, value, setValue }) {
   );
 }
 
+function useVoltageGraphPoints(ratio) {
+  return useMemo(() => {
+    return Array.from({ length: 25 }, (_, index) => {
+      const voltage = 3 + index * 0.5;
+      const componentVoltage = voltage * ratio;
+
+      return {
+        x: 48 + (index / 24) * 418,
+        y: 248 - (componentVoltage / 15) * 188,
+      };
+    });
+  }, [ratio]);
+}
+
+function VoltageShareGraph({ title, yLabel, ratio, supplyVoltage, points, color }) {
+  const graphPath = points
+    .map((point, index) => `${index === 0 ? "M" : "L"} ${point.x} ${point.y}`)
+    .join(" ");
+  const activePoint = {
+    x: 48 + ((supplyVoltage - 3) / 12) * 418,
+    y: 248 - ((supplyVoltage * ratio) / 15) * 188,
+  };
+
+  return (
+    <div className="graph-area compact">
+      <div className="graph-title">{title}</div>
+      <svg viewBox="0 0 520 290" width="100%" height="250">
+        <rect width="520" height="290" fill="#f8f4e8" />
+
+        <line x1="48" y1="248" x2="490" y2="248" stroke="#30271e" strokeWidth="3" />
+        <line x1="48" y1="248" x2="48" y2="35" stroke="#30271e" strokeWidth="3" />
+
+        {[0, 1, 2, 3, 4].map((n) => (
+          <g key={n}>
+            <line x1={48 + n * 104.5} y1="248" x2={48 + n * 104.5} y2="253" stroke="#30271e" />
+            <text x={48 + n * 104.5} y="270" textAnchor="middle" fill="#6f624d" fontSize="10">
+              {3 + n * 3}
+            </text>
+          </g>
+        ))}
+
+        {[0, 1, 2, 3, 4, 5].map((n) => (
+          <g key={n}>
+            <line x1="43" y1={248 - n * 37.6} x2="48" y2={248 - n * 37.6} stroke="#30271e" />
+            <text x="34" y={252 - n * 37.6} textAnchor="end" fill="#6f624d" fontSize="10">
+              {n * 3}
+            </text>
+          </g>
+        ))}
+
+        <text x="268" y="284" textAnchor="middle" fill="#30271e" fontSize="12">
+          Supply voltage / V
+        </text>
+        <text x="14" y="144" textAnchor="middle" fill="#30271e" fontSize="12" transform="rotate(-90 14 144)">
+          {yLabel}
+        </text>
+
+        <path d={graphPath} fill="none" stroke={color} strokeWidth="5" strokeLinecap="round" />
+        <circle cx={activePoint.x} cy={activePoint.y} r="9" fill={color} stroke="#30271e" strokeWidth="2" />
+      </svg>
+    </div>
+  );
+}
+
 function PotentialDividerDiagram({
   supplyVoltage,
   rTop,
   rBottom,
-  loadResistance,
-  useLoad,
-  outputVoltage,
-  topVoltage,
+  v1,
+  v2,
   circuitCurrent,
-  loadCurrent,
   studentMode,
 }) {
-  const outputLabel = studentMode ? "? V" : `${outputVoltage.toFixed(2)} V`;
-  const topLabel = studentMode ? "? V" : `${topVoltage.toFixed(2)} V`;
+  const supplyLabel = studentMode ? "? V" : `${supplyVoltage.toFixed(2)} V`;
+  const v1Label = studentMode ? "? V" : `${v1.toFixed(2)} V`;
+  const v2Label = studentMode ? "? V" : `${v2.toFixed(2)} V`;
   const currentLabel = studentMode ? "? mA" : `${(circuitCurrent * 1000).toFixed(2)} mA`;
-  const loadLabel = studentMode ? "? mA" : `${(loadCurrent * 1000).toFixed(2)} mA`;
-  const outputFillHeight = Math.max(8, Math.min(148, (outputVoltage / Math.max(supplyVoltage, 1)) * 148));
 
   return (
     <svg viewBox="0 0 850 390" width="100%" height="100%">
@@ -876,7 +887,7 @@ function PotentialDividerDiagram({
       <rect width="850" height="390" fill="#f8f4e8" />
 
       <text x="78" y="74" fill="#30271e" fontSize="16" fontWeight="800">
-        Vs = {supplyVoltage.toFixed(1)} V
+        One current everywhere: I = {currentLabel}
       </text>
 
       <line x1="105" y1="118" x2="165" y2="118" stroke="#30271e" strokeWidth="7" strokeLinecap="round" />
@@ -903,47 +914,30 @@ function PotentialDividerDiagram({
         {(rBottom / 1000).toFixed(1)} kΩ
       </text>
 
-      <path d="M420 205 H610" fill="none" stroke="#30271e" strokeWidth="6" strokeLinecap="round" />
-      <circle cx="652" cy="205" r="32" fill="#fff" stroke="#30271e" strokeWidth="4" />
-      <text x="652" y="215" textAnchor="middle" fill="#30271e" fontSize="28" fontWeight="900">V</text>
-      <path d="M684 205 H728 V300 H420" fill="none" stroke="#7c6d56" strokeWidth="3" strokeDasharray="7 6" />
+      <path d="M165 118 H270 V166 H152" fill="none" stroke="#4b8aa0" strokeWidth="2.5" strokeLinecap="round" />
+      <circle cx="302" cy="142" r="28" fill="#fff" stroke="#30271e" strokeWidth="4" />
+      <path d="M270 142 H274" stroke="#4b8aa0" strokeWidth="2.5" strokeLinecap="round" />
+      <text x="302" y="151" textAnchor="middle" fill="#30271e" fontSize="24" fontWeight="900">Vs</text>
+      <text x="300" y="188" textAnchor="middle" fill="#6f624d" fontSize="13" fontWeight="800">{supplyLabel}</text>
 
-      <rect x="734" y="134" width="28" height="148" rx="12" fill="#fff" stroke="#30271e" strokeWidth="3" />
-      <rect x="738" y={278 - outputFillHeight} width="20" height={outputFillHeight} rx="9" fill="#4b8aa0" />
-      <text x="748" y="315" textAnchor="middle" fill="#30271e" fontSize="13" fontWeight="800">
-        {outputLabel}
-      </text>
+      <path d="M470 112 H548 V182 H470" fill="none" stroke="#4b8aa0" strokeWidth="2.5" strokeLinecap="round" />
+      <circle cx="590" cy="147" r="28" fill="#fff" stroke="#30271e" strokeWidth="4" />
+      <path d="M548 147 H562" stroke="#4b8aa0" strokeWidth="2.5" strokeLinecap="round" />
+      <text x="590" y="156" textAnchor="middle" fill="#30271e" fontSize="24" fontWeight="900">V1</text>
+      <text x="590" y="193" textAnchor="middle" fill="#6f624d" fontSize="13" fontWeight="800">{v1Label}</text>
 
-      {useLoad && (
-        <>
-          <path d="M560 205 V242" stroke="#30271e" strokeWidth="6" strokeLinecap="round" />
-          <rect x="517" y="242" width="86" height="48" rx="12" fill="#fff" stroke="#30271e" strokeWidth="4" />
-          <text x="560" y="263" textAnchor="middle" fill="#30271e" fontSize="14" fontWeight="900">LOAD</text>
-          <text x="560" y="281" textAnchor="middle" fill="#30271e" fontSize="11" fontWeight="800">
-            {(loadResistance / 1000).toFixed(1)} kΩ
-          </text>
-          <path d="M560 290 V300" stroke="#30271e" strokeWidth="6" strokeLinecap="round" />
-          <text x="587" y="236" fill="#6f624d" fontSize="12" fontWeight="700">
-            Iload = {loadLabel}
-          </text>
-        </>
-      )}
+      <path d="M470 222 H548 V278 H470" fill="none" stroke="#c45b41" strokeWidth="2.5" strokeLinecap="round" />
+      <circle cx="590" cy="250" r="28" fill="#fff" stroke="#30271e" strokeWidth="4" />
+      <path d="M548 250 H562" stroke="#c45b41" strokeWidth="2.5" strokeLinecap="round" />
+      <text x="590" y="259" textAnchor="middle" fill="#30271e" fontSize="24" fontWeight="900">V2</text>
+      <text x="590" y="296" textAnchor="middle" fill="#6f624d" fontSize="13" fontWeight="800">{v2Label}</text>
 
       <path d="M230 90 H335" stroke="#30271e" strokeWidth="3" markerEnd="url(#arrowDivider)" />
       <path d="M420 98 V109" stroke="#30271e" strokeWidth="3" markerEnd="url(#arrowDivider)" />
       <path d="M420 288 V296" stroke="#30271e" strokeWidth="3" markerEnd="url(#arrowDivider)" />
 
-      <text x="468" y="146" fill="#6f624d" fontSize="13" fontWeight="700">
-        V across R1 = {topLabel}
-      </text>
-      <text x="468" y="253" fill="#6f624d" fontSize="13" fontWeight="700">
-        Vout across R2 = {outputLabel}
-      </text>
-      <text x="190" y="128" fill="#6f624d" fontSize="13" fontWeight="700">
-        divider current = {currentLabel}
-      </text>
-      <text x="592" y="181" fill="#c45b41" fontSize="14" fontWeight="900">
-        centre tap
+      <text x="650" y="91" fill="#6f624d" fontSize="14" fontWeight="800">
+        {supplyLabel} = {v1Label} + {v2Label}
       </text>
     </svg>
   );
@@ -1366,6 +1360,10 @@ function StyleBlock() {
         margin-top: 16px;
       }
 
+      .summary-grid.four {
+        grid-template-columns: repeat(4, 1fr);
+      }
+
       .value-box {
         background: #f8f4e8;
         border: 1px solid #e1d7bf;
@@ -1466,6 +1464,24 @@ function StyleBlock() {
         overflow: hidden;
       }
 
+      .graph-area.compact {
+        margin-top: 0;
+      }
+
+      .graph-title {
+        padding: 12px 14px 0;
+        color: #30271e;
+        font-size: 14px;
+        font-weight: 900;
+      }
+
+      .split-graphs {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-top: 12px;
+      }
+
       @media (max-width: 1100px) {
         .main-grid {
           grid-template-columns: 1fr;
@@ -1487,7 +1503,9 @@ function StyleBlock() {
         }
 
         .summary-grid,
-        .check-grid {
+        .summary-grid.four,
+        .check-grid,
+        .split-graphs {
           grid-template-columns: 1fr;
         }
       }
