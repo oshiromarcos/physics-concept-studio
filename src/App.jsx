@@ -28,6 +28,7 @@ export default function App() {
           {page === "ohms-law" && <OhmsLawPage />}
           {page === "series-parallel" && <SeriesParallelPage />}
           {page === "potential-divider" && <PotentialDividerPage />}
+          {page === "wire-resistance" && <WireResistancePage />}
         </main>
       </div>
     </div>
@@ -65,10 +66,13 @@ function Navigation({ page, setPage }) {
             <div className="topic-subtitle">Output voltage from a ratio</div>
           </button>
 
-          <div className="topic muted">
+          <button
+            className={page === "wire-resistance" ? "topic active topic-button" : "topic topic-button"}
+            onClick={() => setPage("wire-resistance")}
+          >
             <div className="topic-title">Resistance of a Wire</div>
-            <div className="topic-subtitle">Coming next</div>
-          </div>
+            <div className="topic-subtitle">Length, area, and material</div>
+          </button>
         </div>
       </div>
     </>
@@ -495,6 +499,267 @@ function PotentialDividerPage() {
                 {!studentMode && (
                   <p className="subtitle">
                     Correct value: V2 = {v2.toFixed(2)} V
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      </aside>
+    </>
+  );
+}
+
+const wireMaterials = [
+  { key: "copper", name: "Copper", resistivity: 1.68e-8, color: "#c45b41" },
+  { key: "constantan", name: "Constantan", resistivity: 4.9e-7, color: "#4b8aa0" },
+  { key: "nichrome", name: "Nichrome", resistivity: 1.1e-6, color: "#7656a8" },
+  { key: "steel", name: "Steel", resistivity: 1.4e-7, color: "#6f624d" },
+];
+
+function WireResistancePage() {
+  const [length, setLength] = useState(1.2);
+  const [diameter, setDiameter] = useState(0.45);
+  const [materialKey, setMaterialKey] = useState("constantan");
+  const [testVoltage, setTestVoltage] = useState(3);
+  const [studentMode, setStudentMode] = useState(false);
+  const [prediction, setPrediction] = useState("");
+  const [checkResult, setCheckResult] = useState(null);
+
+  const material = wireMaterials.find((item) => item.key === materialKey) ?? wireMaterials[1];
+  const area = Math.PI * ((diameter / 1000) / 2) ** 2;
+  const resistance = material.resistivity * length / area;
+  const current = testVoltage / resistance;
+  const areaMm2 = area * 1_000_000;
+  const resistivityScale = material.resistivity / 1e-8;
+  const maxGraphResistance = material.resistivity * 2.5 / area;
+  const graphMax = Math.max(1, Math.ceil(maxGraphResistance / 5) * 5);
+
+  const graphPoints = useMemo(() => {
+    return Array.from({ length: 25 }, (_, index) => {
+      const sampleLength = 0.1 + index * 0.1;
+      const sampleResistance = material.resistivity * sampleLength / area;
+      return {
+        x: 48 + (index / 24) * 418,
+        y: 248 - (sampleResistance / graphMax) * 188,
+      };
+    });
+  }, [area, graphMax, material.resistivity]);
+
+  const graphPath = graphPoints
+    .map((point, index) => `${index === 0 ? "M" : "L"} ${point.x} ${point.y}`)
+    .join(" ");
+  const activePoint = {
+    x: 48 + ((length - 0.1) / 2.4) * 418,
+    y: 248 - (resistance / graphMax) * 188,
+  };
+
+  function reset() {
+    setLength(1.2);
+    setDiameter(0.45);
+    setMaterialKey("constantan");
+    setTestVoltage(3);
+    setStudentMode(false);
+    setPrediction("");
+    setCheckResult(null);
+  }
+
+  function checkAnswer() {
+    const predictedResistance = Number(prediction);
+    const tolerance = Math.max(0.05, resistance * 0.03);
+
+    setCheckResult({
+      correct: Math.abs(predictedResistance - resistance) <= tolerance,
+    });
+  }
+
+  return (
+    <>
+      <section>
+        <div className="card">
+          <div className="card-content">
+            <div className="studio-top">
+              <div>
+                <h2 className="studio-title">Resistance of a Wire</h2>
+                <p className="subtitle">
+                  Change the wire and see why longer, thinner, higher-resistivity wires have more resistance.
+                </p>
+              </div>
+
+              <div className="prompt-box">
+                <strong>Predict first:</strong>
+                <br />
+                If the diameter doubles, what should happen to the resistance?
+              </div>
+            </div>
+
+            <div className="simulation">
+              <WireResistanceDiagram
+                length={length}
+                diameter={diameter}
+                material={material}
+                resistance={resistance}
+                current={current}
+                testVoltage={testVoltage}
+                studentMode={studentMode}
+              />
+            </div>
+
+            <div className="summary-grid four">
+              <ValueBox label="Resistance" value={studentMode ? "?" : resistance.toFixed(2)} unit="Ω" />
+              <ValueBox label="Current" value={studentMode ? "?" : (current * 1000).toFixed(1)} unit="mA" />
+              <ValueBox label="Area" value={studentMode ? "?" : areaMm2.toFixed(3)} unit="mm²" />
+              <ValueBox label="Resistivity" value={studentMode ? "?" : resistivityScale.toFixed(1)} unit="×10⁻⁸ Ωm" />
+            </div>
+          </div>
+        </div>
+
+        <br />
+
+        <div className="card">
+          <div className="card-content">
+            <h3>Live graph: resistance against length</h3>
+            <p className="subtitle">
+              For one material and one diameter, resistance is directly proportional to length.
+            </p>
+
+            <div className="graph-area">
+              <svg viewBox="0 0 520 290" width="100%" height="270">
+                <rect width="520" height="290" fill="#f8f4e8" />
+                <line x1="48" y1="248" x2="490" y2="248" stroke="#30271e" strokeWidth="3" />
+                <line x1="48" y1="248" x2="48" y2="35" stroke="#30271e" strokeWidth="3" />
+
+                {[0, 1, 2, 3, 4, 5].map((n) => (
+                  <g key={n}>
+                    <line x1={48 + n * 83.6} y1="248" x2={48 + n * 83.6} y2="253" stroke="#30271e" />
+                    <text x={48 + n * 83.6} y="270" textAnchor="middle" fill="#6f624d" fontSize="10">
+                      {(n * 0.5).toFixed(1)}
+                    </text>
+                  </g>
+                ))}
+
+                {[0, 1, 2, 3, 4, 5].map((n) => (
+                  <g key={n}>
+                    <line x1="43" y1={248 - n * 37.6} x2="48" y2={248 - n * 37.6} stroke="#30271e" />
+                    <text x="34" y={252 - n * 37.6} textAnchor="end" fill="#6f624d" fontSize="10">
+                      {((graphMax / 5) * n).toFixed(graphMax < 10 ? 1 : 0)}
+                    </text>
+                  </g>
+                ))}
+
+                <text x="268" y="284" textAnchor="middle" fill="#30271e" fontSize="12">
+                  Length / m
+                </text>
+                <text x="14" y="144" textAnchor="middle" fill="#30271e" fontSize="12" transform="rotate(-90 14 144)">
+                  Resistance / Ω
+                </text>
+
+                <path d={graphPath} fill="none" stroke={material.color} strokeWidth="5" strokeLinecap="round" />
+                <circle cx={activePoint.x} cy={activePoint.y} r="9" fill="#fff7d8" stroke="#30271e" strokeWidth="3" />
+              </svg>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <aside>
+        <div className="card">
+          <div className="card-content">
+            <div className="small-title">CONTROLS</div>
+
+            <div className="control-group">
+              <div className="control-label">
+                <span>Material</span>
+                <strong>{material.name}</strong>
+              </div>
+              <select value={materialKey} onChange={(event) => setMaterialKey(event.target.value)}>
+                {wireMaterials.map((item) => (
+                  <option key={item.key} value={item.key}>
+                    {item.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="control-group">
+              <div className="control-label">
+                <span>Length</span>
+                <strong>{length.toFixed(2)} m</strong>
+              </div>
+              <input type="range" min="0.1" max="2.5" step="0.05" value={length} onChange={(event) => setLength(Number(event.target.value))} />
+            </div>
+
+            <div className="control-group">
+              <div className="control-label">
+                <span>Diameter</span>
+                <strong>{diameter.toFixed(2)} mm</strong>
+              </div>
+              <input type="range" min="0.2" max="1.2" step="0.05" value={diameter} onChange={(event) => setDiameter(Number(event.target.value))} />
+            </div>
+
+            <div className="control-group">
+              <div className="control-label">
+                <span>Test voltage</span>
+                <strong>{testVoltage.toFixed(1)} V</strong>
+              </div>
+              <input type="range" min="1" max="6" step="0.5" value={testVoltage} onChange={(event) => setTestVoltage(Number(event.target.value))} />
+            </div>
+
+            <label className="switch-row">
+              Student mode
+              <input type="checkbox" checked={studentMode} onChange={(event) => setStudentMode(event.target.checked)} />
+            </label>
+
+            <button className="button-light full" onClick={reset}>↺ Reset</button>
+          </div>
+        </div>
+
+        <br />
+
+        <div className="card">
+          <div className="card-content">
+            <div className="small-title">RULE</div>
+            <h3>Resistance of a wire</h3>
+            <div className="formula-box">
+              R = ρL / A
+            </div>
+            <p className="subtitle">
+              Resistance increases with length and resistivity, but decreases when cross-sectional area gets larger.
+            </p>
+          </div>
+        </div>
+
+        <br />
+
+        <div className="card">
+          <div className="card-content">
+            <div className="small-title">STUDENT TESTER</div>
+
+            <div className="task-box">
+              Predict the wire resistance from its length, area, and material.
+            </div>
+
+            <div className="check-grid single">
+              <div>
+                <p className="subtitle">Predicted R / Ω</p>
+                <input type="number" value={prediction} onChange={(event) => setPrediction(event.target.value)} placeholder="e.g. 3.70" />
+              </div>
+            </div>
+
+            <button className="button-dark full" onClick={checkAnswer}>
+              Check prediction
+            </button>
+
+            {checkResult && (
+              <div className="feedback">
+                Resistance:{" "}
+                <span className={checkResult.correct ? "good" : "bad"}>
+                  {checkResult.correct ? "correct" : "check again"}
+                </span>
+
+                {!studentMode && (
+                  <p className="subtitle">
+                    Correct value: R = {resistance.toFixed(2)} Ω
                   </p>
                 )}
               </div>
@@ -943,6 +1208,108 @@ function PotentialDividerDiagram({
   );
 }
 
+function WireResistanceDiagram({
+  length,
+  diameter,
+  material,
+  resistance,
+  current,
+  testVoltage,
+  studentMode,
+}) {
+  const wireStart = 230;
+  const wireMaxWidth = 420;
+  const wireWidth = 60 + (length / 2.5) * wireMaxWidth;
+  const wireEnd = wireStart + wireWidth;
+  const wireThickness = 4 + (diameter / 1.2) * 16;
+  const resistanceLabel = studentMode ? "? Ω" : `${resistance.toFixed(2)} Ω`;
+  const currentLabel = studentMode ? "? mA" : `${(current * 1000).toFixed(1)} mA`;
+  const voltageLabel = studentMode ? "? V" : `${testVoltage.toFixed(1)} V`;
+
+  return (
+    <svg viewBox="0 0 850 390" width="100%" height="100%">
+      <defs>
+        <marker id="arrowWire" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+          <path d="M0,0 L0,6 L9,3 z" fill="#30271e" />
+        </marker>
+      </defs>
+
+      <rect width="850" height="390" fill="#f8f4e8" />
+
+      <text x="78" y="70" fill="#30271e" fontSize="16" fontWeight="800">
+        {material.name} wire
+      </text>
+
+      <line x1="105" y1="120" x2="165" y2="120" stroke="#30271e" strokeWidth="7" strokeLinecap="round" />
+      <line x1="118" y1="168" x2="152" y2="168" stroke="#30271e" strokeWidth="5" strokeLinecap="round" />
+      <text x="173" y="124" fill="#30271e" fontSize="16" fontWeight="800">+</text>
+      <text x="163" y="174" fill="#30271e" fontSize="16" fontWeight="800">−</text>
+
+      <path d="M135 120 V92 H190" fill="none" stroke="#30271e" strokeWidth="8" strokeLinecap="round" />
+      <circle cx="220" cy="92" r="27" fill="#fff" stroke="#30271e" strokeWidth="4" />
+      <text x="220" y="101" textAnchor="middle" fill="#30271e" fontSize="26" fontWeight="900">A</text>
+      <path d={`M247 92 H${wireStart}`} fill="none" stroke="#30271e" strokeWidth="8" strokeLinecap="round" />
+
+      <line
+        x1={wireStart}
+        y1="92"
+        x2={wireEnd}
+        y2="92"
+        stroke={material.color}
+        strokeWidth={wireThickness}
+        strokeLinecap="round"
+      />
+      <line x1={wireStart} y1="74" x2={wireStart} y2="110" stroke="#30271e" strokeWidth="4" />
+      <line x1={wireEnd} y1="74" x2={wireEnd} y2="110" stroke="#30271e" strokeWidth="4" />
+
+      <path d={`M${wireEnd} 92 H730 V300 H135 V168`} fill="none" stroke="#30271e" strokeWidth="8" strokeLinecap="round" />
+
+      <path d="M180 92 H207" stroke="#30271e" strokeWidth="3" markerEnd="url(#arrowWire)" />
+      <path d={`M${wireEnd + 24} 92 H${wireEnd + 64}`} stroke="#30271e" strokeWidth="3" markerEnd="url(#arrowWire)" />
+      <path d="M620 300 H575" stroke="#30271e" strokeWidth="3" markerEnd="url(#arrowWire)" />
+
+      <path d={`M${wireStart} 126 V166 H330`} fill="none" stroke="#4b8aa0" strokeWidth="2.5" strokeLinecap="round" />
+      <path d={`M${wireEnd} 126 V166 H390`} fill="none" stroke="#4b8aa0" strokeWidth="2.5" strokeLinecap="round" />
+      <circle cx="360" cy="166" r="28" fill="#fff" stroke="#30271e" strokeWidth="4" />
+      <text x="360" y="175" textAnchor="middle" fill="#30271e" fontSize="24" fontWeight="900">V</text>
+
+      <line x1={wireStart} y1="142" x2={wireEnd} y2="142" stroke="#d6c9aa" strokeWidth="5" strokeLinecap="round" />
+      {Array.from({ length: 6 }, (_, index) => (
+        <g key={index}>
+          <line
+            x1={wireStart + (wireWidth / 5) * index}
+            y1="134"
+            x2={wireStart + (wireWidth / 5) * index}
+            y2="151"
+            stroke="#6f624d"
+            strokeWidth="2"
+          />
+        </g>
+      ))}
+
+      <text x={(wireStart + wireEnd) / 2} y="172" textAnchor="middle" fill="#6f624d" fontSize="13" fontWeight="800">
+        L = {length.toFixed(2)} m
+      </text>
+      <text x={(wireStart + wireEnd) / 2} y="56" textAnchor="middle" fill="#30271e" fontSize="14" fontWeight="900">
+        diameter = {diameter.toFixed(2)} mm
+      </text>
+
+      <text x="185" y="134" fill="#6f624d" fontSize="13" fontWeight="800">
+        I = {currentLabel}
+      </text>
+      <text x="398" y="174" fill="#6f624d" fontSize="13" fontWeight="800">
+        V = {voltageLabel}
+      </text>
+      <text x="540" y="222" fill="#30271e" fontSize="16" fontWeight="900">
+        R = {resistanceLabel}
+      </text>
+      <text x="540" y="246" fill="#6f624d" fontSize="13" fontWeight="800">
+        R = ρL / A
+      </text>
+    </svg>
+  );
+}
+
 function SeriesDiagram({ supplyVoltage, resistors, totalCurrent }) {
   const hasThree = resistors.length === 3;
 
@@ -1303,6 +1670,16 @@ function StyleBlock() {
       }
 
       input[type="number"] {
+        width: 100%;
+        border: 1px solid #d6c9aa;
+        border-radius: 12px;
+        padding: 10px;
+        font-size: 15px;
+        background: #fffdf6;
+        color: #30271e;
+      }
+
+      select {
         width: 100%;
         border: 1px solid #d6c9aa;
         border-radius: 12px;
