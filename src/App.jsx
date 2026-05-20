@@ -138,6 +138,9 @@ const networkRevealDefaults = {
   equivalentResistance: false,
   totalCurrent: false,
   totalPower: false,
+  branchCurrent0: false,
+  branchCurrent1: false,
+  branchCurrent2: false,
 };
 
 const wireRevealDefaults = {
@@ -1083,7 +1086,8 @@ function SeriesParallelPage() {
               )}
             </div>
 
-            <div className="summary-grid">
+            <div className="summary-grid four">
+              <FlipValueBox label="Supply voltage" value={supplyVoltage.toFixed(1)} unit="V" revealed={revealedValues.supplyVoltage} onFlip={() => flipValue("supplyVoltage")} />
               <FlipValueBox label="Equivalent resistance" value={equivalentResistance.toFixed(2)} unit="Ω" revealed={revealedValues.equivalentResistance} onFlip={() => flipValue("equivalentResistance")} />
               <FlipValueBox label="Total current" value={totalCurrent.toFixed(2)} unit="A" revealed={revealedValues.totalCurrent} onFlip={() => flipValue("totalCurrent")} />
               <FlipValueBox label="Total power" value={totalPower.toFixed(2)} unit="W" revealed={revealedValues.totalPower} onFlip={() => flipValue("totalPower")} />
@@ -1717,7 +1721,7 @@ function SeriesDiagram({ supplyVoltage, resistors, totalCurrent, revealedValues,
   );
 }
 
-function ParallelDiagram({ supplyVoltage, resistors, rows, totalCurrent, revealedValues, onFlip }) {
+function ParallelDiagram({ resistors, rows, totalCurrent, revealedValues, onFlip }) {
   const branchPositions = resistors.length === 3 ? [330, 500, 670] : [410, 610];
   const railEnd = branchPositions[branchPositions.length - 1];
 
@@ -1730,18 +1734,6 @@ function ParallelDiagram({ supplyVoltage, resistors, rows, totalCurrent, reveale
       </defs>
 
       <rect width="850" height="390" fill="#f8f4e8" />
-
-      <SvgInfoCard
-        x={70}
-        y={42}
-        width={138}
-        height={76}
-        label="Supply"
-        value={supplyVoltage.toFixed(1)}
-        unit="V"
-        revealed={revealedValues.supplyVoltage}
-        onFlip={() => onFlip("supplyVoltage")}
-      />
 
       {/* Cell */}
       <line x1="105" y1="120" x2="165" y2="120" stroke="#30271e" strokeWidth="7" strokeLinecap="round" />
@@ -1784,8 +1776,8 @@ function ParallelDiagram({ supplyVoltage, resistors, rows, totalCurrent, reveale
             label={`I${index + 1}`}
             value={rows[index].current.toFixed(2)}
             unit="A"
-            revealed={revealedValues.totalCurrent}
-            onFlip={() => onFlip("totalCurrent")}
+            revealed={revealedValues[`branchCurrent${index}`]}
+            onFlip={() => onFlip(`branchCurrent${index}`)}
             compact
           />
 
