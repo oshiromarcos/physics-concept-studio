@@ -1445,13 +1445,12 @@ function PotentialDividerDiagram({
         {(rBottom / 1000).toFixed(1)} kΩ
       </text>
 
-      <path d="M60 118 H84 V142 H90" fill="none" stroke="#4b8aa0" strokeWidth="2.5" strokeLinecap="round" />
-      <path d="M140 142 H194 V166 H152" fill="none" stroke="#4b8aa0" strokeWidth="2.5" strokeLinecap="round" />
-      <path d="M140 142 H164 V118 H166" fill="none" stroke="#4b8aa0" strokeWidth="2.5" strokeLinecap="round" />
-      <circle cx="115" cy="142" r="28" fill="#fff" stroke="#30271e" strokeWidth="4" />
-      <text x="115" y="151" textAnchor="middle" fill="#30271e" fontSize="24" fontWeight="900">Vs</text>
+      <path d="M64 142 H90" stroke="#4b8aa0" strokeWidth="2.5" strokeLinecap="round" />
+      <path d="M64 142 H64 V166 H152" fill="none" stroke="#4b8aa0" strokeWidth="2.5" strokeLinecap="round" />
+      <circle cx="36" cy="142" r="28" fill="#fff" stroke="#30271e" strokeWidth="4" />
+      <text x="36" y="151" textAnchor="middle" fill="#30271e" fontSize="22" fontWeight="900">Vs</text>
       <SvgInfoCard
-        x={50}
+        x={54}
         y={184}
         width={130}
         height={66}
@@ -1463,13 +1462,9 @@ function PotentialDividerDiagram({
         compact
       />
 
-      <path d="M470 112 H550" stroke="#4b8aa0" strokeWidth="2.5" strokeLinecap="round" />
-      <path d="M470 182 H550" stroke="#4b8aa0" strokeWidth="2.5" strokeLinecap="round" />
+      <path d="M470 112 H542 V147 H562" fill="none" stroke="#4b8aa0" strokeWidth="2.5" strokeLinecap="round" />
+      <path d="M470 182 H642 V147 H618" fill="none" stroke="#4b8aa0" strokeWidth="2.5" strokeLinecap="round" />
       <circle cx="590" cy="147" r="28" fill="#fff" stroke="#30271e" strokeWidth="4" />
-      <path d="M550 112 V147 H562" fill="none" stroke="#4b8aa0" strokeWidth="2.5" strokeLinecap="round" />
-      <path d="M550 182 V147" fill="none" stroke="#4b8aa0" strokeWidth="2.5" strokeLinecap="round" />
-      <path d="M618 147 H642 V112 H612" fill="none" stroke="#4b8aa0" strokeWidth="2.5" strokeLinecap="round" />
-      <path d="M642 147 V182 H612" fill="none" stroke="#4b8aa0" strokeWidth="2.5" strokeLinecap="round" />
       <text x="590" y="156" textAnchor="middle" fill="#30271e" fontSize="24" fontWeight="900">V1</text>
       <SvgInfoCard
         x={526}
@@ -1484,13 +1479,9 @@ function PotentialDividerDiagram({
         compact
       />
 
-      <path d="M470 222 H550" stroke="#c45b41" strokeWidth="2.5" strokeLinecap="round" />
-      <path d="M470 278 H550" stroke="#c45b41" strokeWidth="2.5" strokeLinecap="round" />
+      <path d="M470 222 H542 V250 H562" fill="none" stroke="#c45b41" strokeWidth="2.5" strokeLinecap="round" />
+      <path d="M470 278 H642 V250 H618" fill="none" stroke="#c45b41" strokeWidth="2.5" strokeLinecap="round" />
       <circle cx="590" cy="250" r="28" fill="#fff" stroke="#30271e" strokeWidth="4" />
-      <path d="M550 222 V250 H562" fill="none" stroke="#c45b41" strokeWidth="2.5" strokeLinecap="round" />
-      <path d="M550 278 V250" fill="none" stroke="#c45b41" strokeWidth="2.5" strokeLinecap="round" />
-      <path d="M618 250 H642 V222 H612" fill="none" stroke="#c45b41" strokeWidth="2.5" strokeLinecap="round" />
-      <path d="M642 250 V278 H612" fill="none" stroke="#c45b41" strokeWidth="2.5" strokeLinecap="round" />
       <text x="590" y="259" textAnchor="middle" fill="#30271e" fontSize="24" fontWeight="900">V2</text>
       <SvgInfoCard
         x={526}
@@ -1612,6 +1603,7 @@ function WireResistanceDiagram({
         revealed={revealedValues.length}
         onFlip={() => onFlip("length")}
         compact
+        opacity={0.5}
       />
       <SvgInfoCard
         x={(wireStart + wireEnd) / 2 - 76}
@@ -1915,9 +1907,9 @@ function FlipValueBox({ label, value, unit, revealed, onFlip, compact = false })
   );
 }
 
-function SvgInfoCard({ x, y, width, height, label, value, unit, revealed, onFlip, compact = false }) {
+function SvgInfoCard({ x, y, width, height, label, value, unit, revealed, onFlip, compact = false, opacity = 1 }) {
   return (
-    <foreignObject x={x} y={y} width={width} height={height}>
+    <foreignObject x={x} y={y} width={width} height={height} opacity={opacity}>
       <FlipValueBox
         label={label}
         value={value}
