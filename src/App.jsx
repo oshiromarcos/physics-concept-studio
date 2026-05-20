@@ -569,8 +569,9 @@ function PotentialDividerPage() {
               />
             </div>
 
-            <div className="summary-grid four">
+            <div className="summary-grid five">
               <FlipValueBox label="Supply voltage" value={supplyVoltage.toFixed(2)} unit="V" revealed={revealedValues.supplyVoltage} onFlip={() => flipValue("supplyVoltage")} />
+              <FlipValueBox label="Circuit current" value={(circuitCurrent * 1000).toFixed(2)} unit="mA" revealed={revealedValues.current} onFlip={() => flipValue("current")} />
               <FlipValueBox label="V1 across R1" value={v1.toFixed(2)} unit="V" revealed={revealedValues.v1} onFlip={() => flipValue("v1")} />
               <FlipValueBox label="V2 across R2" value={v2.toFixed(2)} unit="V" revealed={revealedValues.v2} onFlip={() => flipValue("v2")} />
               <FlipValueBox label="V1 + V2" value={voltageSum.toFixed(2)} unit="V" revealed={revealedValues.voltageSum} onFlip={() => flipValue("voltageSum")} />
@@ -1404,25 +1405,29 @@ function PotentialDividerDiagram({
 
       <rect width="850" height="390" fill="#f8f4e8" />
 
-      <SvgInfoCard
-        x={68}
-        y={44}
-        width={168}
-        height={76}
-        label="Current"
-        value={(circuitCurrent * 1000).toFixed(2)}
-        unit="mA"
-        revealed={revealedValues.current}
-        onFlip={() => onFlip("current")}
-      />
-
       <line x1="105" y1="118" x2="165" y2="118" stroke="#30271e" strokeWidth="7" strokeLinecap="round" />
       <line x1="118" y1="166" x2="152" y2="166" stroke="#30271e" strokeWidth="5" strokeLinecap="round" />
       <text x="173" y="122" fill="#30271e" fontSize="16" fontWeight="800">+</text>
       <text x="163" y="172" fill="#30271e" fontSize="16" fontWeight="800">−</text>
 
-      <path d="M135 118 V90 H420 V112" fill="none" stroke="#30271e" strokeWidth="8" strokeLinecap="round" />
+      <path d="M135 118 V90 H262" fill="none" stroke="#30271e" strokeWidth="8" strokeLinecap="round" />
+      <circle cx="292" cy="90" r="27" fill="#fff" stroke="#30271e" strokeWidth="4" />
+      <text x="292" y="99" textAnchor="middle" fill="#30271e" fontSize="26" fontWeight="900">A</text>
+      <path d="M319 90 H420 V112" fill="none" stroke="#30271e" strokeWidth="8" strokeLinecap="round" />
       <path d="M420 278 V300 H135 V166" fill="none" stroke="#30271e" strokeWidth="8" strokeLinecap="round" />
+
+      <SvgInfoCard
+        x={210}
+        y={16}
+        width={164}
+        height={70}
+        label="Current"
+        value={(circuitCurrent * 1000).toFixed(2)}
+        unit="mA"
+        revealed={revealedValues.current}
+        onFlip={() => onFlip("current")}
+        compact
+      />
 
       <rect x="377" y="112" width="86" height="70" rx="12" fill="#fff" stroke="#30271e" strokeWidth="4" />
       <text x="420" y="142" textAnchor="middle" fill="#30271e" fontSize="15" fontWeight="900">R1</text>
@@ -1440,13 +1445,14 @@ function PotentialDividerDiagram({
         {(rBottom / 1000).toFixed(1)} kΩ
       </text>
 
-      <path d="M165 118 H270 V166 H152" fill="none" stroke="#4b8aa0" strokeWidth="2.5" strokeLinecap="round" />
-      <circle cx="302" cy="142" r="28" fill="#fff" stroke="#30271e" strokeWidth="4" />
-      <path d="M270 142 H274" stroke="#4b8aa0" strokeWidth="2.5" strokeLinecap="round" />
-      <text x="302" y="151" textAnchor="middle" fill="#30271e" fontSize="24" fontWeight="900">Vs</text>
+      <path d="M60 118 H84 V142 H90" fill="none" stroke="#4b8aa0" strokeWidth="2.5" strokeLinecap="round" />
+      <path d="M140 142 H194 V166 H152" fill="none" stroke="#4b8aa0" strokeWidth="2.5" strokeLinecap="round" />
+      <path d="M140 142 H164 V118 H166" fill="none" stroke="#4b8aa0" strokeWidth="2.5" strokeLinecap="round" />
+      <circle cx="115" cy="142" r="28" fill="#fff" stroke="#30271e" strokeWidth="4" />
+      <text x="115" y="151" textAnchor="middle" fill="#30271e" fontSize="24" fontWeight="900">Vs</text>
       <SvgInfoCard
-        x={236}
-        y={174}
+        x={50}
+        y={184}
         width={130}
         height={66}
         label="Supply"
@@ -1457,9 +1463,13 @@ function PotentialDividerDiagram({
         compact
       />
 
-      <path d="M470 112 H548 V182 H470" fill="none" stroke="#4b8aa0" strokeWidth="2.5" strokeLinecap="round" />
+      <path d="M470 112 H550" stroke="#4b8aa0" strokeWidth="2.5" strokeLinecap="round" />
+      <path d="M470 182 H550" stroke="#4b8aa0" strokeWidth="2.5" strokeLinecap="round" />
       <circle cx="590" cy="147" r="28" fill="#fff" stroke="#30271e" strokeWidth="4" />
-      <path d="M548 147 H562" stroke="#4b8aa0" strokeWidth="2.5" strokeLinecap="round" />
+      <path d="M550 112 V147 H562" fill="none" stroke="#4b8aa0" strokeWidth="2.5" strokeLinecap="round" />
+      <path d="M550 182 V147" fill="none" stroke="#4b8aa0" strokeWidth="2.5" strokeLinecap="round" />
+      <path d="M618 147 H642 V112 H612" fill="none" stroke="#4b8aa0" strokeWidth="2.5" strokeLinecap="round" />
+      <path d="M642 147 V182 H612" fill="none" stroke="#4b8aa0" strokeWidth="2.5" strokeLinecap="round" />
       <text x="590" y="156" textAnchor="middle" fill="#30271e" fontSize="24" fontWeight="900">V1</text>
       <SvgInfoCard
         x={526}
@@ -1474,9 +1484,13 @@ function PotentialDividerDiagram({
         compact
       />
 
-      <path d="M470 222 H548 V278 H470" fill="none" stroke="#c45b41" strokeWidth="2.5" strokeLinecap="round" />
+      <path d="M470 222 H550" stroke="#c45b41" strokeWidth="2.5" strokeLinecap="round" />
+      <path d="M470 278 H550" stroke="#c45b41" strokeWidth="2.5" strokeLinecap="round" />
       <circle cx="590" cy="250" r="28" fill="#fff" stroke="#30271e" strokeWidth="4" />
-      <path d="M548 250 H562" stroke="#c45b41" strokeWidth="2.5" strokeLinecap="round" />
+      <path d="M550 222 V250 H562" fill="none" stroke="#c45b41" strokeWidth="2.5" strokeLinecap="round" />
+      <path d="M550 278 V250" fill="none" stroke="#c45b41" strokeWidth="2.5" strokeLinecap="round" />
+      <path d="M618 250 H642 V222 H612" fill="none" stroke="#c45b41" strokeWidth="2.5" strokeLinecap="round" />
+      <path d="M642 250 V278 H612" fill="none" stroke="#c45b41" strokeWidth="2.5" strokeLinecap="round" />
       <text x="590" y="259" textAnchor="middle" fill="#30271e" fontSize="24" fontWeight="900">V2</text>
       <SvgInfoCard
         x={526}
@@ -1491,7 +1505,8 @@ function PotentialDividerDiagram({
         compact
       />
 
-      <path d="M230 90 H335" stroke="#30271e" strokeWidth="3" markerEnd="url(#arrowDivider)" />
+      <path d="M198 90 H248" stroke="#30271e" strokeWidth="3" markerEnd="url(#arrowDivider)" />
+      <path d="M332 90 H382" stroke="#30271e" strokeWidth="3" markerEnd="url(#arrowDivider)" />
       <path d="M420 98 V109" stroke="#30271e" strokeWidth="3" markerEnd="url(#arrowDivider)" />
       <path d="M420 288 V296" stroke="#30271e" strokeWidth="3" markerEnd="url(#arrowDivider)" />
 
@@ -2249,6 +2264,10 @@ function StyleBlock() {
 
       .summary-grid.four {
         grid-template-columns: repeat(4, 1fr);
+      }
+
+      .summary-grid.five {
+        grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
       }
 
       .value-box {
