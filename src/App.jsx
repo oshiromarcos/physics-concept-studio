@@ -118,6 +118,38 @@ const predictionSets = {
   ],
 };
 
+const ohmsRevealDefaults = {
+  voltage: false,
+  current: false,
+  power: false,
+  resistance: false,
+};
+
+const dividerRevealDefaults = {
+  supplyVoltage: false,
+  current: false,
+  v1: false,
+  v2: false,
+  voltageSum: false,
+};
+
+const networkRevealDefaults = {
+  supplyVoltage: false,
+  equivalentResistance: false,
+  totalCurrent: false,
+  totalPower: false,
+};
+
+const wireRevealDefaults = {
+  resistance: false,
+  current: false,
+  area: false,
+  resistivity: false,
+  length: false,
+  diameter: false,
+  voltage: false,
+};
+
 export default function App() {
   const [page, setPage] = useState("series-parallel");
 
@@ -175,6 +207,7 @@ function OhmsLawPage() {
   const [resistance, setResistance] = useState(12);
   const [studentMode, setStudentMode] = useState(false);
   const [showElectrons, setShowElectrons] = useState(false);
+  const [revealedValues, setRevealedValues] = useState(ohmsRevealDefaults);
 
   const current = voltage / resistance;
   const power = voltage * current;
@@ -208,6 +241,19 @@ function OhmsLawPage() {
     setResistance(12);
     setStudentMode(false);
     setShowElectrons(false);
+    setRevealedValues(ohmsRevealDefaults);
+  }
+
+  function flipValue(key) {
+    setRevealedValues((currentValues) => ({
+      ...currentValues,
+      [key]: !currentValues[key],
+    }));
+  }
+
+  function toggleStudentMode(checked) {
+    setStudentMode(checked);
+    setRevealedValues(ohmsRevealDefaults);
   }
 
   return (
@@ -239,9 +285,17 @@ function OhmsLawPage() {
 
                 <rect width="850" height="390" fill="#f8f4e8" />
 
-                <text x="86" y="76" fill="#30271e" fontSize="16" fontWeight="800">
-                  V = {voltage.toFixed(1)} V
-                </text>
+                <SvgInfoCard
+                  x={58}
+                  y={46}
+                  width={132}
+                  height={76}
+                  label="Voltage"
+                  value={voltage.toFixed(1)}
+                  unit="V"
+                  revealed={revealedValues.voltage}
+                  onFlip={() => flipValue("voltage")}
+                />
 
                 <line x1="120" y1="120" x2="180" y2="120" stroke="#30271e" strokeWidth="7" strokeLinecap="round" />
                 <line x1="133" y1="168" x2="167" y2="168" stroke="#30271e" strokeWidth="5" strokeLinecap="round" />
@@ -253,25 +307,51 @@ function OhmsLawPage() {
                 <path d="M720 265 V300 H150 V168" fill="none" stroke="#30271e" strokeWidth="8" strokeLinecap="round" />
 
                 <rect x="350" y="66" width="120" height="48" rx="10" fill="#fff" stroke="#30271e" strokeWidth="4" />
-                <text x="410" y="50" textAnchor="middle" fill="#30271e" fontSize="15" fontWeight="800">
-                  R = {resistance.toFixed(1)} Ω
-                </text>
+                <SvgInfoCard
+                  x={340}
+                  y={8}
+                  width={140}
+                  height={72}
+                  label="Resistance"
+                  value={resistance.toFixed(1)}
+                  unit="Ω"
+                  revealed={revealedValues.resistance}
+                  onFlip={() => flipValue("resistance")}
+                />
 
                 <path d="M350 90 V160 H382" fill="none" stroke="#7c6d56" strokeWidth="3" strokeDasharray="5 5" />
                 <path d="M470 90 V160 H438" fill="none" stroke="#7c6d56" strokeWidth="3" strokeDasharray="5 5" />
                 <circle cx="410" cy="160" r="26" fill="#fff" stroke="#30271e" strokeWidth="4" />
                 <text x="410" y="169" textAnchor="middle" fill="#30271e" fontSize="26" fontWeight="900">V</text>
-                <text x="386" y="210" fill="#6f624d" fontSize="13">
-                  {voltage.toFixed(1)} V
-                </text>
+                <SvgInfoCard
+                  x={342}
+                  y={184}
+                  width={136}
+                  height={70}
+                  label="Voltmeter"
+                  value={voltage.toFixed(1)}
+                  unit="V"
+                  revealed={revealedValues.voltage}
+                  onFlip={() => flipValue("voltage")}
+                  compact
+                />
 
                 <line x1="720" y1="210" x2="720" y2="221" stroke="#30271e" strokeWidth="8" strokeLinecap="round" />
                 <circle cx="720" cy="243" r="26" fill="#fff" stroke="#30271e" strokeWidth="4" />
                 <text x="720" y="252" textAnchor="middle" fill="#30271e" fontSize="26" fontWeight="900">A</text>
                 <line x1="720" y1="265" x2="720" y2="276" stroke="#30271e" strokeWidth="8" strokeLinecap="round" />
-                <text x="690" y="318" fill="#6f624d" fontSize="13">
-                  {studentMode ? "? A" : `${current.toFixed(2)} A`}
-                </text>
+                <SvgInfoCard
+                  x={654}
+                  y={292}
+                  width={132}
+                  height={70}
+                  label="Current"
+                  value={current.toFixed(2)}
+                  unit="A"
+                  revealed={revealedValues.current}
+                  onFlip={() => flipValue("current")}
+                  compact
+                />
 
                 <path d="M225 90 H305" stroke="#30271e" strokeWidth="3" markerEnd="url(#arrowOhm)" />
                 <path d="M720 130 V190" stroke="#30271e" strokeWidth="3" markerEnd="url(#arrowOhm)" />
@@ -301,9 +381,9 @@ function OhmsLawPage() {
             </div>
 
             <div className="summary-grid">
-              <ValueBox label="Current" value={studentMode ? "?" : current.toFixed(2)} unit="A" />
-              <ValueBox label="Power" value={studentMode ? "?" : power.toFixed(2)} unit="W" />
-              <ValueBox label="Resistance" value={studentMode ? "?" : resistance.toFixed(1)} unit="Ω" />
+              <FlipValueBox label="Current" value={current.toFixed(2)} unit="A" revealed={revealedValues.current} onFlip={() => flipValue("current")} />
+              <FlipValueBox label="Power" value={power.toFixed(2)} unit="W" revealed={revealedValues.power} onFlip={() => flipValue("power")} />
+              <FlipValueBox label="Resistance" value={resistance.toFixed(1)} unit="Ω" revealed={revealedValues.resistance} onFlip={() => flipValue("resistance")} />
             </div>
           </div>
         </div>
@@ -377,7 +457,7 @@ function OhmsLawPage() {
 
             <label className="switch-row">
               Student mode
-              <input type="checkbox" checked={studentMode} onChange={(e) => setStudentMode(e.target.checked)} />
+              <input type="checkbox" checked={studentMode} onChange={(e) => toggleStudentMode(e.target.checked)} />
             </label>
 
             <label className="switch-row">
@@ -411,6 +491,7 @@ function PotentialDividerPage() {
   const [rTop, setRTop] = useState(3000);
   const [rBottom, setRBottom] = useState(6000);
   const [studentMode, setStudentMode] = useState(false);
+  const [revealedValues, setRevealedValues] = useState(dividerRevealDefaults);
   const [prediction, setPrediction] = useState("");
   const [checkResult, setCheckResult] = useState(null);
 
@@ -430,8 +511,21 @@ function PotentialDividerPage() {
     setRTop(3000);
     setRBottom(6000);
     setStudentMode(false);
+    setRevealedValues(dividerRevealDefaults);
     setPrediction("");
     setCheckResult(null);
+  }
+
+  function flipValue(key) {
+    setRevealedValues((currentValues) => ({
+      ...currentValues,
+      [key]: !currentValues[key],
+    }));
+  }
+
+  function toggleStudentMode(checked) {
+    setStudentMode(checked);
+    setRevealedValues(dividerRevealDefaults);
   }
 
   function checkAnswer() {
@@ -467,15 +561,16 @@ function PotentialDividerPage() {
                 v1={v1}
                 v2={v2}
                 circuitCurrent={circuitCurrent}
-                studentMode={studentMode}
+                revealedValues={revealedValues}
+                onFlip={flipValue}
               />
             </div>
 
             <div className="summary-grid four">
-              <ValueBox label="Supply voltage" value={studentMode ? "?" : supplyVoltage.toFixed(2)} unit="V" />
-              <ValueBox label="V1 across R1" value={studentMode ? "?" : v1.toFixed(2)} unit="V" />
-              <ValueBox label="V2 across R2" value={studentMode ? "?" : v2.toFixed(2)} unit="V" />
-              <ValueBox label="V1 + V2" value={studentMode ? "?" : voltageSum.toFixed(2)} unit="V" />
+              <FlipValueBox label="Supply voltage" value={supplyVoltage.toFixed(2)} unit="V" revealed={revealedValues.supplyVoltage} onFlip={() => flipValue("supplyVoltage")} />
+              <FlipValueBox label="V1 across R1" value={v1.toFixed(2)} unit="V" revealed={revealedValues.v1} onFlip={() => flipValue("v1")} />
+              <FlipValueBox label="V2 across R2" value={v2.toFixed(2)} unit="V" revealed={revealedValues.v2} onFlip={() => flipValue("v2")} />
+              <FlipValueBox label="V1 + V2" value={voltageSum.toFixed(2)} unit="V" revealed={revealedValues.voltageSum} onFlip={() => flipValue("voltageSum")} />
             </div>
           </div>
         </div>
@@ -529,7 +624,7 @@ function PotentialDividerPage() {
 
             <label className="switch-row">
               Student mode
-              <input type="checkbox" checked={studentMode} onChange={(event) => setStudentMode(event.target.checked)} />
+              <input type="checkbox" checked={studentMode} onChange={(event) => toggleStudentMode(event.target.checked)} />
             </label>
 
             <button className="button-light full" onClick={reset}>↺ Reset</button>
@@ -605,13 +700,7 @@ function WireResistancePage() {
   const [diameter, setDiameter] = useState(0.45);
   const [materialKey, setMaterialKey] = useState("constantan");
   const [testVoltage, setTestVoltage] = useState(3);
-  const [revealedValues, setRevealedValues] = useState({
-    resistance: true,
-    current: true,
-    area: true,
-    resistivity: true,
-    ruleResistance: true,
-  });
+  const [revealedValues, setRevealedValues] = useState(wireRevealDefaults);
   const [prediction, setPrediction] = useState("");
   const [checkResult, setCheckResult] = useState(null);
 
@@ -661,13 +750,7 @@ function WireResistancePage() {
     setDiameter(0.45);
     setMaterialKey("constantan");
     setTestVoltage(3);
-    setRevealedValues({
-      resistance: true,
-      current: true,
-      area: true,
-      resistivity: true,
-      ruleResistance: true,
-    });
+    setRevealedValues(wireRevealDefaults);
     setPrediction("");
     setCheckResult(null);
   }
@@ -705,6 +788,8 @@ function WireResistancePage() {
                 resistance={resistance}
                 current={current}
                 testVoltage={testVoltage}
+                revealedValues={revealedValues}
+                onFlip={flipValue}
               />
             </div>
 
@@ -832,10 +917,10 @@ function WireResistancePage() {
             <div className="formula-box">
               R = ρL / A
               <button
-                className={revealedValues.ruleResistance ? "formula-result flip-result revealed" : "formula-result flip-result"}
-                onClick={() => flipValue("ruleResistance")}
+                className={revealedValues.resistance ? "formula-result flip-result revealed" : "formula-result flip-result"}
+                onClick={() => flipValue("resistance")}
               >
-                R = {revealedValues.ruleResistance ? resistance.toFixed(2) : "?"} Ω
+                R = {revealedValues.resistance ? resistance.toFixed(2) : "?"} Ω
               </button>
             </div>
             <p className="subtitle">
@@ -892,11 +977,12 @@ function SeriesParallelPage() {
   const [r3, setR3] = useState(30);
   const [useThird, setUseThird] = useState(true);
   const [studentMode, setStudentMode] = useState(false);
+  const [revealedValues, setRevealedValues] = useState(networkRevealDefaults);
   const [predictionR, setPredictionR] = useState("");
   const [predictionI, setPredictionI] = useState("");
   const [checkResult, setCheckResult] = useState(null);
 
-  const resistors = useThird ? [r1, r2, r3] : [r1, r2];
+  const resistors = useMemo(() => (useThird ? [r1, r2, r3] : [r1, r2]), [r1, r2, r3, useThird]);
 
   const equivalentResistance = useMemo(() => {
     if (mode === "series") {
@@ -931,9 +1017,22 @@ function SeriesParallelPage() {
     setR3(30);
     setUseThird(true);
     setStudentMode(false);
+    setRevealedValues(networkRevealDefaults);
     setPredictionR("");
     setPredictionI("");
     setCheckResult(null);
+  }
+
+  function flipValue(key) {
+    setRevealedValues((currentValues) => ({
+      ...currentValues,
+      [key]: !currentValues[key],
+    }));
+  }
+
+  function toggleStudentMode(checked) {
+    setStudentMode(checked);
+    setRevealedValues(networkRevealDefaults);
   }
 
   function checkAnswers() {
@@ -948,8 +1047,6 @@ function SeriesParallelPage() {
       iCorrect: Math.abs(predictedI - totalCurrent) <= iTolerance,
     });
   }
-
-  const hidden = studentMode ? "?" : null;
 
   return (
     <>
@@ -980,16 +1077,16 @@ function SeriesParallelPage() {
 
             <div className="simulation">
               {mode === "series" ? (
-                <SeriesDiagram supplyVoltage={supplyVoltage} resistors={resistors} totalCurrent={totalCurrent} />
+                <SeriesDiagram supplyVoltage={supplyVoltage} resistors={resistors} totalCurrent={totalCurrent} revealedValues={revealedValues} onFlip={flipValue} />
               ) : (
-                <ParallelDiagram supplyVoltage={supplyVoltage} resistors={resistors} rows={rows} totalCurrent={totalCurrent} />
+                <ParallelDiagram supplyVoltage={supplyVoltage} resistors={resistors} rows={rows} totalCurrent={totalCurrent} revealedValues={revealedValues} onFlip={flipValue} />
               )}
             </div>
 
             <div className="summary-grid">
-              <ValueBox label="Equivalent resistance" value={hidden ?? equivalentResistance.toFixed(2)} unit="Ω" />
-              <ValueBox label="Total current" value={hidden ?? totalCurrent.toFixed(2)} unit="A" />
-              <ValueBox label="Total power" value={hidden ?? totalPower.toFixed(2)} unit="W" />
+              <FlipValueBox label="Equivalent resistance" value={equivalentResistance.toFixed(2)} unit="Ω" revealed={revealedValues.equivalentResistance} onFlip={() => flipValue("equivalentResistance")} />
+              <FlipValueBox label="Total current" value={totalCurrent.toFixed(2)} unit="A" revealed={revealedValues.totalCurrent} onFlip={() => flipValue("totalCurrent")} />
+              <FlipValueBox label="Total power" value={totalPower.toFixed(2)} unit="W" revealed={revealedValues.totalPower} onFlip={() => flipValue("totalPower")} />
             </div>
           </div>
         </div>
@@ -1055,7 +1152,7 @@ function SeriesParallelPage() {
 
             <label className="switch-row">
               Student mode
-              <input type="checkbox" checked={studentMode} onChange={(e) => setStudentMode(e.target.checked)} />
+              <input type="checkbox" checked={studentMode} onChange={(e) => toggleStudentMode(e.target.checked)} />
             </label>
 
             <button className="button-light full" onClick={reset}>↺ Reset</button>
@@ -1290,13 +1387,9 @@ function PotentialDividerDiagram({
   v1,
   v2,
   circuitCurrent,
-  studentMode,
+  revealedValues,
+  onFlip,
 }) {
-  const supplyLabel = studentMode ? "? V" : `${supplyVoltage.toFixed(2)} V`;
-  const v1Label = studentMode ? "? V" : `${v1.toFixed(2)} V`;
-  const v2Label = studentMode ? "? V" : `${v2.toFixed(2)} V`;
-  const currentLabel = studentMode ? "? mA" : `${(circuitCurrent * 1000).toFixed(2)} mA`;
-
   return (
     <svg viewBox="0 0 850 390" width="100%" height="100%">
       <defs>
@@ -1307,9 +1400,17 @@ function PotentialDividerDiagram({
 
       <rect width="850" height="390" fill="#f8f4e8" />
 
-      <text x="78" y="74" fill="#30271e" fontSize="16" fontWeight="800">
-        One current everywhere: I = {currentLabel}
-      </text>
+      <SvgInfoCard
+        x={68}
+        y={44}
+        width={168}
+        height={76}
+        label="Current"
+        value={(circuitCurrent * 1000).toFixed(2)}
+        unit="mA"
+        revealed={revealedValues.current}
+        onFlip={() => onFlip("current")}
+      />
 
       <line x1="105" y1="118" x2="165" y2="118" stroke="#30271e" strokeWidth="7" strokeLinecap="round" />
       <line x1="118" y1="166" x2="152" y2="166" stroke="#30271e" strokeWidth="5" strokeLinecap="round" />
@@ -1339,27 +1440,68 @@ function PotentialDividerDiagram({
       <circle cx="302" cy="142" r="28" fill="#fff" stroke="#30271e" strokeWidth="4" />
       <path d="M270 142 H274" stroke="#4b8aa0" strokeWidth="2.5" strokeLinecap="round" />
       <text x="302" y="151" textAnchor="middle" fill="#30271e" fontSize="24" fontWeight="900">Vs</text>
-      <text x="300" y="188" textAnchor="middle" fill="#6f624d" fontSize="13" fontWeight="800">{supplyLabel}</text>
+      <SvgInfoCard
+        x={236}
+        y={174}
+        width={130}
+        height={66}
+        label="Supply"
+        value={supplyVoltage.toFixed(2)}
+        unit="V"
+        revealed={revealedValues.supplyVoltage}
+        onFlip={() => onFlip("supplyVoltage")}
+        compact
+      />
 
       <path d="M470 112 H548 V182 H470" fill="none" stroke="#4b8aa0" strokeWidth="2.5" strokeLinecap="round" />
       <circle cx="590" cy="147" r="28" fill="#fff" stroke="#30271e" strokeWidth="4" />
       <path d="M548 147 H562" stroke="#4b8aa0" strokeWidth="2.5" strokeLinecap="round" />
       <text x="590" y="156" textAnchor="middle" fill="#30271e" fontSize="24" fontWeight="900">V1</text>
-      <text x="590" y="193" textAnchor="middle" fill="#6f624d" fontSize="13" fontWeight="800">{v1Label}</text>
+      <SvgInfoCard
+        x={526}
+        y={178}
+        width={130}
+        height={66}
+        label="V1"
+        value={v1.toFixed(2)}
+        unit="V"
+        revealed={revealedValues.v1}
+        onFlip={() => onFlip("v1")}
+        compact
+      />
 
       <path d="M470 222 H548 V278 H470" fill="none" stroke="#c45b41" strokeWidth="2.5" strokeLinecap="round" />
       <circle cx="590" cy="250" r="28" fill="#fff" stroke="#30271e" strokeWidth="4" />
       <path d="M548 250 H562" stroke="#c45b41" strokeWidth="2.5" strokeLinecap="round" />
       <text x="590" y="259" textAnchor="middle" fill="#30271e" fontSize="24" fontWeight="900">V2</text>
-      <text x="590" y="296" textAnchor="middle" fill="#6f624d" fontSize="13" fontWeight="800">{v2Label}</text>
+      <SvgInfoCard
+        x={526}
+        y={282}
+        width={130}
+        height={66}
+        label="V2"
+        value={v2.toFixed(2)}
+        unit="V"
+        revealed={revealedValues.v2}
+        onFlip={() => onFlip("v2")}
+        compact
+      />
 
       <path d="M230 90 H335" stroke="#30271e" strokeWidth="3" markerEnd="url(#arrowDivider)" />
       <path d="M420 98 V109" stroke="#30271e" strokeWidth="3" markerEnd="url(#arrowDivider)" />
       <path d="M420 288 V296" stroke="#30271e" strokeWidth="3" markerEnd="url(#arrowDivider)" />
 
-      <text x="650" y="91" fill="#6f624d" fontSize="14" fontWeight="800">
-        {supplyLabel} = {v1Label} + {v2Label}
-      </text>
+      <SvgInfoCard
+        x={632}
+        y={52}
+        width={160}
+        height={78}
+        label="V1 + V2"
+        value={(v1 + v2).toFixed(2)}
+        unit="V"
+        revealed={revealedValues.voltageSum}
+        onFlip={() => onFlip("voltageSum")}
+      />
     </svg>
   );
 }
@@ -1371,16 +1513,14 @@ function WireResistanceDiagram({
   resistance,
   current,
   testVoltage,
+  revealedValues,
+  onFlip,
 }) {
   const wireStart = 230;
   const wireMaxWidth = 420;
   const wireWidth = 60 + (length / 2.5) * wireMaxWidth;
   const wireEnd = wireStart + wireWidth;
   const wireThickness = 4 + (diameter / 1.2) * 16;
-  const resistanceLabel = `${resistance.toFixed(2)} Ω`;
-  const currentLabel = `${(current * 1000).toFixed(1)} mA`;
-  const voltageLabel = `${testVoltage.toFixed(1)} V`;
-
   return (
     <svg viewBox="0 0 850 390" width="100%" height="100%">
       <defs>
@@ -1442,27 +1582,71 @@ function WireResistanceDiagram({
         </g>
       ))}
 
-      <text x={(wireStart + wireEnd) / 2} y="174" textAnchor="middle" fill="#6f624d" fontSize="13" fontWeight="800">
-        L = {length.toFixed(2)} m
-      </text>
-      <text x={(wireStart + wireEnd) / 2} y="56" textAnchor="middle" fill="#30271e" fontSize="14" fontWeight="900">
-        diameter = {diameter.toFixed(2)} mm
-      </text>
+      <SvgInfoCard
+        x={(wireStart + wireEnd) / 2 - 66}
+        y={148}
+        width={132}
+        height={66}
+        label="Length"
+        value={length.toFixed(2)}
+        unit="m"
+        revealed={revealedValues.length}
+        onFlip={() => onFlip("length")}
+        compact
+      />
+      <SvgInfoCard
+        x={(wireStart + wireEnd) / 2 - 76}
+        y={16}
+        width={152}
+        height={70}
+        label="Diameter"
+        value={diameter.toFixed(2)}
+        unit="mm"
+        revealed={revealedValues.diameter}
+        onFlip={() => onFlip("diameter")}
+        compact
+      />
 
-      <text x="440" y="346" textAnchor="middle" fill="#6f624d" fontSize="13" fontWeight="800">
-        I = {currentLabel}
-      </text>
-      <text x="360" y="252" textAnchor="middle" fill="#6f624d" fontSize="13" fontWeight="800">
-        V = {voltageLabel}
-      </text>
-      <text x="590" y="222" fill="#30271e" fontSize="20" fontWeight="900">
-        R = {resistanceLabel}
-      </text>
+      <SvgInfoCard
+        x={376}
+        y={318}
+        width={132}
+        height={66}
+        label="Current"
+        value={(current * 1000).toFixed(1)}
+        unit="mA"
+        revealed={revealedValues.current}
+        onFlip={() => onFlip("current")}
+        compact
+      />
+      <SvgInfoCard
+        x={294}
+        y={238}
+        width={132}
+        height={66}
+        label="Voltage"
+        value={testVoltage.toFixed(1)}
+        unit="V"
+        revealed={revealedValues.voltage}
+        onFlip={() => onFlip("voltage")}
+        compact
+      />
+      <SvgInfoCard
+        x={560}
+        y={188}
+        width={150}
+        height={78}
+        label="Resistance"
+        value={resistance.toFixed(2)}
+        unit="Ω"
+        revealed={revealedValues.resistance}
+        onFlip={() => onFlip("resistance")}
+      />
     </svg>
   );
 }
 
-function SeriesDiagram({ supplyVoltage, resistors, totalCurrent }) {
+function SeriesDiagram({ supplyVoltage, resistors, totalCurrent, revealedValues, onFlip }) {
   const hasThree = resistors.length === 3;
 
   return (
@@ -1475,9 +1659,17 @@ function SeriesDiagram({ supplyVoltage, resistors, totalCurrent }) {
 
       <rect width="850" height="390" fill="#f8f4e8" />
 
-      <text x="80" y="74" fill="#30271e" fontSize="16" fontWeight="800">
-        V = {supplyVoltage.toFixed(1)} V
-      </text>
+      <SvgInfoCard
+        x={70}
+        y={42}
+        width={138}
+        height={76}
+        label="Supply"
+        value={supplyVoltage.toFixed(1)}
+        unit="V"
+        revealed={revealedValues.supplyVoltage}
+        onFlip={() => onFlip("supplyVoltage")}
+      />
 
       <line x1="105" y1="120" x2="165" y2="120" stroke="#30271e" strokeWidth="7" strokeLinecap="round" />
       <line x1="118" y1="168" x2="152" y2="168" stroke="#30271e" strokeWidth="5" strokeLinecap="round" />
@@ -1510,14 +1702,22 @@ function SeriesDiagram({ supplyVoltage, resistors, totalCurrent }) {
       <path d="M720 130 V175" stroke="#30271e" strokeWidth="3" markerEnd="url(#arrowSeries)" />
       <path d="M610 300 H560" stroke="#30271e" strokeWidth="3" markerEnd="url(#arrowSeries)" />
 
-      <text x="535" y="340" fill="#6f624d" fontSize="14">
-        Same current everywhere: I = {totalCurrent.toFixed(2)} A
-      </text>
+      <SvgInfoCard
+        x={512}
+        y={312}
+        width={178}
+        height={72}
+        label="Series current"
+        value={totalCurrent.toFixed(2)}
+        unit="A"
+        revealed={revealedValues.totalCurrent}
+        onFlip={() => onFlip("totalCurrent")}
+      />
     </svg>
   );
 }
 
-function ParallelDiagram({ supplyVoltage, resistors, rows, totalCurrent }) {
+function ParallelDiagram({ supplyVoltage, resistors, rows, totalCurrent, revealedValues, onFlip }) {
   const branchPositions = resistors.length === 3 ? [330, 500, 670] : [410, 610];
   const railEnd = branchPositions[branchPositions.length - 1];
 
@@ -1531,9 +1731,17 @@ function ParallelDiagram({ supplyVoltage, resistors, rows, totalCurrent }) {
 
       <rect width="850" height="390" fill="#f8f4e8" />
 
-      <text x="80" y="74" fill="#30271e" fontSize="16" fontWeight="800">
-        V = {supplyVoltage.toFixed(1)} V
-      </text>
+      <SvgInfoCard
+        x={70}
+        y={42}
+        width={138}
+        height={76}
+        label="Supply"
+        value={supplyVoltage.toFixed(1)}
+        unit="V"
+        revealed={revealedValues.supplyVoltage}
+        onFlip={() => onFlip("supplyVoltage")}
+      />
 
       {/* Cell */}
       <line x1="105" y1="120" x2="165" y2="120" stroke="#30271e" strokeWidth="7" strokeLinecap="round" />
@@ -1549,9 +1757,18 @@ function ParallelDiagram({ supplyVoltage, resistors, rows, totalCurrent }) {
       <text x="240" y="99" textAnchor="middle" fill="#30271e" fontSize="26" fontWeight="900">A</text>
       <line x1="267" y1="90" x2={railEnd} y2="90" stroke="#30271e" strokeWidth="8" strokeLinecap="round" />
 
-      <text x="204" y="130" fill="#6f624d" fontSize="13">
-        Itotal = {totalCurrent.toFixed(2)} A
-      </text>
+      <SvgInfoCard
+        x={194}
+        y={118}
+        width={132}
+        height={66}
+        label="Total current"
+        value={totalCurrent.toFixed(2)}
+        unit="A"
+        revealed={revealedValues.totalCurrent}
+        onFlip={() => onFlip("totalCurrent")}
+        compact
+      />
 
       {/* Bottom return rail, ending at the final branch. No excess wire on the right. */}
       <path d={`M135 168 V300 H${railEnd}`} fill="none" stroke="#30271e" strokeWidth="8" strokeLinecap="round" />
@@ -1559,20 +1776,18 @@ function ParallelDiagram({ supplyVoltage, resistors, rows, totalCurrent }) {
       {/* Parallel branches. Resistor rectangles are vertical because the branch wire is vertical. */}
       {branchPositions.map((x, index) => (
         <g key={index}>
-          {/* Bright branch current label, placed above the rail so it is not hidden. */}
-          <text
-            x={x + 34}
-            y="150"
-            textAnchor="start"
-            fill="#ffd84d"
-            stroke="#30271e"
-            strokeWidth="2.5"
-            paintOrder="stroke fill"
-            fontSize="13"
-            fontWeight="900"
-          >
-            I{index + 1} = {rows[index].current.toFixed(2)} A
-          </text>
+          <SvgInfoCard
+            x={x + 30}
+            y={118}
+            width={116}
+            height={62}
+            label={`I${index + 1}`}
+            value={rows[index].current.toFixed(2)}
+            unit="A"
+            revealed={revealedValues.totalCurrent}
+            onFlip={() => onFlip("totalCurrent")}
+            compact
+          />
 
           <path d={`M${x} 90 V121`} stroke="#30271e" strokeWidth="8" strokeLinecap="round" />
 
@@ -1668,23 +1883,43 @@ function PredictionQuiz({ topic }) {
   );
 }
 
-function ValueBox({ label, value, unit }) {
+function FlipValueBox({ label, value, unit, revealed, onFlip, compact = false }) {
   return (
-    <div className="value-box">
-      <div className="value-label">{label}</div>
-      <div className="value-number">{value}</div>
-      <div className="value-unit">{unit}</div>
-    </div>
+    <button
+      type="button"
+      className={`${revealed ? "value-box flip-value revealed" : "value-box flip-value"}${compact ? " compact" : ""}`}
+      onClick={onFlip}
+      aria-pressed={revealed}
+      aria-label={`${revealed ? "Hide" : "Reveal"} ${label}`}
+    >
+      <span className="flip-card-inner">
+        <span className="flip-card-face flip-card-front">
+          <span className="value-label">{label}</span>
+          <span className="value-number">?</span>
+          <span className="value-unit">Tap to reveal</span>
+        </span>
+        <span className="flip-card-face flip-card-back">
+          <span className="value-label">{label}</span>
+          <span className="value-number">{value}</span>
+          <span className="value-unit">{unit}</span>
+        </span>
+      </span>
+    </button>
   );
 }
 
-function FlipValueBox({ label, value, unit, revealed, onFlip }) {
+function SvgInfoCard({ x, y, width, height, label, value, unit, revealed, onFlip, compact = false }) {
   return (
-    <button className={revealed ? "value-box flip-value revealed" : "value-box flip-value"} onClick={onFlip}>
-      <div className="value-label">{label}</div>
-      <div className="value-number">{revealed ? value : "?"}</div>
-      <div className="value-unit">{unit}</div>
-    </button>
+    <foreignObject x={x} y={y} width={width} height={height}>
+      <FlipValueBox
+        label={label}
+        value={value}
+        unit={unit}
+        revealed={revealed}
+        onFlip={onFlip}
+        compact={compact}
+      />
+    </foreignObject>
   );
 }
 
@@ -2027,21 +2262,36 @@ function StyleBlock() {
       .value-box {
         background: #f8f4e8;
         border: 1px solid #e1d7bf;
-        border-radius: 18px;
-        padding: 18px 10px;
+        border-radius: 8px;
+        padding: 0;
         text-align: center;
+        box-shadow: 0 12px 28px rgba(48, 39, 30, 0.12);
       }
 
       .flip-value {
         min-height: 104px;
+        width: 100%;
+        height: 100%;
+        appearance: none;
+        border: 1px solid #e1d7bf;
+        cursor: pointer;
         color: #30271e;
-        transition: border-color 0.2s, background 0.2s, transform 0.2s;
+        perspective: 900px;
+        transition: border-color 0.2s, background 0.2s, transform 0.2s, box-shadow 0.2s;
+      }
+
+      .flip-value.compact {
+        min-height: 0;
+      }
+
+      .flip-value:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 16px 32px rgba(48, 39, 30, 0.16);
       }
 
       .flip-value:hover,
       .flip-result:hover {
         border-color: #a9c6d0;
-        background: #eef6f8;
       }
 
       .flip-value:not(.revealed),
@@ -2050,19 +2300,81 @@ function StyleBlock() {
         border-color: #e3d39b;
       }
 
+      .flip-card-inner {
+        display: block;
+        position: relative;
+        width: 100%;
+        min-height: 104px;
+        height: 100%;
+        transform-style: preserve-3d;
+        transition: transform 0.48s cubic-bezier(.2,.7,.2,1);
+      }
+
+      .flip-value.compact .flip-card-inner {
+        min-height: 0;
+      }
+
+      .flip-value.revealed .flip-card-inner {
+        transform: rotateY(180deg);
+      }
+
+      .flip-card-face {
+        align-items: center;
+        backface-visibility: hidden;
+        border-radius: 8px;
+        display: flex;
+        flex-direction: column;
+        inset: 0;
+        justify-content: center;
+        padding: 12px 8px;
+        position: absolute;
+      }
+
+      .flip-card-front {
+        background: linear-gradient(180deg, #fff9df, #f6e8bd);
+      }
+
+      .flip-card-back {
+        background: #f8f4e8;
+        transform: rotateY(180deg);
+      }
+
+      .flip-value.compact .flip-card-face {
+        padding: 8px 6px;
+      }
+
       .value-label {
+        display: block;
         font-size: 15px;
         color: #6f624d;
+        font-weight: 800;
       }
 
       .value-number {
+        display: block;
         font-size: 32px;
         font-weight: 900;
         margin: 4px 0;
+        line-height: 1;
       }
 
       .value-unit {
+        display: block;
         font-size: 16px;
+        color: #6f624d;
+        font-weight: 700;
+      }
+
+      .flip-value.compact .value-label {
+        font-size: 11px;
+      }
+
+      .flip-value.compact .value-number {
+        font-size: 20px;
+      }
+
+      .flip-value.compact .value-unit {
+        font-size: 11px;
       }
 
       .data-table {
