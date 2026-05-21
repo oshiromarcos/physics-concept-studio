@@ -289,10 +289,10 @@ function OhmsLawPage() {
                 <rect width="850" height="390" fill="#f8f4e8" />
 
                 <SvgInfoCard
-                  x={58}
-                  y={46}
+                  x={188}
+                  y={202}
                   width={132}
-                  height={76}
+                  height={70}
                   label="Voltage"
                   value={voltage.toFixed(1)}
                   unit="V"
@@ -311,15 +311,16 @@ function OhmsLawPage() {
 
                 <rect x="350" y="66" width="120" height="48" rx="10" fill="#fff" stroke="#30271e" strokeWidth="4" />
                 <SvgInfoCard
-                  x={340}
-                  y={8}
-                  width={140}
-                  height={72}
+                  x={506}
+                  y={120}
+                  width={132}
+                  height={66}
                   label="Resistance"
                   value={resistance.toFixed(1)}
                   unit="Ω"
                   revealed={revealedValues.resistance}
                   onFlip={() => flipValue("resistance")}
+                  compact
                 />
 
                 <path d="M350 90 V160 H382" fill="none" stroke="#7c6d56" strokeWidth="3" strokeDasharray="5 5" />
@@ -344,8 +345,8 @@ function OhmsLawPage() {
                 <text x="720" y="252" textAnchor="middle" fill="#30271e" fontSize="26" fontWeight="900">A</text>
                 <line x1="720" y1="265" x2="720" y2="276" stroke="#30271e" strokeWidth="8" strokeLinecap="round" />
                 <SvgInfoCard
-                  x={654}
-                  y={292}
+                  x={560}
+                  y={210}
                   width={132}
                   height={70}
                   label="Current"
@@ -1081,7 +1082,7 @@ function SeriesParallelPage() {
 
             <div className="simulation">
               {mode === "series" ? (
-                <SeriesDiagram supplyVoltage={supplyVoltage} resistors={resistors} totalCurrent={totalCurrent} revealedValues={revealedValues} onFlip={flipValue} />
+                <SeriesDiagram resistors={resistors} totalCurrent={totalCurrent} revealedValues={revealedValues} onFlip={flipValue} />
               ) : (
                 <ParallelDiagram supplyVoltage={supplyVoltage} resistors={resistors} rows={rows} totalCurrent={totalCurrent} revealedValues={revealedValues} onFlip={flipValue} />
               )}
@@ -1445,8 +1446,8 @@ function PotentialDividerDiagram({
         {(rBottom / 1000).toFixed(1)} kΩ
       </text>
 
-      <path d="M64 142 H90" stroke="#4b8aa0" strokeWidth="2.5" strokeLinecap="round" />
-      <path d="M64 142 H64 V166 H152" fill="none" stroke="#4b8aa0" strokeWidth="2.5" strokeLinecap="round" />
+      <path d="M61 132 H96 V118 H105" fill="none" stroke="#4b8aa0" strokeWidth="2.5" strokeLinecap="round" />
+      <path d="M61 152 H96 V166 H118" fill="none" stroke="#4b8aa0" strokeWidth="2.5" strokeLinecap="round" />
       <circle cx="36" cy="142" r="28" fill="#fff" stroke="#30271e" strokeWidth="4" />
       <text x="36" y="151" textAnchor="middle" fill="#30271e" fontSize="22" fontWeight="900">Vs</text>
       <SvgInfoCard
@@ -1594,7 +1595,7 @@ function WireResistanceDiagram({
 
       <SvgInfoCard
         x={(wireStart + wireEnd) / 2 - 66}
-        y={148}
+        y={112}
         width={132}
         height={66}
         label="Length"
@@ -1603,7 +1604,7 @@ function WireResistanceDiagram({
         revealed={revealedValues.length}
         onFlip={() => onFlip("length")}
         compact
-        opacity={0.5}
+        opacity={0.78}
       />
       <SvgInfoCard
         x={(wireStart + wireEnd) / 2 - 76}
@@ -1657,7 +1658,7 @@ function WireResistanceDiagram({
   );
 }
 
-function SeriesDiagram({ supplyVoltage, resistors, totalCurrent, revealedValues, onFlip }) {
+function SeriesDiagram({ resistors, totalCurrent, revealedValues, onFlip }) {
   const hasThree = resistors.length === 3;
 
   return (
@@ -1669,18 +1670,6 @@ function SeriesDiagram({ supplyVoltage, resistors, totalCurrent, revealedValues,
       </defs>
 
       <rect width="850" height="390" fill="#f8f4e8" />
-
-      <SvgInfoCard
-        x={70}
-        y={42}
-        width={138}
-        height={76}
-        label="Supply"
-        value={supplyVoltage.toFixed(1)}
-        unit="V"
-        revealed={revealedValues.supplyVoltage}
-        onFlip={() => onFlip("supplyVoltage")}
-      />
 
       <line x1="105" y1="120" x2="165" y2="120" stroke="#30271e" strokeWidth="7" strokeLinecap="round" />
       <line x1="118" y1="168" x2="152" y2="168" stroke="#30271e" strokeWidth="5" strokeLinecap="round" />
@@ -1714,15 +1703,16 @@ function SeriesDiagram({ supplyVoltage, resistors, totalCurrent, revealedValues,
       <path d="M610 300 H560" stroke="#30271e" strokeWidth="3" markerEnd="url(#arrowSeries)" />
 
       <SvgInfoCard
-        x={512}
-        y={312}
-        width={178}
-        height={72}
+        x={548}
+        y={190}
+        width={132}
+        height={66}
         label="Series current"
         value={totalCurrent.toFixed(2)}
         unit="A"
         revealed={revealedValues.totalCurrent}
         onFlip={() => onFlip("totalCurrent")}
+        compact
       />
     </svg>
   );
@@ -1895,7 +1885,8 @@ function FlipValueBox({ label, value, unit, revealed, onFlip, compact = false })
         <span className="flip-card-face flip-card-front">
           <span className="value-label">{label}</span>
           <span className="value-number">?</span>
-          <span className="value-unit">Tap to reveal</span>
+          <span className="value-unit">{unit}</span>
+          <span className="value-hint">Tap to reveal</span>
         </span>
         <span className="flip-card-face flip-card-back">
           <span className="value-label">{label}</span>
@@ -2240,7 +2231,7 @@ function StyleBlock() {
       }
 
       .simulation {
-        height: 390px;
+        height: clamp(190px, 46vw, 390px);
         background: #f8f4e8;
         border: 1px solid #e1d7bf;
         border-radius: 22px;
@@ -2368,6 +2359,15 @@ function StyleBlock() {
         font-weight: 700;
       }
 
+      .value-hint {
+        display: block;
+        color: #8a7b62;
+        font-size: 12px;
+        font-weight: 800;
+        line-height: 1.1;
+        margin-top: 3px;
+      }
+
       .flip-value.compact .value-label {
         font-size: 11px;
       }
@@ -2378,6 +2378,11 @@ function StyleBlock() {
 
       .flip-value.compact .value-unit {
         font-size: 11px;
+      }
+
+      .flip-value.compact .value-hint {
+        font-size: 9px;
+        margin-top: 1px;
       }
 
       .data-table {
