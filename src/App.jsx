@@ -394,9 +394,6 @@ function OhmsLawPage() {
               <FlipValueBox label="Resistance" value={resistance.toFixed(1)} unit="Ω" revealed={revealedValues.resistance} onFlip={() => flipValue("resistance")} />
             </div>
 
-            <div className="practice-strip">
-              <PredictionQuiz topic="ohms-law" />
-            </div>
           </div>
         </div>
 
@@ -478,6 +475,14 @@ function OhmsLawPage() {
             </label>
 
             <button className="button-light full" onClick={reset}>↺ Reset</button>
+          </div>
+        </div>
+
+        <br />
+
+        <div className="card">
+          <div className="card-content">
+            <PredictionQuiz topic="ohms-law" />
           </div>
         </div>
 
@@ -585,9 +590,6 @@ function PotentialDividerPage() {
               <FlipValueBox label="V1 + V2" value={voltageSum.toFixed(2)} unit="V" revealed={revealedValues.voltageSum} onFlip={() => flipValue("voltageSum")} />
             </div>
 
-            <div className="practice-strip">
-              <PredictionQuiz topic="potential-divider" />
-            </div>
           </div>
         </div>
 
@@ -644,6 +646,14 @@ function PotentialDividerPage() {
             </label>
 
             <button className="button-light full" onClick={reset}>↺ Reset</button>
+          </div>
+        </div>
+
+        <br />
+
+        <div className="card">
+          <div className="card-content">
+            <PredictionQuiz topic="potential-divider" />
           </div>
         </div>
 
@@ -839,9 +849,6 @@ function WireResistancePage() {
               />
             </div>
 
-            <div className="practice-strip">
-              <PredictionQuiz topic="wire-resistance" />
-            </div>
           </div>
         </div>
 
@@ -924,6 +931,14 @@ function WireResistancePage() {
             </div>
 
             <button className="button-light full" onClick={reset}>↺ Reset</button>
+          </div>
+        </div>
+
+        <br />
+
+        <div className="card">
+          <div className="card-content">
+            <PredictionQuiz topic="wire-resistance" />
           </div>
         </div>
 
@@ -1108,9 +1123,6 @@ function SeriesParallelPage() {
               <FlipValueBox label="Total power" value={totalPower.toFixed(2)} unit="W" revealed={revealedValues.totalPower} onFlip={() => flipValue("totalPower")} />
             </div>
 
-            <div className="practice-strip">
-              <PredictionQuiz topic="series-parallel" />
-            </div>
           </div>
         </div>
 
@@ -1179,6 +1191,14 @@ function SeriesParallelPage() {
             </label>
 
             <button className="button-light full" onClick={reset}>↺ Reset</button>
+          </div>
+        </div>
+
+        <br />
+
+        <div className="card">
+          <div className="card-content">
+            <PredictionQuiz topic="series-parallel" />
           </div>
         </div>
 
@@ -2028,8 +2048,21 @@ function StyleBlock() {
 
       .main-grid {
         display: grid;
-        grid-template-columns: minmax(0, 1fr) 360px;
-        gap: 16px;
+        grid-template-columns: minmax(0, 1fr) minmax(310px, 340px);
+        gap: 18px;
+        align-items: start;
+      }
+
+      .main-grid > section,
+      .main-grid > aside {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        min-width: 0;
+      }
+
+      .main-grid br {
+        display: none;
       }
 
       .card {
@@ -2041,7 +2074,7 @@ function StyleBlock() {
       }
 
       .card-content {
-        padding: 18px;
+        padding: 16px;
       }
 
       .small-title {
@@ -2158,11 +2191,11 @@ function StyleBlock() {
         display: flex;
         justify-content: space-between;
         gap: 16px;
-        margin-bottom: 16px;
+        margin-bottom: 12px;
       }
 
       .studio-title {
-        font-size: clamp(34px, 4vw, 50px);
+        font-size: clamp(30px, 3.5vw, 44px);
       }
 
       .quiz-box {
@@ -2234,28 +2267,20 @@ function StyleBlock() {
       }
 
       .simulation {
-        height: clamp(190px, 46vw, 390px);
+        height: clamp(190px, 34vw, 320px);
         margin-inline: auto;
-        max-width: 760px;
+        max-width: 720px;
         background: #f8f4e8;
         border: 1px solid #e1d7bf;
         border-radius: 22px;
         overflow: hidden;
       }
 
-      .practice-strip {
-        margin-top: 12px;
-      }
-
-      .practice-strip .quiz-options {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-      }
-
       .summary-grid {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
-        gap: 10px;
-        margin-top: 16px;
+        gap: 9px;
+        margin-top: 12px;
       }
 
       .summary-grid.four {
@@ -2276,7 +2301,7 @@ function StyleBlock() {
       }
 
       .flip-value {
-        min-height: 104px;
+        min-height: 92px;
         width: 100%;
         height: 100%;
         appearance: none;
@@ -2322,7 +2347,7 @@ function StyleBlock() {
         display: block;
         position: relative;
         width: 100%;
-        min-height: 104px;
+        min-height: 92px;
         height: 100%;
         transform-style: preserve-3d;
         transition: transform 0.48s cubic-bezier(.2,.7,.2,1);
@@ -2378,7 +2403,7 @@ function StyleBlock() {
 
       .value-number {
         display: block;
-        font-size: 32px;
+        font-size: 28px;
         font-weight: 900;
         margin: 4px 0;
         line-height: 1;
@@ -2508,11 +2533,20 @@ function StyleBlock() {
       }
 
       .graph-area {
-        margin-top: 10px;
+        margin-top: 8px;
         background: #f8f4e8;
         border: 1px solid #e1d7bf;
         border-radius: 20px;
         overflow: hidden;
+      }
+
+      .graph-area > svg {
+        display: block;
+        height: 230px;
+      }
+
+      .wire-graphs .graph-area > svg {
+        height: 285px;
       }
 
       .graph-area.compact {
@@ -2520,7 +2554,7 @@ function StyleBlock() {
       }
 
       .graph-title {
-        padding: 12px 14px 0;
+        padding: 10px 14px 0;
         color: #30271e;
         font-size: 16px;
         font-weight: 900;
@@ -2547,7 +2581,7 @@ function StyleBlock() {
         margin-top: 12px;
       }
 
-      @media (max-width: 1100px) {
+      @media (max-width: 880px) {
         .main-grid {
           grid-template-columns: 1fr;
         }
@@ -2579,8 +2613,6 @@ function StyleBlock() {
           flex-direction: column;
         }
 
-        .summary-grid,
-        .summary-grid.four,
         .check-grid,
         .split-graphs,
         .tri-graphs,
@@ -2588,8 +2620,19 @@ function StyleBlock() {
           grid-template-columns: 1fr;
         }
 
-        .practice-strip .quiz-options {
-          grid-template-columns: 1fr;
+        .summary-grid,
+        .summary-grid.four,
+        .summary-grid.five {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .summary-grid .flip-value,
+        .summary-grid .flip-card-inner {
+          min-height: 82px;
+        }
+
+        .summary-grid .value-number {
+          font-size: 24px;
         }
       }
     `}</style>
