@@ -1872,11 +1872,11 @@ function PredictionQuiz({ topic }) {
   );
 }
 
-function FlipValueBox({ label, value, unit, revealed, onFlip, compact = false }) {
+function FlipValueBox({ label, value, unit, revealed, onFlip, compact = false, diagram = false }) {
   return (
     <button
       type="button"
-      className={`${revealed ? "value-box flip-value revealed" : "value-box flip-value"}${compact ? " compact" : ""}`}
+      className={`${revealed ? "value-box flip-value revealed" : "value-box flip-value"}${compact ? " compact" : ""}${diagram ? " diagram-value" : ""}`}
       onClick={onFlip}
       aria-pressed={revealed}
       aria-label={`${revealed ? "Hide" : "Reveal"} ${label}`}
@@ -1899,6 +1899,8 @@ function FlipValueBox({ label, value, unit, revealed, onFlip, compact = false })
 }
 
 function SvgInfoCard({ x, y, width, height, label, value, unit, revealed, onFlip, compact = false, opacity = 1 }) {
+  const useCompactLayout = compact || height < 96;
+
   return (
     <foreignObject x={x} y={y} width={width} height={height} opacity={opacity}>
       <FlipValueBox
@@ -1907,7 +1909,8 @@ function SvgInfoCard({ x, y, width, height, label, value, unit, revealed, onFlip
         unit={unit}
         revealed={revealed}
         onFlip={onFlip}
-        compact={compact}
+        compact={useCompactLayout}
+        diagram
       />
     </foreignObject>
   );
@@ -2294,6 +2297,17 @@ function StyleBlock() {
         border-color: #e3d39b;
       }
 
+      .flip-value.diagram-value {
+        background: rgba(231, 244, 247, 0.74);
+        border-color: rgba(75, 138, 160, 0.42);
+        box-shadow: 0 8px 18px rgba(48, 39, 30, 0.1);
+      }
+
+      .flip-value.diagram-value:not(.revealed) {
+        background: rgba(214, 236, 243, 0.78);
+        border-color: rgba(75, 138, 160, 0.45);
+      }
+
       .flip-card-inner {
         display: block;
         position: relative;
@@ -2331,6 +2345,14 @@ function StyleBlock() {
       .flip-card-back {
         background: #f8f4e8;
         transform: rotateY(180deg);
+      }
+
+      .diagram-value .flip-card-front {
+        background: linear-gradient(180deg, rgba(221, 242, 248, 0.9), rgba(186, 219, 229, 0.84));
+      }
+
+      .diagram-value .flip-card-back {
+        background: rgba(220, 242, 226, 0.88);
       }
 
       .flip-value.compact .flip-card-face {
