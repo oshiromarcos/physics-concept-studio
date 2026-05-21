@@ -186,21 +186,26 @@ export default function App() {
 }
 
 function TopicSelector({ page, setPage }) {
+  const activeTopic = topics.find((topic) => topic.key === page) ?? topics[0];
+
   return (
     <div className="topic-panel">
-      <div className="small-title">TOPICS</div>
-      <div className="topic-grid">
+      <label className="topic-select-label" htmlFor="topic-select">
+        <span className="small-title">TOPIC</span>
+        <strong>{activeTopic.subtitle}</strong>
+      </label>
+      <select
+        id="topic-select"
+        className="topic-select"
+        value={page}
+        onChange={(event) => setPage(event.target.value)}
+      >
         {topics.map((topic) => (
-          <button
-            key={topic.key}
-            className={page === topic.key ? "topic active topic-button" : "topic topic-button"}
-            onClick={() => setPage(topic.key)}
-          >
-            <div className="topic-title">{topic.title}</div>
-            <div className="topic-subtitle">{topic.subtitle}</div>
-          </button>
+          <option key={topic.key} value={topic.key}>
+            {topic.title}
+          </option>
         ))}
-      </div>
+      </select>
     </div>
   );
 }
@@ -272,7 +277,6 @@ function OhmsLawPage() {
                 </p>
               </div>
 
-              <PredictionQuiz topic="ohms-law" />
             </div>
 
             <div className="simulation">
@@ -388,6 +392,10 @@ function OhmsLawPage() {
               <FlipValueBox label="Current" value={current.toFixed(2)} unit="A" revealed={revealedValues.current} onFlip={() => flipValue("current")} />
               <FlipValueBox label="Power" value={power.toFixed(2)} unit="W" revealed={revealedValues.power} onFlip={() => flipValue("power")} />
               <FlipValueBox label="Resistance" value={resistance.toFixed(1)} unit="Ω" revealed={revealedValues.resistance} onFlip={() => flipValue("resistance")} />
+            </div>
+
+            <div className="practice-strip">
+              <PredictionQuiz topic="ohms-law" />
             </div>
           </div>
         </div>
@@ -554,7 +562,6 @@ function PotentialDividerPage() {
                 </p>
               </div>
 
-              <PredictionQuiz topic="potential-divider" />
             </div>
 
             <div className="simulation">
@@ -576,6 +583,10 @@ function PotentialDividerPage() {
               <FlipValueBox label="V1 across R1" value={v1.toFixed(2)} unit="V" revealed={revealedValues.v1} onFlip={() => flipValue("v1")} />
               <FlipValueBox label="V2 across R2" value={v2.toFixed(2)} unit="V" revealed={revealedValues.v2} onFlip={() => flipValue("v2")} />
               <FlipValueBox label="V1 + V2" value={voltageSum.toFixed(2)} unit="V" revealed={revealedValues.voltageSum} onFlip={() => flipValue("voltageSum")} />
+            </div>
+
+            <div className="practice-strip">
+              <PredictionQuiz topic="potential-divider" />
             </div>
           </div>
         </div>
@@ -782,7 +793,6 @@ function WireResistancePage() {
                 </p>
               </div>
 
-              <PredictionQuiz topic="wire-resistance" />
             </div>
 
             <div className="simulation">
@@ -827,6 +837,10 @@ function WireResistancePage() {
                 revealed={revealedValues.resistivity}
                 onFlip={() => flipValue("resistivity")}
               />
+            </div>
+
+            <div className="practice-strip">
+              <PredictionQuiz topic="wire-resistance" />
             </div>
           </div>
         </div>
@@ -1068,7 +1082,6 @@ function SeriesParallelPage() {
                 </p>
               </div>
 
-              <PredictionQuiz topic="series-parallel" />
             </div>
 
             <div className="mode-buttons">
@@ -1093,6 +1106,10 @@ function SeriesParallelPage() {
               <FlipValueBox label="Equivalent resistance" value={equivalentResistance.toFixed(2)} unit="Ω" revealed={revealedValues.equivalentResistance} onFlip={() => flipValue("equivalentResistance")} />
               <FlipValueBox label="Total current" value={totalCurrent.toFixed(2)} unit="A" revealed={revealedValues.totalCurrent} onFlip={() => flipValue("totalCurrent")} />
               <FlipValueBox label="Total power" value={totalPower.toFixed(2)} unit="W" revealed={revealedValues.totalPower} onFlip={() => flipValue("totalPower")} />
+            </div>
+
+            <div className="practice-strip">
+              <PredictionQuiz topic="series-parallel" />
             </div>
           </div>
         </div>
@@ -2037,53 +2054,36 @@ function StyleBlock() {
       }
 
       .topic-panel {
-        width: min(590px, 44vw);
+        width: min(360px, 34vw);
         background: rgba(255,255,255,0.74);
         border: 1px solid #ddd2b8;
-        border-radius: 22px;
+        border-radius: 18px;
         box-shadow: 0 10px 30px rgba(48,39,30,0.07);
-        padding: 14px;
+        padding: 12px;
       }
 
-      .topic-grid {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 8px;
+      .topic-select-label {
+        align-items: baseline;
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 8px;
       }
 
-      .topic {
-        width: 100%;
-        display: block;
-        text-align: left;
-        padding: 10px 12px;
-        border-radius: 14px;
-        background: rgba(255,255,255,0.45);
-        border: 1px solid transparent;
-        color: #30271e;
+      .topic-select-label .small-title {
+        margin-bottom: 0;
       }
 
-      .topic-button:hover {
-        border-color: #a9c6d0;
-      }
-
-      .topic.active {
-        background: #dbeaf0;
-        border: 1px solid #a9c6d0;
-      }
-
-      .topic.muted {
-        opacity: 0.65;
-      }
-
-      .topic-title {
-        font-weight: 800;
-        font-size: 15px;
-      }
-
-      .topic-subtitle {
+      .topic-select-label strong {
         font-size: 13px;
         color: #6f624d;
-        margin-top: 3px;
+        white-space: nowrap;
+      }
+
+      .topic-select {
+        background: #dbeaf0;
+        border-color: #a9c6d0;
+        font-weight: 800;
       }
 
       .mode-buttons {
@@ -2166,7 +2166,7 @@ function StyleBlock() {
       }
 
       .quiz-box {
-        width: min(360px, 40%);
+        width: 100%;
         background: #fff7d8;
         border: 1px solid #e3d39b;
         border-radius: 16px;
@@ -2235,10 +2235,20 @@ function StyleBlock() {
 
       .simulation {
         height: clamp(190px, 46vw, 390px);
+        margin-inline: auto;
+        max-width: 760px;
         background: #f8f4e8;
         border: 1px solid #e1d7bf;
         border-radius: 22px;
         overflow: hidden;
+      }
+
+      .practice-strip {
+        margin-top: 12px;
+      }
+
+      .practice-strip .quiz-options {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
       }
 
       .summary-grid {
@@ -2565,10 +2575,6 @@ function StyleBlock() {
           align-items: flex-start;
         }
 
-        .topic-grid {
-          grid-template-columns: 1fr;
-        }
-
         .studio-top {
           flex-direction: column;
         }
@@ -2579,6 +2585,10 @@ function StyleBlock() {
         .split-graphs,
         .tri-graphs,
         .wire-graphs {
+          grid-template-columns: 1fr;
+        }
+
+        .practice-strip .quiz-options {
           grid-template-columns: 1fr;
         }
       }
