@@ -283,14 +283,14 @@ function OhmsLawPage() {
               <svg viewBox="0 0 850 390" width="100%" height="100%">
                 <defs>
                   <marker id="arrowOhm" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
-                    <path d="M0,0 L0,6 L9,3 z" fill="#30271e" />
+                    <path d="M0,0 L0,6 L9,3 z" fill="#1f2433" />
                   </marker>
 
                   <path id="currentPathOhm" d="M150 120 V90 H350 M470 90 H720 V210 M720 265 V300 H150 V168" fill="none" />
                   <path id="electronPathOhm" d="M150 168 V300 H720 V265 M720 210 V90 H470 M350 90 H150 V120" fill="none" />
                 </defs>
 
-                <rect width="850" height="390" fill="#f8f4e8" />
+                <rect width="850" height="390" fill="#fffaf0" />
 
                 <SvgInfoCard
                   x={188}
@@ -304,16 +304,16 @@ function OhmsLawPage() {
                   onFlip={() => flipValue("voltage")}
                 />
 
-                <line x1="120" y1="120" x2="180" y2="120" stroke="#30271e" strokeWidth="7" strokeLinecap="round" />
-                <line x1="133" y1="168" x2="167" y2="168" stroke="#30271e" strokeWidth="5" strokeLinecap="round" />
-                <text x="188" y="124" fill="#30271e" fontSize="16" fontWeight="800">+</text>
-                <text x="178" y="174" fill="#30271e" fontSize="16" fontWeight="800">−</text>
+                <line x1="120" y1="120" x2="180" y2="120" stroke="#1f2433" strokeWidth="7" strokeLinecap="round" />
+                <line x1="133" y1="168" x2="167" y2="168" stroke="#1f2433" strokeWidth="5" strokeLinecap="round" />
+                <text x="188" y="124" fill="#1f2433" fontSize="16" fontWeight="800">+</text>
+                <text x="178" y="174" fill="#1f2433" fontSize="16" fontWeight="800">−</text>
 
-                <path d="M150 120 V90 H350" fill="none" stroke="#30271e" strokeWidth="8" strokeLinecap="round" />
-                <path d="M470 90 H720 V210" fill="none" stroke="#30271e" strokeWidth="8" strokeLinecap="round" />
-                <path d="M720 265 V300 H150 V168" fill="none" stroke="#30271e" strokeWidth="8" strokeLinecap="round" />
+                <path d="M150 120 V90 H350" fill="none" stroke="#1f2433" strokeWidth="8" strokeLinecap="round" />
+                <path d="M470 90 H720 V210" fill="none" stroke="#1f2433" strokeWidth="8" strokeLinecap="round" />
+                <path d="M720 265 V300 H150 V168" fill="none" stroke="#1f2433" strokeWidth="8" strokeLinecap="round" />
 
-                <rect x="350" y="66" width="120" height="48" rx="10" fill="#fff" stroke="#30271e" strokeWidth="4" />
+                <rect x="350" y="66" width="120" height="48" rx="10" fill="#fff" stroke="#1f2433" strokeWidth="4" />
                 <SvgInfoCard
                   x={506}
                   y={120}
@@ -327,10 +327,10 @@ function OhmsLawPage() {
                   compact
                 />
 
-                <path d="M350 90 V160 H382" fill="none" stroke="#7c6d56" strokeWidth="3" strokeDasharray="5 5" />
-                <path d="M470 90 V160 H438" fill="none" stroke="#7c6d56" strokeWidth="3" strokeDasharray="5 5" />
-                <circle cx="410" cy="160" r="26" fill="#fff" stroke="#30271e" strokeWidth="4" />
-                <text x="410" y="169" textAnchor="middle" fill="#30271e" fontSize="26" fontWeight="900">V</text>
+                <path d="M350 90 V160 H382" fill="none" stroke="#83919a" strokeWidth="3" strokeDasharray="5 5" />
+                <path d="M470 90 V160 H438" fill="none" stroke="#83919a" strokeWidth="3" strokeDasharray="5 5" />
+                <circle cx="410" cy="160" r="26" fill="#fff" stroke="#1f2433" strokeWidth="4" />
+                <text x="410" y="169" textAnchor="middle" fill="#1f2433" fontSize="26" fontWeight="900">V</text>
                 <SvgInfoCard
                   x={342}
                   y={184}
@@ -344,10 +344,10 @@ function OhmsLawPage() {
                   compact
                 />
 
-                <line x1="720" y1="210" x2="720" y2="221" stroke="#30271e" strokeWidth="8" strokeLinecap="round" />
-                <circle cx="720" cy="243" r="26" fill="#fff" stroke="#30271e" strokeWidth="4" />
-                <text x="720" y="252" textAnchor="middle" fill="#30271e" fontSize="26" fontWeight="900">A</text>
-                <line x1="720" y1="265" x2="720" y2="276" stroke="#30271e" strokeWidth="8" strokeLinecap="round" />
+                <line x1="720" y1="210" x2="720" y2="221" stroke="#1f2433" strokeWidth="8" strokeLinecap="round" />
+                <circle cx="720" cy="243" r="26" fill="#fff" stroke="#1f2433" strokeWidth="4" />
+                <text x="720" y="252" textAnchor="middle" fill="#1f2433" fontSize="26" fontWeight="900">A</text>
+                <line x1="720" y1="265" x2="720" y2="276" stroke="#1f2433" strokeWidth="8" strokeLinecap="round" />
                 <SvgInfoCard
                   x={560}
                   y={210}
@@ -361,16 +361,16 @@ function OhmsLawPage() {
                   compact
                 />
 
-                <path d="M225 90 H305" stroke="#30271e" strokeWidth="3" markerEnd="url(#arrowOhm)" />
-                <path d="M720 130 V190" stroke="#30271e" strokeWidth="3" markerEnd="url(#arrowOhm)" />
-                <path d="M610 300 H550" stroke="#30271e" strokeWidth="3" markerEnd="url(#arrowOhm)" />
+                <path d="M225 90 H305" stroke="#1f2433" strokeWidth="3" markerEnd="url(#arrowOhm)" />
+                <path d="M720 130 V190" stroke="#1f2433" strokeWidth="3" markerEnd="url(#arrowOhm)" />
+                <path d="M610 300 H550" stroke="#1f2433" strokeWidth="3" markerEnd="url(#arrowOhm)" />
 
-                <text x="520" y="76" fill="#30271e" fontSize="13" fontWeight="700">
+                <text x="520" y="76" fill="#1f2433" fontSize="13" fontWeight="700">
                   conventional current
                 </text>
 
                 {[0, 1, 2, 3, 4].map((n) => (
-                  <circle key={`current-${n}`} r="7" fill="#4b8aa0">
+                  <circle key={`current-${n}`} r="7" fill="#17a9c4">
                     <animateMotion dur={`${speed}s`} repeatCount="indefinite" begin={`${n * 0.55}s`}>
                       <mpath href="#currentPathOhm" />
                     </animateMotion>
@@ -379,7 +379,7 @@ function OhmsLawPage() {
 
                 {showElectrons &&
                   [0, 1, 2, 3].map((n) => (
-                    <circle key={`electron-${n}`} r="5" fill="#7656a8">
+                    <circle key={`electron-${n}`} r="5" fill="#7c5cff">
                       <animateMotion dur={`${speed + 1}s`} repeatCount="indefinite" begin={`${n * 0.65}s`}>
                         <mpath href="#electronPathOhm" />
                       </animateMotion>
@@ -408,35 +408,35 @@ function OhmsLawPage() {
 
             <div className="graph-area">
               <svg viewBox="0 0 520 290" width="100%" height="270">
-                <rect width="520" height="290" fill="#f8f4e8" />
+                <rect width="520" height="290" fill="#fffaf0" />
 
-                <line x1="50" y1="250" x2="490" y2="250" stroke="#30271e" strokeWidth="3" />
-                <line x1="50" y1="250" x2="50" y2="35" stroke="#30271e" strokeWidth="3" />
+                <line x1="50" y1="250" x2="490" y2="250" stroke="#1f2433" strokeWidth="3" />
+                <line x1="50" y1="250" x2="50" y2="35" stroke="#1f2433" strokeWidth="3" />
 
-                <text x="260" y="282" textAnchor="middle" fill="#30271e" fontSize="12">
+                <text x="260" y="282" textAnchor="middle" fill="#1f2433" fontSize="12">
                   Potential difference V / V
                 </text>
 
-                <text x="13" y="145" textAnchor="middle" fill="#30271e" fontSize="12" transform="rotate(-90 13 145)">
+                <text x="13" y="145" textAnchor="middle" fill="#1f2433" fontSize="12" transform="rotate(-90 13 145)">
                   Current I / A
                 </text>
 
                 {[0, 1, 2, 3, 4, 5, 6].map((n) => (
                   <g key={n}>
-                    <line x1={50 + n * 70} y1="250" x2={50 + n * 70} y2="255" stroke="#30271e" />
-                    <text x={50 + n * 70} y="270" textAnchor="middle" fill="#6f624d" fontSize="10">
+                    <line x1={50 + n * 70} y1="250" x2={50 + n * 70} y2="255" stroke="#1f2433" />
+                    <text x={50 + n * 70} y="270" textAnchor="middle" fill="#5e6b73" fontSize="10">
                       {n * 2}
                     </text>
                   </g>
                 ))}
 
-                <path d={graphPath} fill="none" stroke="#4b8aa0" strokeWidth="5" strokeLinecap="round" />
+                <path d={graphPath} fill="none" stroke="#17a9c4" strokeWidth="5" strokeLinecap="round" />
 
                 {graphPoints.map((p, index) => (
-                  <circle key={index} cx={p.x} cy={p.y} r="5" fill="#30271e" />
+                  <circle key={index} cx={p.x} cy={p.y} r="5" fill="#1f2433" />
                 ))}
 
-                <circle cx={activePoint.x} cy={activePoint.y} r="9" fill="#c45b41" />
+                <circle cx={activePoint.x} cy={activePoint.y} r="9" fill="#f25f4c" />
               </svg>
             </div>
           </div>
@@ -609,7 +609,7 @@ function PotentialDividerPage() {
                 ratio={v1Ratio}
                 supplyVoltage={supplyVoltage}
                 points={v1Segments}
-                color="#4b8aa0"
+                color="#17a9c4"
               />
               <VoltageShareGraph
                 title="V2 against supply voltage"
@@ -617,7 +617,7 @@ function PotentialDividerPage() {
                 ratio={v2Ratio}
                 supplyVoltage={supplyVoltage}
                 points={v2Segments}
-                color="#c45b41"
+                color="#f25f4c"
               />
             </div>
           </div>
@@ -715,10 +715,10 @@ function PotentialDividerPage() {
 }
 
 const wireMaterials = [
-  { key: "copper", name: "Copper", resistivity: 1.68e-8, color: "#c45b41" },
-  { key: "constantan", name: "Constantan", resistivity: 4.9e-7, color: "#4b8aa0" },
-  { key: "nichrome", name: "Nichrome", resistivity: 1.1e-6, color: "#7656a8" },
-  { key: "steel", name: "Steel", resistivity: 1.4e-7, color: "#6f624d" },
+  { key: "copper", name: "Copper", resistivity: 1.68e-8, color: "#f25f4c" },
+  { key: "constantan", name: "Constantan", resistivity: 4.9e-7, color: "#17a9c4" },
+  { key: "nichrome", name: "Nichrome", resistivity: 1.1e-6, color: "#7c5cff" },
+  { key: "steel", name: "Steel", resistivity: 1.4e-7, color: "#5e6b73" },
 ];
 
 function WireResistancePage() {
@@ -879,7 +879,7 @@ function WireResistancePage() {
                 points={diameterGraphPoints}
                 activeX={48 + ((diameter - 0.2) / 1.0) * 418}
                 activeY={wireGraphBottom - Math.min(resistance / wireGraphMax, 1) * wireGraphHeight}
-                color="#4b8aa0"
+                color="#17a9c4"
                 xTick={(n) => (0.2 + n * 0.2).toFixed(1)}
               />
             </div>
@@ -1339,15 +1339,15 @@ function VoltageShareGraph({ title, yLabel, ratio, supplyVoltage, points, color 
     <div className="graph-area compact">
       <div className="graph-title">{title}</div>
       <svg viewBox="0 0 520 290" width="100%" height="250">
-        <rect width="520" height="290" fill="#f8f4e8" />
+        <rect width="520" height="290" fill="#fffaf0" />
 
-        <line x1="48" y1="248" x2="490" y2="248" stroke="#30271e" strokeWidth="3" />
-        <line x1="48" y1="248" x2="48" y2="35" stroke="#30271e" strokeWidth="3" />
+        <line x1="48" y1="248" x2="490" y2="248" stroke="#1f2433" strokeWidth="3" />
+        <line x1="48" y1="248" x2="48" y2="35" stroke="#1f2433" strokeWidth="3" />
 
         {[0, 1, 2, 3, 4].map((n) => (
           <g key={n}>
-            <line x1={48 + n * 104.5} y1="248" x2={48 + n * 104.5} y2="253" stroke="#30271e" />
-            <text x={48 + n * 104.5} y="270" textAnchor="middle" fill="#6f624d" fontSize="10">
+            <line x1={48 + n * 104.5} y1="248" x2={48 + n * 104.5} y2="253" stroke="#1f2433" />
+            <text x={48 + n * 104.5} y="270" textAnchor="middle" fill="#5e6b73" fontSize="10">
               {3 + n * 3}
             </text>
           </g>
@@ -1355,22 +1355,22 @@ function VoltageShareGraph({ title, yLabel, ratio, supplyVoltage, points, color 
 
         {[0, 1, 2, 3, 4, 5].map((n) => (
           <g key={n}>
-            <line x1="43" y1={248 - n * 37.6} x2="48" y2={248 - n * 37.6} stroke="#30271e" />
-            <text x="34" y={252 - n * 37.6} textAnchor="end" fill="#6f624d" fontSize="10">
+            <line x1="43" y1={248 - n * 37.6} x2="48" y2={248 - n * 37.6} stroke="#1f2433" />
+            <text x="34" y={252 - n * 37.6} textAnchor="end" fill="#5e6b73" fontSize="10">
               {n * 3}
             </text>
           </g>
         ))}
 
-        <text x="268" y="284" textAnchor="middle" fill="#30271e" fontSize="12">
+        <text x="268" y="284" textAnchor="middle" fill="#1f2433" fontSize="12">
           Supply voltage / V
         </text>
-        <text x="14" y="144" textAnchor="middle" fill="#30271e" fontSize="12" transform="rotate(-90 14 144)">
+        <text x="14" y="144" textAnchor="middle" fill="#1f2433" fontSize="12" transform="rotate(-90 14 144)">
           {yLabel}
         </text>
 
         <path d={graphPath} fill="none" stroke={color} strokeWidth="5" strokeLinecap="round" />
-        <circle cx={activePoint.x} cy={activePoint.y} r="9" fill={color} stroke="#30271e" strokeWidth="2" />
+        <circle cx={activePoint.x} cy={activePoint.y} r="9" fill={color} stroke="#1f2433" strokeWidth="2" />
       </svg>
     </div>
   );
@@ -1387,14 +1387,14 @@ function WireLineGraph({ title, xLabel, yMax, points, activeX, activeY, color, x
     <div className="graph-area compact">
       <div className="graph-title">{title}</div>
       <svg viewBox="0 0 520 470" width="100%" height="430">
-        <rect width="520" height="470" fill="#f8f4e8" />
-        <line x1="48" y1={graphBottom} x2="490" y2={graphBottom} stroke="#30271e" strokeWidth="3" />
-        <line x1="48" y1={graphBottom} x2="48" y2="52" stroke="#30271e" strokeWidth="3" />
+        <rect width="520" height="470" fill="#fffaf0" />
+        <line x1="48" y1={graphBottom} x2="490" y2={graphBottom} stroke="#1f2433" strokeWidth="3" />
+        <line x1="48" y1={graphBottom} x2="48" y2="52" stroke="#1f2433" strokeWidth="3" />
 
         {[0, 1, 2, 3, 4, 5].map((n) => (
           <g key={n}>
-            <line x1={48 + n * 83.6} y1={graphBottom} x2={48 + n * 83.6} y2={graphBottom + 5} stroke="#30271e" />
-            <text x={48 + n * 83.6} y={graphBottom + 22} textAnchor="middle" fill="#6f624d" fontSize="10">
+            <line x1={48 + n * 83.6} y1={graphBottom} x2={48 + n * 83.6} y2={graphBottom + 5} stroke="#1f2433" />
+            <text x={48 + n * 83.6} y={graphBottom + 22} textAnchor="middle" fill="#5e6b73" fontSize="10">
               {xTick(n)}
             </text>
           </g>
@@ -1402,22 +1402,22 @@ function WireLineGraph({ title, xLabel, yMax, points, activeX, activeY, color, x
 
         {[0, 1, 2, 3, 4, 5].map((n) => (
           <g key={n}>
-            <line x1="43" y1={graphBottom - n * (graphHeight / 5)} x2="48" y2={graphBottom - n * (graphHeight / 5)} stroke="#30271e" />
-            <text x="34" y={graphBottom + 4 - n * (graphHeight / 5)} textAnchor="end" fill="#6f624d" fontSize="10">
+            <line x1="43" y1={graphBottom - n * (graphHeight / 5)} x2="48" y2={graphBottom - n * (graphHeight / 5)} stroke="#1f2433" />
+            <text x="34" y={graphBottom + 4 - n * (graphHeight / 5)} textAnchor="end" fill="#5e6b73" fontSize="10">
               {(yMax / 5) * n}
             </text>
           </g>
         ))}
 
-        <text x="268" y="462" textAnchor="middle" fill="#30271e" fontSize="12">
+        <text x="268" y="462" textAnchor="middle" fill="#1f2433" fontSize="12">
           {xLabel}
         </text>
-        <text x="14" y="240" textAnchor="middle" fill="#30271e" fontSize="12" transform="rotate(-90 14 240)">
+        <text x="14" y="240" textAnchor="middle" fill="#1f2433" fontSize="12" transform="rotate(-90 14 240)">
           R / Ω
         </text>
 
         <path d={graphPath} fill="none" stroke={color} strokeWidth="5" strokeLinecap="round" />
-        <circle cx={activeX} cy={activeY} r="9" fill="#fff7d8" stroke="#30271e" strokeWidth="3" />
+        <circle cx={activeX} cy={activeY} r="9" fill="#fff3b0" stroke="#1f2433" strokeWidth="3" />
       </svg>
     </div>
   );
@@ -1437,22 +1437,22 @@ function PotentialDividerDiagram({
     <svg viewBox="0 0 850 390" width="100%" height="100%">
       <defs>
         <marker id="arrowDivider" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
-          <path d="M0,0 L0,6 L9,3 z" fill="#30271e" />
+          <path d="M0,0 L0,6 L9,3 z" fill="#1f2433" />
         </marker>
       </defs>
 
-      <rect width="850" height="390" fill="#f8f4e8" />
+      <rect width="850" height="390" fill="#fffaf0" />
 
-      <line x1="105" y1="118" x2="165" y2="118" stroke="#30271e" strokeWidth="7" strokeLinecap="round" />
-      <line x1="118" y1="166" x2="152" y2="166" stroke="#30271e" strokeWidth="5" strokeLinecap="round" />
-      <text x="173" y="122" fill="#30271e" fontSize="16" fontWeight="800">+</text>
-      <text x="163" y="172" fill="#30271e" fontSize="16" fontWeight="800">−</text>
+      <line x1="105" y1="118" x2="165" y2="118" stroke="#1f2433" strokeWidth="7" strokeLinecap="round" />
+      <line x1="118" y1="166" x2="152" y2="166" stroke="#1f2433" strokeWidth="5" strokeLinecap="round" />
+      <text x="173" y="122" fill="#1f2433" fontSize="16" fontWeight="800">+</text>
+      <text x="163" y="172" fill="#1f2433" fontSize="16" fontWeight="800">−</text>
 
-      <path d="M135 118 V90 H262" fill="none" stroke="#30271e" strokeWidth="8" strokeLinecap="round" />
-      <circle cx="292" cy="90" r="27" fill="#fff" stroke="#30271e" strokeWidth="4" />
-      <text x="292" y="99" textAnchor="middle" fill="#30271e" fontSize="26" fontWeight="900">A</text>
-      <path d="M319 90 H420 V112" fill="none" stroke="#30271e" strokeWidth="8" strokeLinecap="round" />
-      <path d="M420 278 V300 H135 V166" fill="none" stroke="#30271e" strokeWidth="8" strokeLinecap="round" />
+      <path d="M135 118 V90 H262" fill="none" stroke="#1f2433" strokeWidth="8" strokeLinecap="round" />
+      <circle cx="292" cy="90" r="27" fill="#fff" stroke="#1f2433" strokeWidth="4" />
+      <text x="292" y="99" textAnchor="middle" fill="#1f2433" fontSize="26" fontWeight="900">A</text>
+      <path d="M319 90 H420 V112" fill="none" stroke="#1f2433" strokeWidth="8" strokeLinecap="round" />
+      <path d="M420 278 V300 H135 V166" fill="none" stroke="#1f2433" strokeWidth="8" strokeLinecap="round" />
 
       <SvgInfoCard
         x={210}
@@ -1467,26 +1467,26 @@ function PotentialDividerDiagram({
         compact
       />
 
-      <rect x="377" y="112" width="86" height="70" rx="12" fill="#fff" stroke="#30271e" strokeWidth="4" />
-      <text x="420" y="142" textAnchor="middle" fill="#30271e" fontSize="15" fontWeight="900">R1</text>
-      <text x="420" y="162" textAnchor="middle" fill="#30271e" fontSize="12" fontWeight="800">
+      <rect x="377" y="112" width="86" height="70" rx="12" fill="#fff" stroke="#1f2433" strokeWidth="4" />
+      <text x="420" y="142" textAnchor="middle" fill="#1f2433" fontSize="15" fontWeight="900">R1</text>
+      <text x="420" y="162" textAnchor="middle" fill="#1f2433" fontSize="12" fontWeight="800">
         {(rTop / 1000).toFixed(1)} kΩ
       </text>
 
-      <circle cx="420" cy="205" r="9" fill="#c45b41" stroke="#30271e" strokeWidth="3" />
-      <path d="M420 182 V196" stroke="#30271e" strokeWidth="8" strokeLinecap="round" />
-      <path d="M420 214 V222" stroke="#30271e" strokeWidth="8" strokeLinecap="round" />
+      <circle cx="420" cy="205" r="9" fill="#f25f4c" stroke="#1f2433" strokeWidth="3" />
+      <path d="M420 182 V196" stroke="#1f2433" strokeWidth="8" strokeLinecap="round" />
+      <path d="M420 214 V222" stroke="#1f2433" strokeWidth="8" strokeLinecap="round" />
 
-      <rect x="377" y="222" width="86" height="56" rx="12" fill="#fff" stroke="#30271e" strokeWidth="4" />
-      <text x="420" y="245" textAnchor="middle" fill="#30271e" fontSize="15" fontWeight="900">R2</text>
-      <text x="420" y="264" textAnchor="middle" fill="#30271e" fontSize="12" fontWeight="800">
+      <rect x="377" y="222" width="86" height="56" rx="12" fill="#fff" stroke="#1f2433" strokeWidth="4" />
+      <text x="420" y="245" textAnchor="middle" fill="#1f2433" fontSize="15" fontWeight="900">R2</text>
+      <text x="420" y="264" textAnchor="middle" fill="#1f2433" fontSize="12" fontWeight="800">
         {(rBottom / 1000).toFixed(1)} kΩ
       </text>
 
-      <path d="M61 132 H96 V118 H105" fill="none" stroke="#4b8aa0" strokeWidth="2.5" strokeLinecap="round" />
-      <path d="M61 152 H96 V166 H118" fill="none" stroke="#4b8aa0" strokeWidth="2.5" strokeLinecap="round" />
-      <circle cx="36" cy="142" r="28" fill="#fff" stroke="#30271e" strokeWidth="4" />
-      <text x="36" y="151" textAnchor="middle" fill="#30271e" fontSize="22" fontWeight="900">Vs</text>
+      <path d="M61 132 H96 V118 H105" fill="none" stroke="#17a9c4" strokeWidth="2.5" strokeLinecap="round" />
+      <path d="M61 152 H96 V166 H118" fill="none" stroke="#17a9c4" strokeWidth="2.5" strokeLinecap="round" />
+      <circle cx="36" cy="142" r="28" fill="#fff" stroke="#1f2433" strokeWidth="4" />
+      <text x="36" y="151" textAnchor="middle" fill="#1f2433" fontSize="22" fontWeight="900">Vs</text>
       <SvgInfoCard
         x={54}
         y={184}
@@ -1500,10 +1500,10 @@ function PotentialDividerDiagram({
         compact
       />
 
-      <path d="M470 112 H542 V147 H562" fill="none" stroke="#4b8aa0" strokeWidth="2.5" strokeLinecap="round" />
-      <path d="M470 182 H642 V147 H618" fill="none" stroke="#4b8aa0" strokeWidth="2.5" strokeLinecap="round" />
-      <circle cx="590" cy="147" r="28" fill="#fff" stroke="#30271e" strokeWidth="4" />
-      <text x="590" y="156" textAnchor="middle" fill="#30271e" fontSize="24" fontWeight="900">V1</text>
+      <path d="M470 112 H542 V147 H562" fill="none" stroke="#17a9c4" strokeWidth="2.5" strokeLinecap="round" />
+      <path d="M470 182 H642 V147 H618" fill="none" stroke="#17a9c4" strokeWidth="2.5" strokeLinecap="round" />
+      <circle cx="590" cy="147" r="28" fill="#fff" stroke="#1f2433" strokeWidth="4" />
+      <text x="590" y="156" textAnchor="middle" fill="#1f2433" fontSize="24" fontWeight="900">V1</text>
       <SvgInfoCard
         x={526}
         y={178}
@@ -1517,10 +1517,10 @@ function PotentialDividerDiagram({
         compact
       />
 
-      <path d="M470 222 H542 V250 H562" fill="none" stroke="#c45b41" strokeWidth="2.5" strokeLinecap="round" />
-      <path d="M470 278 H642 V250 H618" fill="none" stroke="#c45b41" strokeWidth="2.5" strokeLinecap="round" />
-      <circle cx="590" cy="250" r="28" fill="#fff" stroke="#30271e" strokeWidth="4" />
-      <text x="590" y="259" textAnchor="middle" fill="#30271e" fontSize="24" fontWeight="900">V2</text>
+      <path d="M470 222 H542 V250 H562" fill="none" stroke="#f25f4c" strokeWidth="2.5" strokeLinecap="round" />
+      <path d="M470 278 H642 V250 H618" fill="none" stroke="#f25f4c" strokeWidth="2.5" strokeLinecap="round" />
+      <circle cx="590" cy="250" r="28" fill="#fff" stroke="#1f2433" strokeWidth="4" />
+      <text x="590" y="259" textAnchor="middle" fill="#1f2433" fontSize="24" fontWeight="900">V2</text>
       <SvgInfoCard
         x={526}
         y={282}
@@ -1534,10 +1534,10 @@ function PotentialDividerDiagram({
         compact
       />
 
-      <path d="M198 90 H248" stroke="#30271e" strokeWidth="3" markerEnd="url(#arrowDivider)" />
-      <path d="M332 90 H382" stroke="#30271e" strokeWidth="3" markerEnd="url(#arrowDivider)" />
-      <path d="M420 98 V109" stroke="#30271e" strokeWidth="3" markerEnd="url(#arrowDivider)" />
-      <path d="M420 288 V296" stroke="#30271e" strokeWidth="3" markerEnd="url(#arrowDivider)" />
+      <path d="M198 90 H248" stroke="#1f2433" strokeWidth="3" markerEnd="url(#arrowDivider)" />
+      <path d="M332 90 H382" stroke="#1f2433" strokeWidth="3" markerEnd="url(#arrowDivider)" />
+      <path d="M420 98 V109" stroke="#1f2433" strokeWidth="3" markerEnd="url(#arrowDivider)" />
+      <path d="M420 288 V296" stroke="#1f2433" strokeWidth="3" markerEnd="url(#arrowDivider)" />
 
       <SvgInfoCard
         x={632}
@@ -1573,22 +1573,22 @@ function WireResistanceDiagram({
     <svg viewBox="0 0 850 390" width="100%" height="100%">
       <defs>
         <marker id="arrowWire" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
-          <path d="M0,0 L0,6 L9,3 z" fill="#30271e" />
+          <path d="M0,0 L0,6 L9,3 z" fill="#1f2433" />
         </marker>
       </defs>
 
-      <rect width="850" height="390" fill="#f8f4e8" />
+      <rect width="850" height="390" fill="#fffaf0" />
 
-      <text x="78" y="70" fill="#30271e" fontSize="16" fontWeight="800">
+      <text x="78" y="70" fill="#1f2433" fontSize="16" fontWeight="800">
         {material.name} wire
       </text>
 
-      <line x1="105" y1="120" x2="165" y2="120" stroke="#30271e" strokeWidth="7" strokeLinecap="round" />
-      <line x1="118" y1="168" x2="152" y2="168" stroke="#30271e" strokeWidth="5" strokeLinecap="round" />
-      <text x="173" y="124" fill="#30271e" fontSize="16" fontWeight="800">+</text>
-      <text x="163" y="174" fill="#30271e" fontSize="16" fontWeight="800">−</text>
+      <line x1="105" y1="120" x2="165" y2="120" stroke="#1f2433" strokeWidth="7" strokeLinecap="round" />
+      <line x1="118" y1="168" x2="152" y2="168" stroke="#1f2433" strokeWidth="5" strokeLinecap="round" />
+      <text x="173" y="124" fill="#1f2433" fontSize="16" fontWeight="800">+</text>
+      <text x="163" y="174" fill="#1f2433" fontSize="16" fontWeight="800">−</text>
 
-      <path d={`M135 120 V92 H${wireStart}`} fill="none" stroke="#30271e" strokeWidth="8" strokeLinecap="round" />
+      <path d={`M135 120 V92 H${wireStart}`} fill="none" stroke="#1f2433" strokeWidth="8" strokeLinecap="round" />
 
       <line
         x1={wireStart}
@@ -1599,24 +1599,24 @@ function WireResistanceDiagram({
         strokeWidth={wireThickness}
         strokeLinecap="round"
       />
-      <line x1={wireStart} y1="74" x2={wireStart} y2="110" stroke="#30271e" strokeWidth="4" />
-      <line x1={wireEnd} y1="74" x2={wireEnd} y2="110" stroke="#30271e" strokeWidth="4" />
+      <line x1={wireStart} y1="74" x2={wireStart} y2="110" stroke="#1f2433" strokeWidth="4" />
+      <line x1={wireEnd} y1="74" x2={wireEnd} y2="110" stroke="#1f2433" strokeWidth="4" />
 
-      <path d={`M${wireEnd} 92 H730 V300 H522`} fill="none" stroke="#30271e" strokeWidth="8" strokeLinecap="round" />
-      <circle cx="492" cy="300" r="27" fill="#fff" stroke="#30271e" strokeWidth="4" />
-      <text x="492" y="309" textAnchor="middle" fill="#30271e" fontSize="26" fontWeight="900">A</text>
-      <path d="M465 300 H135 V168" fill="none" stroke="#30271e" strokeWidth="8" strokeLinecap="round" />
+      <path d={`M${wireEnd} 92 H730 V300 H522`} fill="none" stroke="#1f2433" strokeWidth="8" strokeLinecap="round" />
+      <circle cx="492" cy="300" r="27" fill="#fff" stroke="#1f2433" strokeWidth="4" />
+      <text x="492" y="309" textAnchor="middle" fill="#1f2433" fontSize="26" fontWeight="900">A</text>
+      <path d="M465 300 H135 V168" fill="none" stroke="#1f2433" strokeWidth="8" strokeLinecap="round" />
 
-      <path d="M180 92 H220" stroke="#30271e" strokeWidth="3" markerEnd="url(#arrowWire)" />
-      <path d={`M${wireEnd + 24} 92 H${wireEnd + 64}`} stroke="#30271e" strokeWidth="3" markerEnd="url(#arrowWire)" />
-      <path d="M625 300 H570" stroke="#30271e" strokeWidth="3" markerEnd="url(#arrowWire)" />
+      <path d="M180 92 H220" stroke="#1f2433" strokeWidth="3" markerEnd="url(#arrowWire)" />
+      <path d={`M${wireEnd + 24} 92 H${wireEnd + 64}`} stroke="#1f2433" strokeWidth="3" markerEnd="url(#arrowWire)" />
+      <path d="M625 300 H570" stroke="#1f2433" strokeWidth="3" markerEnd="url(#arrowWire)" />
 
-      <path d={`M${wireStart} 126 V206 H330`} fill="none" stroke="#4b8aa0" strokeWidth="2.5" strokeLinecap="round" />
-      <path d={`M${wireEnd} 126 V206 H390`} fill="none" stroke="#4b8aa0" strokeWidth="2.5" strokeLinecap="round" />
-      <circle cx="360" cy="206" r="28" fill="#fff" stroke="#30271e" strokeWidth="4" />
-      <text x="360" y="215" textAnchor="middle" fill="#30271e" fontSize="24" fontWeight="900">V</text>
+      <path d={`M${wireStart} 126 V206 H330`} fill="none" stroke="#17a9c4" strokeWidth="2.5" strokeLinecap="round" />
+      <path d={`M${wireEnd} 126 V206 H390`} fill="none" stroke="#17a9c4" strokeWidth="2.5" strokeLinecap="round" />
+      <circle cx="360" cy="206" r="28" fill="#fff" stroke="#1f2433" strokeWidth="4" />
+      <text x="360" y="215" textAnchor="middle" fill="#1f2433" fontSize="24" fontWeight="900">V</text>
 
-      <line x1={wireStart} y1="142" x2={wireEnd} y2="142" stroke="#d6c9aa" strokeWidth="5" strokeLinecap="round" />
+      <line x1={wireStart} y1="142" x2={wireEnd} y2="142" stroke="#e6c66e" strokeWidth="5" strokeLinecap="round" />
       {Array.from({ length: 6 }, (_, index) => (
         <g key={index}>
           <line
@@ -1624,7 +1624,7 @@ function WireResistanceDiagram({
             y1="134"
             x2={wireStart + (wireWidth / 5) * index}
             y2="151"
-            stroke="#6f624d"
+            stroke="#5e6b73"
             strokeWidth="2"
           />
         </g>
@@ -1702,42 +1702,42 @@ function SeriesDiagram({ resistors, totalCurrent, revealedValues, onFlip }) {
     <svg viewBox="0 0 850 390" width="100%" height="100%">
       <defs>
         <marker id="arrowSeries" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
-          <path d="M0,0 L0,6 L9,3 z" fill="#30271e" />
+          <path d="M0,0 L0,6 L9,3 z" fill="#1f2433" />
         </marker>
       </defs>
 
-      <rect width="850" height="390" fill="#f8f4e8" />
+      <rect width="850" height="390" fill="#fffaf0" />
 
-      <line x1="105" y1="120" x2="165" y2="120" stroke="#30271e" strokeWidth="7" strokeLinecap="round" />
-      <line x1="118" y1="168" x2="152" y2="168" stroke="#30271e" strokeWidth="5" strokeLinecap="round" />
-      <text x="173" y="124" fill="#30271e" fontSize="16" fontWeight="800">+</text>
-      <text x="163" y="174" fill="#30271e" fontSize="16" fontWeight="800">−</text>
+      <line x1="105" y1="120" x2="165" y2="120" stroke="#1f2433" strokeWidth="7" strokeLinecap="round" />
+      <line x1="118" y1="168" x2="152" y2="168" stroke="#1f2433" strokeWidth="5" strokeLinecap="round" />
+      <text x="173" y="124" fill="#1f2433" fontSize="16" fontWeight="800">+</text>
+      <text x="163" y="174" fill="#1f2433" fontSize="16" fontWeight="800">−</text>
 
-      <path d="M135 120 V90 H230" fill="none" stroke="#30271e" strokeWidth="8" strokeLinecap="round" />
-      <path d="M135 168 V300 H720 V255" fill="none" stroke="#30271e" strokeWidth="8" strokeLinecap="round" />
+      <path d="M135 120 V90 H230" fill="none" stroke="#1f2433" strokeWidth="8" strokeLinecap="round" />
+      <path d="M135 168 V300 H720 V255" fill="none" stroke="#1f2433" strokeWidth="8" strokeLinecap="round" />
 
       <ResistorBox x={230} y={66} label={`R1 = ${resistors[0].toFixed(1)} Ω`} />
-      <path d="M350 90 H390" fill="none" stroke="#30271e" strokeWidth="8" strokeLinecap="round" />
+      <path d="M350 90 H390" fill="none" stroke="#1f2433" strokeWidth="8" strokeLinecap="round" />
       <ResistorBox x={390} y={66} label={`R2 = ${resistors[1].toFixed(1)} Ω`} />
 
       {hasThree ? (
         <>
-          <path d="M510 90 H550" fill="none" stroke="#30271e" strokeWidth="8" strokeLinecap="round" />
+          <path d="M510 90 H550" fill="none" stroke="#1f2433" strokeWidth="8" strokeLinecap="round" />
           <ResistorBox x={550} y={66} label={`R3 = ${resistors[2].toFixed(1)} Ω`} />
-          <path d="M670 90 H720 V185" fill="none" stroke="#30271e" strokeWidth="8" strokeLinecap="round" />
+          <path d="M670 90 H720 V185" fill="none" stroke="#1f2433" strokeWidth="8" strokeLinecap="round" />
         </>
       ) : (
-        <path d="M510 90 H720 V185" fill="none" stroke="#30271e" strokeWidth="8" strokeLinecap="round" />
+        <path d="M510 90 H720 V185" fill="none" stroke="#1f2433" strokeWidth="8" strokeLinecap="round" />
       )}
 
-      <circle cx="720" cy="220" r="27" fill="#fff" stroke="#30271e" strokeWidth="4" />
-      <text x="720" y="229" textAnchor="middle" fill="#30271e" fontSize="26" fontWeight="900">A</text>
-      <line x1="720" y1="185" x2="720" y2="193" stroke="#30271e" strokeWidth="8" strokeLinecap="round" />
-      <line x1="720" y1="247" x2="720" y2="255" stroke="#30271e" strokeWidth="8" strokeLinecap="round" />
+      <circle cx="720" cy="220" r="27" fill="#fff" stroke="#1f2433" strokeWidth="4" />
+      <text x="720" y="229" textAnchor="middle" fill="#1f2433" fontSize="26" fontWeight="900">A</text>
+      <line x1="720" y1="185" x2="720" y2="193" stroke="#1f2433" strokeWidth="8" strokeLinecap="round" />
+      <line x1="720" y1="247" x2="720" y2="255" stroke="#1f2433" strokeWidth="8" strokeLinecap="round" />
 
-      <path d="M185 90 H220" stroke="#30271e" strokeWidth="3" markerEnd="url(#arrowSeries)" />
-      <path d="M720 130 V175" stroke="#30271e" strokeWidth="3" markerEnd="url(#arrowSeries)" />
-      <path d="M610 300 H560" stroke="#30271e" strokeWidth="3" markerEnd="url(#arrowSeries)" />
+      <path d="M185 90 H220" stroke="#1f2433" strokeWidth="3" markerEnd="url(#arrowSeries)" />
+      <path d="M720 130 V175" stroke="#1f2433" strokeWidth="3" markerEnd="url(#arrowSeries)" />
+      <path d="M610 300 H560" stroke="#1f2433" strokeWidth="3" markerEnd="url(#arrowSeries)" />
 
       <SvgInfoCard
         x={548}
@@ -1763,25 +1763,25 @@ function ParallelDiagram({ resistors, rows, totalCurrent, revealedValues, onFlip
     <svg viewBox="0 0 850 390" width="100%" height="100%">
       <defs>
         <marker id="arrowParallel" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
-          <path d="M0,0 L0,6 L9,3 z" fill="#30271e" />
+          <path d="M0,0 L0,6 L9,3 z" fill="#1f2433" />
         </marker>
       </defs>
 
-      <rect width="850" height="390" fill="#f8f4e8" />
+      <rect width="850" height="390" fill="#fffaf0" />
 
       {/* Cell */}
-      <line x1="105" y1="120" x2="165" y2="120" stroke="#30271e" strokeWidth="7" strokeLinecap="round" />
-      <line x1="118" y1="168" x2="152" y2="168" stroke="#30271e" strokeWidth="5" strokeLinecap="round" />
-      <text x="173" y="124" fill="#30271e" fontSize="16" fontWeight="800">+</text>
-      <text x="163" y="174" fill="#30271e" fontSize="16" fontWeight="800">−</text>
+      <line x1="105" y1="120" x2="165" y2="120" stroke="#1f2433" strokeWidth="7" strokeLinecap="round" />
+      <line x1="118" y1="168" x2="152" y2="168" stroke="#1f2433" strokeWidth="5" strokeLinecap="round" />
+      <text x="173" y="124" fill="#1f2433" fontSize="16" fontWeight="800">+</text>
+      <text x="163" y="174" fill="#1f2433" fontSize="16" fontWeight="800">−</text>
 
       {/* Main circuit path. Ammeter is in series before the branches. */}
-      <path d="M135 120 V90 H190" fill="none" stroke="#30271e" strokeWidth="8" strokeLinecap="round" />
+      <path d="M135 120 V90 H190" fill="none" stroke="#1f2433" strokeWidth="8" strokeLinecap="round" />
 
-      <line x1="190" y1="90" x2="213" y2="90" stroke="#30271e" strokeWidth="8" strokeLinecap="round" />
-      <circle cx="240" cy="90" r="27" fill="#fff" stroke="#30271e" strokeWidth="4" />
-      <text x="240" y="99" textAnchor="middle" fill="#30271e" fontSize="26" fontWeight="900">A</text>
-      <line x1="267" y1="90" x2={railEnd} y2="90" stroke="#30271e" strokeWidth="8" strokeLinecap="round" />
+      <line x1="190" y1="90" x2="213" y2="90" stroke="#1f2433" strokeWidth="8" strokeLinecap="round" />
+      <circle cx="240" cy="90" r="27" fill="#fff" stroke="#1f2433" strokeWidth="4" />
+      <text x="240" y="99" textAnchor="middle" fill="#1f2433" fontSize="26" fontWeight="900">A</text>
+      <line x1="267" y1="90" x2={railEnd} y2="90" stroke="#1f2433" strokeWidth="8" strokeLinecap="round" />
 
       <SvgInfoCard
         x={194}
@@ -1797,7 +1797,7 @@ function ParallelDiagram({ resistors, rows, totalCurrent, revealedValues, onFlip
       />
 
       {/* Bottom return rail, ending at the final branch. No excess wire on the right. */}
-      <path d={`M135 168 V300 H${railEnd}`} fill="none" stroke="#30271e" strokeWidth="8" strokeLinecap="round" />
+      <path d={`M135 168 V300 H${railEnd}`} fill="none" stroke="#1f2433" strokeWidth="8" strokeLinecap="round" />
 
       {/* Parallel branches. Resistor rectangles are vertical because the branch wire is vertical. */}
       {branchPositions.map((x, index) => (
@@ -1815,31 +1815,31 @@ function ParallelDiagram({ resistors, rows, totalCurrent, revealedValues, onFlip
             compact
           />
 
-          <path d={`M${x} 90 V121`} stroke="#30271e" strokeWidth="8" strokeLinecap="round" />
+          <path d={`M${x} 90 V121`} stroke="#1f2433" strokeWidth="8" strokeLinecap="round" />
 
-          <circle cx={x} cy="146" r="23" fill="#fff" stroke="#30271e" strokeWidth="4" />
-          <text x={x} y="154" textAnchor="middle" fill="#30271e" fontSize="23" fontWeight="900">A</text>
+          <circle cx={x} cy="146" r="23" fill="#fff" stroke="#1f2433" strokeWidth="4" />
+          <text x={x} y="154" textAnchor="middle" fill="#1f2433" fontSize="23" fontWeight="900">A</text>
 
-          <path d={`M${x} 169 V190`} stroke="#30271e" strokeWidth="8" strokeLinecap="round" />
+          <path d={`M${x} 169 V190`} stroke="#1f2433" strokeWidth="8" strokeLinecap="round" />
 
-          <rect x={x - 27} y="190" width="54" height="88" rx="10" fill="#fff" stroke="#30271e" strokeWidth="4" />
-          <text x={x} y="228" textAnchor="middle" fill="#30271e" fontSize="14" fontWeight="900">
+          <rect x={x - 27} y="190" width="54" height="88" rx="10" fill="#fff" stroke="#1f2433" strokeWidth="4" />
+          <text x={x} y="228" textAnchor="middle" fill="#1f2433" fontSize="14" fontWeight="900">
             R{index + 1}
           </text>
-          <text x={x} y="248" textAnchor="middle" fill="#30271e" fontSize="12" fontWeight="800">
+          <text x={x} y="248" textAnchor="middle" fill="#1f2433" fontSize="12" fontWeight="800">
             {resistors[index].toFixed(1)} Ω
           </text>
 
-          <path d={`M${x} 278 V300`} stroke="#30271e" strokeWidth="8" strokeLinecap="round" />
+          <path d={`M${x} 278 V300`} stroke="#1f2433" strokeWidth="8" strokeLinecap="round" />
         </g>
       ))}
 
       {/* Current direction arrows */}
-      <path d="M170 90 H205" stroke="#30271e" strokeWidth="3" markerEnd="url(#arrowParallel)" />
-      <path d={`M285 90 H${branchPositions[0] - 35}`} stroke="#30271e" strokeWidth="3" markerEnd="url(#arrowParallel)" />
-      <path d={`M${railEnd - 40} 300 H${railEnd - 100}`} stroke="#30271e" strokeWidth="3" markerEnd="url(#arrowParallel)" />
+      <path d="M170 90 H205" stroke="#1f2433" strokeWidth="3" markerEnd="url(#arrowParallel)" />
+      <path d={`M285 90 H${branchPositions[0] - 35}`} stroke="#1f2433" strokeWidth="3" markerEnd="url(#arrowParallel)" />
+      <path d={`M${railEnd - 40} 300 H${railEnd - 100}`} stroke="#1f2433" strokeWidth="3" markerEnd="url(#arrowParallel)" />
 
-      <text x="445" y="340" textAnchor="middle" fill="#6f624d" fontSize="14">
+      <text x="445" y="340" textAnchor="middle" fill="#5e6b73" fontSize="14">
         {resistors.length === 3
           ? "Branch currents add: Itotal = I1 + I2 + I3"
           : "Branch currents add: Itotal = I1 + I2"}
@@ -1851,8 +1851,8 @@ function ParallelDiagram({ resistors, rows, totalCurrent, revealedValues, onFlip
 function ResistorBox({ x, y, label }) {
   return (
     <g>
-      <rect x={x} y={y} width="120" height="48" rx="10" fill="#fff" stroke="#30271e" strokeWidth="4" />
-      <text x={x + 60} y={y - 10} textAnchor="middle" fill="#30271e" fontSize="14" fontWeight="800">
+      <rect x={x} y={y} width="120" height="48" rx="10" fill="#fff" stroke="#1f2433" strokeWidth="4" />
+      <text x={x + 60} y={y - 10} textAnchor="middle" fill="#1f2433" fontSize="14" fontWeight="800">
         {label}
       </text>
     </g>
@@ -1961,17 +1961,17 @@ function StyleBlock() {
       body {
         margin: 0;
         font-family: Arial, sans-serif;
-        background: #f6f0df;
-        color: #30271e;
+        background: #f4fbf8;
+        color: #1f2433;
       }
 
       .app {
         min-height: 100vh;
         padding: 24px;
         background:
-          radial-gradient(circle at top left, rgba(112, 160, 175, 0.22), transparent 32%),
-          radial-gradient(circle at bottom right, rgba(196, 91, 65, 0.13), transparent 35%),
-          #f6f0df;
+          linear-gradient(135deg, rgba(23,169,196,0.16) 0%, rgba(23,169,196,0) 34%),
+          linear-gradient(315deg, rgba(242,95,76,0.16) 0%, rgba(242,95,76,0) 36%),
+          linear-gradient(180deg, #f7fffb 0%, #edf8ff 52%, #fff7de 100%);
       }
 
       .page {
@@ -1996,9 +1996,11 @@ function StyleBlock() {
       .brand-icon {
         width: 54px;
         height: 54px;
-        border-radius: 18px;
-        background: rgba(255,255,255,0.72);
-        border: 1px solid #ddd2b8;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #17a9c4, #7c5cff 54%, #f25f4c);
+        border: 1px solid rgba(255,255,255,0.75);
+        box-shadow: 0 14px 30px rgba(23, 169, 196, 0.28);
+        color: white;
         display: grid;
         place-items: center;
         font-size: 28px;
@@ -2012,11 +2014,11 @@ function StyleBlock() {
 
       h1 {
         font-size: clamp(30px, 4vw, 48px);
-        letter-spacing: -0.04em;
+        letter-spacing: 0;
       }
 
       .subtitle {
-        color: #6f624d;
+        color: #5e6b73;
         font-size: 16px;
         margin-top: 6px;
         line-height: 1.45;
@@ -2024,7 +2026,7 @@ function StyleBlock() {
 
       button {
         border: none;
-        border-radius: 14px;
+        border-radius: 8px;
         padding: 11px 16px;
         cursor: pointer;
         font-weight: 700;
@@ -2032,14 +2034,15 @@ function StyleBlock() {
       }
 
       .button-dark {
-        background: #30271e;
+        background: linear-gradient(135deg, #1f2433, #115f73);
         color: white;
+        box-shadow: 0 10px 20px rgba(17, 95, 115, 0.22);
       }
 
       .button-light {
-        background: rgba(255,255,255,0.72);
-        border: 1px solid #d6c9aa;
-        color: #30271e;
+        background: #ffffff;
+        border: 1px solid #4fb9d7;
+        color: #1f2433;
       }
 
       .full {
@@ -2066,10 +2069,10 @@ function StyleBlock() {
       }
 
       .card {
-        background: rgba(255,255,255,0.74);
-        border: 1px solid #ddd2b8;
-        border-radius: 24px;
-        box-shadow: 0 10px 30px rgba(48,39,30,0.07);
+        background: rgba(255,255,255,0.86);
+        border: 1px solid #b8d7d2;
+        border-radius: 8px;
+        box-shadow: 0 14px 34px rgba(31,36,51,0.09);
         overflow: hidden;
       }
 
@@ -2081,17 +2084,17 @@ function StyleBlock() {
         font-family: monospace;
         font-size: 13px;
         letter-spacing: 0.16em;
-        color: #5e523f;
+        color: #316c79;
         margin-bottom: 10px;
         font-weight: 800;
       }
 
       .topic-panel {
         width: min(360px, 34vw);
-        background: rgba(255,255,255,0.74);
-        border: 1px solid #ddd2b8;
-        border-radius: 18px;
-        box-shadow: 0 10px 30px rgba(48,39,30,0.07);
+        background: rgba(255,255,255,0.9);
+        border: 1px solid #b8d7d2;
+        border-radius: 8px;
+        box-shadow: 0 14px 34px rgba(31,36,51,0.09);
         padding: 12px;
       }
 
@@ -2109,13 +2112,13 @@ function StyleBlock() {
 
       .topic-select-label strong {
         font-size: 13px;
-        color: #6f624d;
+        color: #5e6b73;
         white-space: nowrap;
       }
 
       .topic-select {
-        background: #dbeaf0;
-        border-color: #a9c6d0;
+        background: linear-gradient(135deg, #d8f4ff, #fff3b0);
+        border-color: #4fb9d7;
         font-weight: 800;
       }
 
@@ -2127,13 +2130,13 @@ function StyleBlock() {
       }
 
       .mode-button {
-        background: #f8f4e8;
-        border: 1px solid #d6c9aa;
-        color: #30271e;
+        background: #fffaf0;
+        border: 1px solid #e6c66e;
+        color: #1f2433;
       }
 
       .mode-button.active {
-        background: #30271e;
+        background: linear-gradient(135deg, #17a9c4, #7c5cff);
         color: white;
       }
 
@@ -2148,32 +2151,32 @@ function StyleBlock() {
       input[type="checkbox"] {
         width: 18px;
         height: 18px;
-        accent-color: #30271e;
+        accent-color: #17a9c4;
       }
 
       input[type="range"] {
         width: 100%;
-        accent-color: #30271e;
+        accent-color: #f25f4c;
       }
 
       input[type="number"] {
         width: 100%;
-        border: 1px solid #d6c9aa;
-        border-radius: 12px;
+        border: 1px solid #e6c66e;
+        border-radius: 8px;
         padding: 10px;
         font-size: 17px;
-        background: #fffdf6;
-        color: #30271e;
+        background: #ffffff;
+        color: #1f2433;
       }
 
       select {
         width: 100%;
-        border: 1px solid #d6c9aa;
-        border-radius: 12px;
+        border: 1px solid #e6c66e;
+        border-radius: 8px;
         padding: 10px;
         font-size: 17px;
-        background: #fffdf6;
-        color: #30271e;
+        background: #ffffff;
+        color: #1f2433;
       }
 
       .control-group {
@@ -2200,11 +2203,11 @@ function StyleBlock() {
 
       .quiz-box {
         width: 100%;
-        background: #fff7d8;
-        border: 1px solid #e3d39b;
-        border-radius: 16px;
+        background: linear-gradient(180deg, #fff7c8, #fff0a3);
+        border: 1px solid #ffd166;
+        border-radius: 8px;
         padding: 12px;
-        color: #5f5444;
+        color: #4c515d;
         line-height: 1.45;
       }
 
@@ -2213,17 +2216,17 @@ function StyleBlock() {
         align-items: center;
         justify-content: space-between;
         gap: 10px;
-        color: #30271e;
+        color: #1f2433;
         font-size: 15px;
         margin-bottom: 8px;
       }
 
       .quiz-next {
         padding: 6px 10px;
-        border-radius: 10px;
+        border-radius: 8px;
         background: rgba(255,255,255,0.72);
-        border: 1px solid #e3d39b;
-        color: #30271e;
+        border: 1px solid #ffd166;
+        color: #1f2433;
         font-size: 13px;
       }
 
@@ -2243,25 +2246,25 @@ function StyleBlock() {
         justify-content: space-between;
         gap: 8px;
         padding: 8px 10px;
-        border-radius: 12px;
-        border: 1px solid #e3d39b;
-        background: #fffdf6;
-        color: #30271e;
+        border-radius: 8px;
+        border: 1px solid #ffd166;
+        background: #ffffff;
+        color: #1f2433;
         text-align: left;
         font-size: 14px;
       }
 
       .quiz-option.chosen {
-        background: #f6ead0;
+        background: #ffe2a8;
       }
 
       .quiz-option.correct {
-        background: #e6f3e8;
-        border-color: #8ac198;
+        background: #dcfce7;
+        border-color: #32c36c;
       }
 
       .checkmark {
-        color: #1f6b43;
+        color: #0f8f56;
         font-size: 18px;
         font-weight: 900;
       }
@@ -2270,9 +2273,9 @@ function StyleBlock() {
         height: clamp(190px, 34vw, 320px);
         margin-inline: auto;
         max-width: 720px;
-        background: #f8f4e8;
-        border: 1px solid #e1d7bf;
-        border-radius: 22px;
+        background: linear-gradient(180deg, #ffffff, #fffaf0);
+        border: 1px solid #b8d7d2;
+        border-radius: 8px;
         overflow: hidden;
       }
 
@@ -2292,12 +2295,12 @@ function StyleBlock() {
       }
 
       .value-box {
-        background: #f8f4e8;
-        border: 1px solid #e1d7bf;
+        background: #fffaf0;
+        border: 1px solid #cfe5df;
         border-radius: 8px;
         padding: 0;
         text-align: center;
-        box-shadow: 0 12px 28px rgba(48, 39, 30, 0.12);
+        box-shadow: 0 12px 26px rgba(31, 36, 51, 0.12);
       }
 
       .flip-value {
@@ -2305,9 +2308,9 @@ function StyleBlock() {
         width: 100%;
         height: 100%;
         appearance: none;
-        border: 1px solid #e1d7bf;
+        border: 1px solid #cfe5df;
         cursor: pointer;
-        color: #30271e;
+        color: #1f2433;
         perspective: 900px;
         transition: border-color 0.2s, background 0.2s, transform 0.2s, box-shadow 0.2s;
       }
@@ -2318,29 +2321,29 @@ function StyleBlock() {
 
       .flip-value:hover {
         transform: translateY(-1px);
-        box-shadow: 0 16px 32px rgba(48, 39, 30, 0.16);
+        box-shadow: 0 16px 32px rgba(23, 169, 196, 0.18);
       }
 
       .flip-value:hover,
       .flip-result:hover {
-        border-color: #a9c6d0;
+        border-color: #4fb9d7;
       }
 
       .flip-value:not(.revealed),
       .flip-result:not(.revealed) {
-        background: #fff7d8;
-        border-color: #e3d39b;
+        background: #fff3b0;
+        border-color: #ffd166;
       }
 
       .flip-value.diagram-value {
-        background: rgba(231, 244, 247, 0.74);
-        border-color: rgba(75, 138, 160, 0.42);
-        box-shadow: 0 8px 18px rgba(48, 39, 30, 0.1);
+        background: rgba(216, 244, 255, 0.82);
+        border-color: rgba(23, 169, 196, 0.45);
+        box-shadow: 0 8px 18px rgba(31, 36, 51, 0.1);
       }
 
       .flip-value.diagram-value:not(.revealed) {
-        background: rgba(214, 236, 243, 0.78);
-        border-color: rgba(75, 138, 160, 0.45);
+        background: rgba(255, 243, 176, 0.84);
+        border-color: rgba(242, 95, 76, 0.34);
       }
 
       .flip-card-inner {
@@ -2374,20 +2377,20 @@ function StyleBlock() {
       }
 
       .flip-card-front {
-        background: linear-gradient(180deg, #fff9df, #f6e8bd);
+        background: linear-gradient(180deg, #fff8d6, #ffd166);
       }
 
       .flip-card-back {
-        background: #f8f4e8;
+        background: #fffaf0;
         transform: rotateY(180deg);
       }
 
       .diagram-value .flip-card-front {
-        background: linear-gradient(180deg, rgba(221, 242, 248, 0.9), rgba(186, 219, 229, 0.84));
+        background: linear-gradient(180deg, rgba(216, 244, 255, 0.95), rgba(255, 243, 176, 0.88));
       }
 
       .diagram-value .flip-card-back {
-        background: rgba(220, 242, 226, 0.88);
+        background: rgba(220, 252, 231, 0.9);
       }
 
       .flip-value.compact .flip-card-face {
@@ -2397,7 +2400,7 @@ function StyleBlock() {
       .value-label {
         display: block;
         font-size: 15px;
-        color: #6f624d;
+        color: #5e6b73;
         font-weight: 800;
       }
 
@@ -2412,13 +2415,13 @@ function StyleBlock() {
       .value-unit {
         display: block;
         font-size: 16px;
-        color: #6f624d;
+        color: #5e6b73;
         font-weight: 700;
       }
 
       .value-hint {
         display: block;
-        color: #8a7b62;
+        color: #7b6f52;
         font-size: 12px;
         font-weight: 800;
         line-height: 1.1;
@@ -2451,7 +2454,7 @@ function StyleBlock() {
 
       .data-table th,
       .data-table td {
-        border-bottom: 1px solid #e7dcc7;
+        border-bottom: 1px solid #d6e8e2;
         padding: 9px 6px;
         text-align: right;
       }
@@ -2462,9 +2465,9 @@ function StyleBlock() {
       }
 
       .formula-box {
-        background: #f8f4e8;
-        border: 1px solid #e1d7bf;
-        border-radius: 18px;
+        background: #fffaf0;
+        border: 1px solid #cfe5df;
+        border-radius: 8px;
         padding: 14px;
         font-family: Georgia, serif;
         font-size: 24px;
@@ -2477,7 +2480,7 @@ function StyleBlock() {
         width: 100%;
         margin-top: 10px;
         padding-top: 10px;
-        border-top: 1px solid #e1d7bf;
+        border-top: 1px solid #cfe5df;
         font-family: Arial, sans-serif;
         font-size: 28px;
         font-weight: 900;
@@ -2489,14 +2492,14 @@ function StyleBlock() {
         border-left: 0;
         border-radius: 0;
         background: transparent;
-        color: #30271e;
+        color: #1f2433;
         text-align: left;
       }
 
       .task-box {
-        background: #fff7d8;
-        border: 1px solid #e3d39b;
-        border-radius: 16px;
+        background: #fff3b0;
+        border: 1px solid #ffd166;
+        border-radius: 8px;
         padding: 12px;
         font-size: 16px;
         line-height: 1.45;
@@ -2515,28 +2518,28 @@ function StyleBlock() {
 
       .feedback {
         margin-top: 12px;
-        border-radius: 14px;
+        border-radius: 8px;
         padding: 12px;
         font-size: 16px;
-        background: #f8f4e8;
-        border: 1px solid #e1d7bf;
+        background: #fffaf0;
+        border: 1px solid #cfe5df;
       }
 
       .good {
-        color: #1f6b43;
+        color: #0f8f56;
         font-weight: 800;
       }
 
       .bad {
-        color: #9b3d2e;
+        color: #d53329;
         font-weight: 800;
       }
 
       .graph-area {
         margin-top: 8px;
-        background: #f8f4e8;
-        border: 1px solid #e1d7bf;
-        border-radius: 20px;
+        background: #fffaf0;
+        border: 1px solid #cfe5df;
+        border-radius: 8px;
         overflow: hidden;
       }
 
@@ -2555,7 +2558,7 @@ function StyleBlock() {
 
       .graph-title {
         padding: 10px 14px 0;
-        color: #30271e;
+        color: #1f2433;
         font-size: 16px;
         font-weight: 900;
       }
