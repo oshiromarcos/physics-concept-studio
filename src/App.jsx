@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 
 const topics = [
   { key: "ohms-law", title: "Ohm’s Law", subtitle: "V, I and R" },
@@ -721,14 +721,31 @@ const wireMaterials = [
   { key: "steel", name: "Steel", resistivity: 1.4e-7, color: "#5e6b73" },
 ];
 
+function randomWireDiameter() {
+  return Number((0.32 + Math.random() * 0.54).toFixed(3));
+}
+
+function getAmmeterMax(current) {
+  return current > 5 ? 10 : 5;
+}
+
+function getMeterNeedleAngle(current, maxCurrent) {
+  const startAngle = 215;
+  const endAngle = 325;
+  const fraction = Math.min(Math.max(current / maxCurrent, 0), 1);
+  return startAngle + fraction * (endAngle - startAngle);
+}
+
 function WireResistancePage() {
   const [length, setLength] = useState(1.2);
-  const [diameter, setDiameter] = useState(0.45);
+  const [diameter, setDiameter] = useState(randomWireDiameter);
   const [materialKey, setMaterialKey] = useState("constantan");
-  const [testVoltage, setTestVoltage] = useState(3);
+  const [testVoltage, setTestVoltage] = useState(9);
   const [revealedValues, setRevealedValues] = useState(wireRevealDefaults);
   const [prediction, setPrediction] = useState("");
   const [checkResult, setCheckResult] = useState(null);
+  const [showDiameterView, setShowDiameterView] = useState(true);
+  const [showCurrentMeter, setShowCurrentMeter] = useState(false);
 
   const material = wireMaterials.find((item) => item.key === materialKey) ?? wireMaterials[1];
   const area = Math.PI * ((diameter / 1000) / 2) ** 2;
@@ -742,7 +759,7 @@ function WireResistancePage() {
 
   const lengthGraphPoints = useMemo(() => {
     return Array.from({ length: 25 }, (_, index) => {
-      const sampleLength = 0.1 + index * 0.1;
+      const sampleLength = 0.25 + (index / 24) * 5.75;
       const sampleResistance = material.resistivity * sampleLength / area;
       return {
         x: 48 + (index / 24) * 418,
@@ -773,12 +790,14 @@ function WireResistancePage() {
 
   function reset() {
     setLength(1.2);
-    setDiameter(0.45);
+    setDiameter(randomWireDiameter());
     setMaterialKey("constantan");
-    setTestVoltage(3);
+    setTestVoltage(9);
     setRevealedValues(wireRevealDefaults);
     setPrediction("");
     setCheckResult(null);
+    setShowDiameterView(true);
+    setShowCurrentMeter(false);
   }
 
   function checkAnswer() {
@@ -805,9 +824,10 @@ function WireResistancePage() {
 
             </div>
 
-            <div className="simulation">
+            <div className="simulation wire-simulation">
               <WireResistanceDiagram
                 length={length}
+                setLength={setLength}
                 diameter={diameter}
                 material={material}
                 resistance={resistance}
@@ -815,8 +835,23 @@ function WireResistancePage() {
                 testVoltage={testVoltage}
                 revealedValues={revealedValues}
                 onFlip={flipValue}
+                onShowCurrentMeter={() => setShowCurrentMeter(true)}
               />
             </div>
+
+            {showDiameterView && (
+              <DiameterMeasureOverlay
+                diameter={diameter}
+                onClose={() => setShowDiameterView(false)}
+              />
+            )}
+
+            {showCurrentMeter && (
+              <CurrentMeterOverlay
+                current={current}
+                onClose={() => setShowCurrentMeter(false)}
+              />
+            )}
 
             <div className="summary-grid four">
               <FlipValueBox
@@ -867,10 +902,10 @@ function WireResistancePage() {
                 xLabel="Length / m"
                 yMax={wireGraphMax}
                 points={lengthGraphPoints}
-                activeX={48 + ((length - 0.1) / 2.4) * 418}
+                activeX={48 + ((length - 0.25) / 5.75) * 418}
                 activeY={wireGraphBottom - Math.min(resistance / wireGraphMax, 1) * wireGraphHeight}
                 color={material.color}
-                xTick={(n) => (n * 0.5).toFixed(1)}
+                xTick={(n) => (n * 1.2).toFixed(1)}
               />
               <WireLineGraph
                 title="R against diameter"
@@ -908,26 +943,38 @@ function WireResistancePage() {
 
             <div className="control-group">
               <div className="control-label">
-                <span>Length</span>
-                <strong>{length.toFixed(2)} m</strong>
+                <span>Red clip length</span>
+                <strong>read ruler</strong>
               </div>
-              <input type="range" min="0.1" max="2.5" step="0.05" value={length} onChange={(event) => setLength(Number(event.target.value))} />
+              <input type="range" min="0.25" max="6" step="0.001" value={length} onChange={(event) => setLength(Number(event.target.value))} />
             </div>
 
             <div className="control-group">
               <div className="control-label">
-                <span>Diameter</span>
-                <strong>{diameter.toFixed(2)} mm</strong>
+                <span>Wire diameter</span>
+                <strong>estimate from grid</strong>
               </div>
-              <input type="range" min="0.2" max="1.2" step="0.05" value={diameter} onChange={(event) => setDiameter(Number(event.target.value))} />
+              <input type="range" min="0.2" max="1.2" step="0.001" value={diameter} onChange={(event) => setDiameter(Number(event.target.value))} />
             </div>
+
+            {!showDiameterView && (
+              <button className="button-light full" onClick={() => setShowDiameterView(true)}>
+                Show diameter grid
+              </button>
+            )}
+
+            {!showCurrentMeter && (
+              <button className="button-light full" onClick={() => setShowCurrentMeter(true)}>
+                Show current meter
+              </button>
+            )}
 
             <div className="control-group">
               <div className="control-label">
                 <span>Test voltage</span>
                 <strong>{testVoltage.toFixed(1)} V</strong>
               </div>
-              <input type="range" min="1" max="6" step="0.5" value={testVoltage} onChange={(event) => setTestVoltage(Number(event.target.value))} />
+              <input type="range" min="1" max="12" step="0.5" value={testVoltage} onChange={(event) => setTestVoltage(Number(event.target.value))} />
             </div>
 
             <button className="button-light full" onClick={reset}>↺ Reset</button>
@@ -1556,6 +1603,7 @@ function PotentialDividerDiagram({
 
 function WireResistanceDiagram({
   length,
+  setLength,
   diameter,
   material,
   resistance,
@@ -1563,14 +1611,64 @@ function WireResistanceDiagram({
   testVoltage,
   revealedValues,
   onFlip,
+  onShowCurrentMeter,
 }) {
-  const wireStart = 230;
-  const wireMaxWidth = 420;
-  const wireWidth = 60 + (length / 2.5) * wireMaxWidth;
-  const wireEnd = wireStart + wireWidth;
-  const wireThickness = 4 + (diameter / 1.2) * 16;
+  const svgRef = useRef(null);
+  const draggingClip = useRef(false);
+  const rulerX = 66;
+  const rulerZeroX = 88;
+  const rulerY = 34;
+  const rulerScaleWidth = 680;
+  const rulerWidth = rulerScaleWidth + (rulerZeroX - rulerX);
+  const wireY = 126;
+  const wireEnd = rulerZeroX + rulerScaleWidth;
+  const clipX = rulerZeroX + (length / 6) * rulerScaleWidth;
+  const wireThickness = 4 + (diameter / 1.2) * 12;
+  const currentA = current;
+  const ammeterMax = getAmmeterMax(currentA);
+  const smallMeterNeedleAngle = getMeterNeedleAngle(currentA, ammeterMax);
+  const smallMeterCenterX = 178;
+  const smallMeterCenterY = 318;
+  const smallMeterNeedleX = smallMeterCenterX + Math.cos((smallMeterNeedleAngle * Math.PI) / 180) * 24;
+  const smallMeterNeedleY = smallMeterCenterY + Math.sin((smallMeterNeedleAngle * Math.PI) / 180) * 24;
+
+  function updateLengthFromPointer(event) {
+    const svg = svgRef.current;
+    if (!svg) return;
+    const point = svg.createSVGPoint();
+    point.x = event.clientX;
+    point.y = event.clientY;
+    const svgPoint = point.matrixTransform(svg.getScreenCTM().inverse());
+    const clampedX = Math.min(wireEnd, Math.max(rulerZeroX + 28, svgPoint.x));
+    const nextLength = ((clampedX - rulerZeroX) / rulerScaleWidth) * 6;
+    setLength(Number(nextLength.toFixed(3)));
+  }
+
+  function startDrag(event) {
+    draggingClip.current = true;
+    event.currentTarget.setPointerCapture(event.pointerId);
+    updateLengthFromPointer(event);
+  }
+
+  function moveDrag(event) {
+    if (!draggingClip.current) return;
+    updateLengthFromPointer(event);
+  }
+
+  function endDrag() {
+    draggingClip.current = false;
+  }
+
   return (
-    <svg viewBox="0 0 850 390" width="100%" height="100%">
+    <svg
+      ref={svgRef}
+      viewBox="0 0 850 390"
+      width="100%"
+      height="100%"
+      onPointerMove={moveDrag}
+      onPointerUp={endDrag}
+      onPointerLeave={endDrag}
+    >
       <defs>
         <marker id="arrowWire" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
           <path d="M0,0 L0,6 L9,3 z" fill="#1f2433" />
@@ -1579,64 +1677,104 @@ function WireResistanceDiagram({
 
       <rect width="850" height="390" fill="#fffaf0" />
 
-      <text x="78" y="70" fill="#1f2433" fontSize="16" fontWeight="800">
+      <text x="78" y="24" fill="#1f2433" fontSize="15" fontWeight="800">
         {material.name} wire
       </text>
 
-      <line x1="105" y1="120" x2="165" y2="120" stroke="#1f2433" strokeWidth="7" strokeLinecap="round" />
-      <line x1="118" y1="168" x2="152" y2="168" stroke="#1f2433" strokeWidth="5" strokeLinecap="round" />
-      <text x="173" y="124" fill="#1f2433" fontSize="16" fontWeight="800">+</text>
-      <text x="163" y="174" fill="#1f2433" fontSize="16" fontWeight="800">−</text>
+      <rect x={rulerX} y={rulerY} width={rulerWidth} height="72" fill="#ffd89a" stroke="#1f2433" strokeWidth="3" />
+      {Array.from({ length: 61 }, (_, index) => {
+        const x = rulerZeroX + (index / 60) * rulerScaleWidth;
+        const isMeter = index % 10 === 0;
+        const isHalf = index % 5 === 0;
+        return (
+          <g key={index}>
+            <line
+              x1={x}
+              y1={isMeter ? 70 : isHalf ? 79 : 88}
+              x2={x}
+              y2={106}
+              stroke="#1f2433"
+              strokeWidth={isMeter ? 3 : isHalf ? 2.4 : 1.8}
+            />
+            {isMeter && (
+              <text x={x} y="61" textAnchor={index === 0 ? "start" : "middle"} fill="#1f2433" fontSize="20" fontWeight="900">
+                {index === 60 ? "6 m" : index / 10}
+              </text>
+            )}
+          </g>
+        );
+      })}
 
-      <path d={`M135 120 V92 H${wireStart}`} fill="none" stroke="#1f2433" strokeWidth="8" strokeLinecap="round" />
-
-      <line
-        x1={wireStart}
-        y1="92"
-        x2={wireEnd}
-        y2="92"
-        stroke={material.color}
-        strokeWidth={wireThickness}
-        strokeLinecap="round"
+      <line x1={rulerZeroX} y1={wireY} x2={wireEnd} y2={wireY} stroke="#d9cdd5" strokeWidth="11" strokeLinecap="round" />
+      <line x1={rulerZeroX} y1={wireY} x2={clipX} y2={wireY} stroke={material.color} strokeWidth={wireThickness} strokeLinecap="round" />
+      <rect
+        x={rulerX - 10}
+        y={rulerY}
+        width={rulerWidth + 20}
+        height="112"
+        fill="transparent"
+        className="wire-drag-zone"
+        onPointerDown={startDrag}
       />
-      <line x1={wireStart} y1="74" x2={wireStart} y2="110" stroke="#1f2433" strokeWidth="4" />
-      <line x1={wireEnd} y1="74" x2={wireEnd} y2="110" stroke="#1f2433" strokeWidth="4" />
 
-      <path d={`M${wireEnd} 92 H730 V300 H522`} fill="none" stroke="#1f2433" strokeWidth="8" strokeLinecap="round" />
-      <circle cx="492" cy="300" r="27" fill="#fff" stroke="#1f2433" strokeWidth="4" />
-      <text x="492" y="309" textAnchor="middle" fill="#1f2433" fontSize="26" fontWeight="900">A</text>
-      <path d="M465 300 H135 V168" fill="none" stroke="#1f2433" strokeWidth="8" strokeLinecap="round" />
+      <g>
+        <path d={`M${rulerZeroX} ${wireY} V318 H178`} fill="none" stroke="#1f2433" strokeWidth="7" strokeLinecap="round" />
+        <path d={`M${clipX} ${wireY} V198 H738 V318 H548`} fill="none" stroke="#1f2433" strokeWidth="7" strokeLinecap="round" />
+        <path d="M435 318 H178" fill="none" stroke="#1f2433" strokeWidth="7" strokeLinecap="round" />
+      </g>
 
-      <path d="M180 92 H220" stroke="#1f2433" strokeWidth="3" markerEnd="url(#arrowWire)" />
-      <path d={`M${wireEnd + 24} 92 H${wireEnd + 64}`} stroke="#1f2433" strokeWidth="3" markerEnd="url(#arrowWire)" />
-      <path d="M625 300 H570" stroke="#1f2433" strokeWidth="3" markerEnd="url(#arrowWire)" />
+      <g className="alligator fixed-clip">
+        <line x1={rulerZeroX} y1="92" x2={rulerZeroX} y2="145" stroke="#bec7ca" strokeWidth="7" strokeLinecap="round" />
+        <rect x={rulerZeroX - 8} y="145" width="16" height="38" rx="2" fill="#111827" />
+      </g>
 
-      <path d={`M${wireStart} 126 V206 H330`} fill="none" stroke="#17a9c4" strokeWidth="2.5" strokeLinecap="round" />
-      <path d={`M${wireEnd} 126 V206 H390`} fill="none" stroke="#17a9c4" strokeWidth="2.5" strokeLinecap="round" />
-      <circle cx="360" cy="206" r="28" fill="#fff" stroke="#1f2433" strokeWidth="4" />
-      <text x="360" y="215" textAnchor="middle" fill="#1f2433" fontSize="24" fontWeight="900">V</text>
+      <g
+        className="alligator draggable-clip"
+        onPointerDown={startDrag}
+        style={{ cursor: "ew-resize" }}
+      >
+        <line x1={clipX} y1="92" x2={clipX} y2="145" stroke="#bec7ca" strokeWidth="7" strokeLinecap="round" />
+        <rect x={clipX - 9} y="145" width="18" height="42" rx="2" fill="#b90f0f" />
+        <path d={`M${clipX - 13} 139 L${clipX} 126 L${clipX + 13} 139`} fill="none" stroke="#e5edf0" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+      </g>
 
-      <line x1={wireStart} y1="142" x2={wireEnd} y2="142" stroke="#e6c66e" strokeWidth="5" strokeLinecap="round" />
-      {Array.from({ length: 6 }, (_, index) => (
-        <g key={index}>
-          <line
-            x1={wireStart + (wireWidth / 5) * index}
-            y1="134"
-            x2={wireStart + (wireWidth / 5) * index}
-            y2="151"
-            stroke="#5e6b73"
-            strokeWidth="2"
-          />
-        </g>
-      ))}
+      <g
+        onClick={onShowCurrentMeter}
+        onKeyDown={(event) => {
+          if (event.key === "Enter" || event.key === " ") onShowCurrentMeter();
+        }}
+        role="button"
+        tabIndex="0"
+        style={{ cursor: "pointer" }}
+      >
+        <circle cx="178" cy="318" r="34" fill="#ffffff" stroke="#1f2433" strokeWidth="4" />
+        <path d={`M178 318 L${smallMeterNeedleX} ${smallMeterNeedleY}`} stroke="#f25f4c" strokeWidth="4" strokeLinecap="round" />
+        <text x="178" y="327" textAnchor="middle" fill="#1f2433" fontSize="28" fontWeight="900">A</text>
+        <text x="145" y="286" fill="#5e6b73" fontSize="10" fontWeight="800">0</text>
+        <text x="172" y="274" fill="#5e6b73" fontSize="10" fontWeight="800">{(ammeterMax / 2).toFixed(ammeterMax === 5 ? 1 : 0)}</text>
+        <text x="209" y="286" fill="#5e6b73" fontSize="10" fontWeight="800">{ammeterMax} A</text>
+      </g>
+
+      <g>
+        <rect x="435" y="287" width="113" height="92" rx="4" fill="#123d75" stroke="#1f2433" strokeWidth="4" />
+        <text x="492" y="315" textAnchor="middle" fill="white" fontSize="19" fontWeight="900">
+          {testVoltage.toFixed(1)} V
+        </text>
+        <path d="M501 321 L468 352 H490 L474 374 L522 336 H500 Z" fill="#ffffff" opacity="0.95" />
+        <rect x="452" y="273" width="16" height="18" fill="#e94227" stroke="#1f2433" strokeWidth="3" />
+        <rect x="516" y="273" width="16" height="18" fill="#e94227" stroke="#1f2433" strokeWidth="3" />
+      </g>
+
+      <path d="M238 318 H420" stroke="#1f2433" strokeWidth="3" markerEnd="url(#arrowWire)" />
+      <path d={`M${clipX + 22} 198 H${Math.min(clipX + 76, 710)}`} stroke="#1f2433" strokeWidth="3" markerEnd="url(#arrowWire)" />
 
       <SvgInfoCard
-        x={(wireStart + wireEnd) / 2 - 66}
-        y={112}
-        width={132}
-        height={66}
+        x="616"
+        y="232"
+        width={150}
+        height={70}
         label="Length"
-        value={length.toFixed(2)}
+        value={length.toFixed(3)}
         unit="m"
         revealed={revealedValues.length}
         onFlip={() => onFlip("length")}
@@ -1644,12 +1782,12 @@ function WireResistanceDiagram({
         opacity={0.78}
       />
       <SvgInfoCard
-        x={(wireStart + wireEnd) / 2 - 76}
-        y={16}
-        width={152}
+        x="616"
+        y="306"
+        width={150}
         height={70}
         label="Diameter"
-        value={diameter.toFixed(2)}
+        value={diameter.toFixed(3)}
         unit="mm"
         revealed={revealedValues.diameter}
         onFlip={() => onFlip("diameter")}
@@ -1657,32 +1795,20 @@ function WireResistanceDiagram({
       />
 
       <SvgInfoCard
-        x={376}
-        y={318}
+        x="248"
+        y="248"
         width={132}
         height={66}
         label="Current"
-        value={(current * 1000).toFixed(1)}
-        unit="mA"
+        value={currentA.toFixed(3)}
+        unit="A"
         revealed={revealedValues.current}
         onFlip={() => onFlip("current")}
         compact
       />
       <SvgInfoCard
-        x={294}
-        y={238}
-        width={132}
-        height={66}
-        label="Voltage"
-        value={testVoltage.toFixed(1)}
-        unit="V"
-        revealed={revealedValues.voltage}
-        onFlip={() => onFlip("voltage")}
-        compact
-      />
-      <SvgInfoCard
-        x={560}
-        y={188}
+        x="252"
+        y="168"
         width={150}
         height={78}
         label="Resistance"
@@ -1692,6 +1818,132 @@ function WireResistanceDiagram({
         onFlip={() => onFlip("resistance")}
       />
     </svg>
+  );
+}
+
+function DiameterMeasureOverlay({ diameter, onClose }) {
+  const gridStep = 24;
+  const gridSize = 480;
+  const circleRadius = (diameter * 10 * gridStep) / 2;
+  const centerX = 252;
+  const centerY = 254;
+
+  return (
+    <div className="diameter-overlay">
+      <button className="diameter-close" onClick={onClose} aria-label="Close diameter grid">
+        ×
+      </button>
+      <svg viewBox="0 0 560 560" width="100%" height="100%" role="img" aria-label="Scaled wire diameter grid">
+        <rect width="560" height="560" fill="rgba(255,255,255,0.82)" />
+        <text x="28" y="44" fill="#b90f0f" fontSize="30" fontWeight="900">
+          Measure Radius and Calculate Area
+        </text>
+        <rect x="40" y="64" width={gridSize} height={gridSize} fill="#fffef5" stroke="#1f2433" strokeWidth="3" />
+        {Array.from({ length: 21 }, (_, index) => {
+          const offset = 40 + index * gridStep;
+          const major = index % 5 === 0;
+          return (
+            <g key={index}>
+              <line x1={offset} y1="64" x2={offset} y2="544" stroke="#1f2433" strokeWidth={major ? 2.8 : 1.1} opacity={major ? 1 : 0.62} />
+              <line x1="40" y1={offset + 24} x2="520" y2={offset + 24} stroke="#1f2433" strokeWidth={major ? 2.8 : 1.1} opacity={major ? 1 : 0.62} />
+            </g>
+          );
+        })}
+        <circle
+          cx={centerX}
+          cy={centerY}
+          r={circleRadius}
+          fill="rgba(111, 91, 101, 0.36)"
+          stroke="#5d545a"
+          strokeWidth="2"
+        />
+        <line x1={centerX - circleRadius} y1={centerY} x2={centerX + circleRadius} y2={centerY} stroke="rgba(185,15,15,0.36)" strokeWidth="6" />
+        <line x1={centerX} y1={centerY - circleRadius} x2={centerX} y2={centerY + circleRadius} stroke="rgba(185,15,15,0.22)" strokeWidth="6" />
+        <text x="128" y="540" fill="#b90f0f" fontSize="29" fontWeight="900">
+          Each Block is 0.1 mm
+        </text>
+      </svg>
+    </div>
+  );
+}
+
+function CurrentMeterOverlay({ current, onClose }) {
+  const meterMax = getAmmeterMax(current);
+  const pivotX = 280;
+  const pivotY = 398;
+  const arcRadius = 230;
+  const startAngle = 215;
+  const endAngle = 325;
+  const needleAngle = getMeterNeedleAngle(current, meterMax);
+  const needleLength = 214;
+  const needleTipX = pivotX + Math.cos((needleAngle * Math.PI) / 180) * needleLength;
+  const needleTipY = pivotY + Math.sin((needleAngle * Math.PI) / 180) * needleLength;
+
+  function polarPoint(angle, radius = arcRadius) {
+    return {
+      x: pivotX + Math.cos((angle * Math.PI) / 180) * radius,
+      y: pivotY + Math.sin((angle * Math.PI) / 180) * radius,
+    };
+  }
+
+  const arcStart = polarPoint(startAngle);
+  const arcEnd = polarPoint(endAngle);
+
+  return (
+    <div className="current-overlay">
+      <div className="current-meter-title">
+        Record Your Current for This Trial
+        <button className="current-close" onClick={onClose} aria-label="Close current meter">
+          ×
+        </button>
+      </div>
+      <svg viewBox="0 0 560 560" width="100%" height="100%" role="img" aria-label="Analog ammeter">
+        <rect width="560" height="560" fill="rgba(0,0,0,0.78)" />
+        <circle cx="280" cy="312" r="246" fill="#ffffff" stroke="#111827" strokeWidth="3" />
+        <path
+          d={`M ${arcStart.x} ${arcStart.y} A ${arcRadius} ${arcRadius} 0 0 1 ${arcEnd.x} ${arcEnd.y}`}
+          fill="none"
+          stroke="#111827"
+          strokeWidth="5"
+          strokeLinecap="round"
+        />
+        {Array.from({ length: 11 }, (_, index) => {
+          const tickAngle = startAngle + (index / 10) * (endAngle - startAngle);
+          const major = index % 5 === 0;
+          const outer = polarPoint(tickAngle, arcRadius + 4);
+          const inner = polarPoint(tickAngle, major ? arcRadius - 46 : arcRadius - 24);
+          return (
+            <line
+              key={index}
+              x1={outer.x}
+              y1={outer.y}
+              x2={inner.x}
+              y2={inner.y}
+              stroke="#111827"
+              strokeWidth={major ? 5 : 4}
+              strokeLinecap="round"
+            />
+          );
+        })}
+        <text x="122" y="232" textAnchor="middle" fill="#111827" fontSize="40" fontWeight="800">
+          0
+        </text>
+        <text x="280" y="136" textAnchor="middle" fill="#111827" fontSize="40" fontWeight="800">
+          {(meterMax / 2).toFixed(meterMax === 5 ? 1 : 0)}
+        </text>
+        <text x="438" y="232" textAnchor="middle" fill="#111827" fontSize="40" fontWeight="800">
+          {meterMax}
+        </text>
+        <line x1={pivotX} y1={pivotY} x2={needleTipX} y2={needleTipY} stroke="#f01818" strokeWidth="4" strokeLinecap="round" />
+        <circle cx={pivotX} cy={pivotY} r="7" fill="#111827" />
+        <text x="280" y="314" textAnchor="middle" fill="#b90f0f" fontSize="50" fontWeight="900">
+          Amps
+        </text>
+        <text x="280" y="505" textAnchor="middle" fill="#111827" fontSize="17" fontFamily="Georgia, serif" fontWeight="700">
+          Precision Meter
+        </text>
+      </svg>
+    </div>
   );
 }
 
@@ -2078,6 +2330,7 @@ function StyleBlock() {
 
       .card-content {
         padding: 16px;
+        position: relative;
       }
 
       .small-title {
@@ -2277,6 +2530,102 @@ function StyleBlock() {
         border: 1px solid #b8d7d2;
         border-radius: 8px;
         overflow: hidden;
+      }
+
+      .wire-simulation {
+        height: clamp(300px, 43vw, 390px);
+        max-width: 920px;
+      }
+
+      .wire-drag-zone {
+        cursor: ew-resize;
+        touch-action: none;
+      }
+
+      .diameter-overlay {
+        background: rgba(255,255,255,0.8);
+        border: 1px solid rgba(31,36,51,0.22);
+        border-radius: 8px;
+        box-shadow: 0 18px 44px rgba(31,36,51,0.18);
+        height: min(420px, 70vw);
+        max-height: calc(100% - 118px);
+        opacity: 0.92;
+        overflow: hidden;
+        position: absolute;
+        right: 28px;
+        top: 92px;
+        width: min(360px, 42vw);
+        z-index: 3;
+      }
+
+      .diameter-close {
+        align-items: center;
+        background: rgba(255,255,255,0.88);
+        border: 1px solid rgba(31,36,51,0.22);
+        border-radius: 8px;
+        color: #1f2433;
+        display: grid;
+        font-size: 24px;
+        height: 34px;
+        line-height: 1;
+        padding: 0;
+        place-items: center;
+        position: absolute;
+        right: 8px;
+        top: 8px;
+        width: 34px;
+        z-index: 4;
+      }
+
+      .current-overlay {
+        background: rgba(0,0,0,0.76);
+        border: 1px solid rgba(31,36,51,0.28);
+        border-radius: 8px;
+        box-shadow: 0 18px 44px rgba(31,36,51,0.22);
+        height: min(520px, 76vw);
+        max-height: calc(100% - 72px);
+        overflow: hidden;
+        position: absolute;
+        right: 30px;
+        top: 36px;
+        width: min(520px, 58vw);
+        z-index: 5;
+      }
+
+      .current-meter-title {
+        align-items: center;
+        background: #171717;
+        color: white;
+        display: flex;
+        font-family: Georgia, serif;
+        font-size: 23px;
+        font-weight: 800;
+        justify-content: center;
+        min-height: 46px;
+        padding: 8px 54px 8px 18px;
+        text-align: center;
+      }
+
+      .current-close {
+        align-items: center;
+        background: transparent;
+        border: 0;
+        color: white;
+        display: grid;
+        font-size: 44px;
+        height: 44px;
+        line-height: 1;
+        padding: 0;
+        place-items: center;
+        position: absolute;
+        right: 8px;
+        top: 2px;
+        width: 44px;
+      }
+
+      .current-overlay svg {
+        display: block;
+        height: calc(100% - 62px);
       }
 
       .summary-grid {
@@ -2627,6 +2976,30 @@ function StyleBlock() {
         .summary-grid.four,
         .summary-grid.five {
           grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .diameter-overlay {
+          height: 340px;
+          margin-top: 12px;
+          max-height: none;
+          position: relative;
+          right: auto;
+          top: auto;
+          width: 100%;
+        }
+
+        .current-overlay {
+          height: 390px;
+          margin-top: 12px;
+          max-height: none;
+          position: relative;
+          right: auto;
+          top: auto;
+          width: 100%;
+        }
+
+        .current-meter-title {
+          font-size: 20px;
         }
 
         .summary-grid .flip-value,
