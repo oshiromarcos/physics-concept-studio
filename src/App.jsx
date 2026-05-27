@@ -772,7 +772,7 @@ function WireResistancePage() {
       const sampleResistance = material.resistivity * sampleLength / area;
       return {
         x: 48 + (index / 24) * 418,
-        y: wireGraphBottom - Math.min(sampleResistance / wireGraphMax, 1) * wireGraphHeight,
+        y: wireGraphBottom - (sampleResistance / wireGraphMax) * wireGraphHeight,
       };
     });
   }, [area, material.resistivity]);
@@ -785,7 +785,7 @@ function WireResistancePage() {
 
       return {
         x: 48 + (index / 20) * 418,
-        y: wireGraphBottom - Math.min(sampleResistance / wireGraphMax, 1) * wireGraphHeight,
+        y: wireGraphBottom - (sampleResistance / wireGraphMax) * wireGraphHeight,
       };
     });
   }, [length, material.resistivity]);
@@ -933,7 +933,7 @@ function WireResistancePage() {
                 yMax={wireGraphMax}
                 points={lengthGraphPoints}
                 activeX={48 + ((length - 0.25) / 5.75) * 418}
-                activeY={wireGraphBottom - Math.min(resistance / wireGraphMax, 1) * wireGraphHeight}
+                activeY={wireGraphBottom - (resistance / wireGraphMax) * wireGraphHeight}
                 color={material.color}
                 xTick={(n) => (n * 1.2).toFixed(1)}
               />
@@ -943,7 +943,7 @@ function WireResistancePage() {
                 yMax={wireGraphMax}
                 points={diameterGraphPoints}
                 activeX={48 + ((diameter - 0.2) / 1.0) * 418}
-                activeY={wireGraphBottom - Math.min(resistance / wireGraphMax, 1) * wireGraphHeight}
+                activeY={wireGraphBottom - (resistance / wireGraphMax) * wireGraphHeight}
                 color="#17a9c4"
                 xTick={(n) => (0.2 + n * 0.2).toFixed(1)}
               />
@@ -1488,11 +1488,12 @@ function VoltageShareGraph({ title, yLabel, ratio, supplyVoltage, points, color 
 }
 
 function WireLineGraph({ title, xLabel, yMax, points, activeX, activeY, color, xTick }) {
-  const graphPath = points
-    .map((point, index) => `${index === 0 ? "M" : "L"} ${point.x} ${point.y}`)
-    .join(" ");
   const graphBottom = 428;
   const graphHeight = 360;
+  const graphTop = graphBottom - graphHeight;
+  const graphRight = 490;
+  const graphPath = buildClippedGraphPath(points, graphTop, graphBottom);
+  const showActivePoint = activeX >= 48 && activeX <= graphRight && activeY >= graphTop && activeY <= graphBottom;
 
   return (
     <div className="graph-area compact">
@@ -1527,11 +1528,60 @@ function WireLineGraph({ title, xLabel, yMax, points, activeX, activeY, color, x
           R / Ω
         </text>
 
-        <path d={graphPath} fill="none" stroke={color} strokeWidth="5" strokeLinecap="round" />
-        <circle cx={activeX} cy={activeY} r="9" fill="#fff3b0" stroke="#1f2433" strokeWidth="3" />
+        {graphPath && <path d={graphPath} fill="none" stroke={color} strokeWidth="5" strokeLinecap="round" />}
+        {showActivePoint && <circle cx={activeX} cy={activeY} r="9" fill="#fff3b0" stroke="#1f2433" strokeWidth="3" />}
       </svg>
     </div>
   );
+}
+
+function buildClippedGraphPath(points, graphTop, graphBottom) {
+  const commands = [];
+
+  function isVisible(point) {
+    return point.y >= graphTop && point.y <= graphBottom;
+  }
+
+  function boundaryPoint(from, to) {
+    const boundaryY = to.y < graphTop ? graphTop : graphBottom;
+    const progress = (boundaryY - from.y) / (to.y - from.y);
+    return {
+      x: from.x + (to.x - from.x) * progress,
+      y: boundaryY,
+    };
+  }
+
+  points.forEach((point, index) => {
+    const previous = points[index - 1];
+    const pointVisible = isVisible(point);
+    const previousVisible = previous ? isVisible(previous) : false;
+
+    if (index === 0) {
+      if (pointVisible) {
+        commands.push(`M ${point.x} ${point.y}`);
+      }
+      return;
+    }
+
+    if (previousVisible && pointVisible) {
+      commands.push(`L ${point.x} ${point.y}`);
+      return;
+    }
+
+    if (previousVisible && !pointVisible) {
+      const clipped = boundaryPoint(previous, point);
+      commands.push(`L ${clipped.x} ${clipped.y}`);
+      return;
+    }
+
+    if (!previousVisible && pointVisible) {
+      const clipped = boundaryPoint(point, previous);
+      commands.push(`M ${clipped.x} ${clipped.y}`);
+      commands.push(`L ${point.x} ${point.y}`);
+    }
+  });
+
+  return commands.join(" ");
 }
 
 function PotentialDividerDiagram({
@@ -1690,6 +1740,12 @@ function WireResistanceDiagram({
   const wireEnd = rulerZeroX + rulerScaleWidth;
   const clipX = rulerZeroX + (length / 6) * rulerScaleWidth;
   const wireThickness = 4 + (diameter / 1.2) * 12;
+  const usedWireLengthPx = clipX - rulerZeroX;
+  const showWireCurrentArrow = usedWireLengthPx > 86;
+  const wireCurrentArrowStartX = rulerZeroX + usedWireLengthPx * 0.72;
+  const wireCurrentArrowEndX = rulerZeroX + usedWireLengthPx * 0.32;
+  const redLeadArrowStartX = clipX < 738 ? Math.min(clipX + 76, 738) : Math.max(clipX - 76, 738);
+  const redLeadArrowEndX = clipX < 738 ? clipX + 22 : clipX - 22;
   const currentA = current;
   const ammeterMax = getAmmeterMax(currentA);
   const smallMeterNeedleAngle = getMeterNeedleAngle(currentA, ammeterMax);
@@ -1844,10 +1900,15 @@ function WireResistanceDiagram({
         <path d="M501 321 L468 352 H490 L474 374 L522 336 H500 Z" fill="#ffffff" opacity="0.95" />
         <rect x="452" y="273" width="16" height="18" fill="#e94227" stroke="#1f2433" strokeWidth="3" />
         <rect x="516" y="273" width="16" height="18" fill="#e94227" stroke="#1f2433" strokeWidth="3" />
+        <text x="460" y="270" textAnchor="middle" fill="#1f2433" fontSize="18" fontWeight="900">−</text>
+        <text x="524" y="270" textAnchor="middle" fill="#1f2433" fontSize="18" fontWeight="900">+</text>
       </g>
 
       <path d="M238 318 H420" stroke="#1f2433" strokeWidth="3" markerEnd="url(#arrowWire)" />
-      <path d={`M${clipX + 22} 198 H${Math.min(clipX + 76, 710)}`} stroke="#1f2433" strokeWidth="3" markerEnd="url(#arrowWire)" />
+      <path d={`M${redLeadArrowStartX} 198 H${redLeadArrowEndX}`} stroke="#1f2433" strokeWidth="3" markerEnd="url(#arrowWire)" />
+      {showWireCurrentArrow && (
+        <path d={`M${wireCurrentArrowStartX} ${wireY} H${wireCurrentArrowEndX}`} stroke="#1f2433" strokeWidth="3" markerEnd="url(#arrowWire)" />
+      )}
 
       {teacherMode && (
         <>
@@ -2012,13 +2073,13 @@ function CurrentMeterOverlay({ current, onClose }) {
             />
           );
         })}
-        <text x={startLabel.x + 18} y={startLabel.y - 8} textAnchor="middle" fill="#111827" fontSize="32" fontWeight="800">
+        <text x={startLabel.x} y={startLabel.y - 20} textAnchor="middle" fill="#111827" fontSize="31" fontWeight="800">
           0
         </text>
         <text x="280" y="136" textAnchor="middle" fill="#111827" fontSize="40" fontWeight="800">
           {(meterMax / 2).toFixed(meterMax === 5 ? 1 : 0)}
         </text>
-        <text x={endLabel.x - 18} y={endLabel.y - 8} textAnchor="middle" fill="#111827" fontSize="32" fontWeight="800">
+        <text x={endLabel.x} y={endLabel.y - 20} textAnchor="middle" fill="#111827" fontSize="31" fontWeight="800">
           {meterMax}
         </text>
         <line x1={pivotX} y1={pivotY} x2={needleTipX} y2={needleTipY} stroke="#f01818" strokeWidth="4" strokeLinecap="round" />
