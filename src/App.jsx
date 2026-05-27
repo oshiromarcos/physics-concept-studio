@@ -1973,6 +1973,8 @@ function CurrentMeterOverlay({ current, onClose }) {
 
   const arcStart = polarPoint(startAngle);
   const arcEnd = polarPoint(endAngle);
+  const startLabel = polarPoint(startAngle, arcRadius + 4);
+  const endLabel = polarPoint(endAngle, arcRadius + 4);
 
   return (
     <div className="current-overlay">
@@ -2010,13 +2012,13 @@ function CurrentMeterOverlay({ current, onClose }) {
             />
           );
         })}
-        <text x="104" y="246" textAnchor="middle" fill="#111827" fontSize="34" fontWeight="800">
+        <text x={startLabel.x + 18} y={startLabel.y - 8} textAnchor="middle" fill="#111827" fontSize="32" fontWeight="800">
           0
         </text>
         <text x="280" y="136" textAnchor="middle" fill="#111827" fontSize="40" fontWeight="800">
           {(meterMax / 2).toFixed(meterMax === 5 ? 1 : 0)}
         </text>
-        <text x="456" y="246" textAnchor="middle" fill="#111827" fontSize="34" fontWeight="800">
+        <text x={endLabel.x - 18} y={endLabel.y - 8} textAnchor="middle" fill="#111827" fontSize="32" fontWeight="800">
           {meterMax}
         </text>
         <line x1={pivotX} y1={pivotY} x2={needleTipX} y2={needleTipY} stroke="#f01818" strokeWidth="4" strokeLinecap="round" />
