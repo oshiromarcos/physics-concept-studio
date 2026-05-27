@@ -736,6 +736,13 @@ function getMeterNeedleAngle(current, maxCurrent) {
   return startAngle + fraction * (endAngle - startAngle);
 }
 
+function getInstrumentNeedleAngle(value, maxValue) {
+  const startAngle = 215;
+  const endAngle = 325;
+  const fraction = Math.min(Math.max(value / maxValue, 0), 1);
+  return startAngle + fraction * (endAngle - startAngle);
+}
+
 function WireResistancePage() {
   const [length, setLength] = useState(1.2);
   const [diameter, setDiameter] = useState(randomWireDiameter);
@@ -744,8 +751,10 @@ function WireResistancePage() {
   const [revealedValues, setRevealedValues] = useState(wireRevealDefaults);
   const [prediction, setPrediction] = useState("");
   const [checkResult, setCheckResult] = useState(null);
-  const [showDiameterView, setShowDiameterView] = useState(true);
+  const [showDiameterView, setShowDiameterView] = useState(false);
   const [showCurrentMeter, setShowCurrentMeter] = useState(false);
+  const [showVoltageMeter, setShowVoltageMeter] = useState(false);
+  const [teacherMode, setTeacherMode] = useState(false);
 
   const material = wireMaterials.find((item) => item.key === materialKey) ?? wireMaterials[1];
   const area = Math.PI * ((diameter / 1000) / 2) ** 2;
@@ -796,8 +805,10 @@ function WireResistancePage() {
     setRevealedValues(wireRevealDefaults);
     setPrediction("");
     setCheckResult(null);
-    setShowDiameterView(true);
+    setShowDiameterView(false);
     setShowCurrentMeter(false);
+    setShowVoltageMeter(false);
+    setTeacherMode(false);
   }
 
   function checkAnswer() {
@@ -835,7 +846,17 @@ function WireResistancePage() {
                 testVoltage={testVoltage}
                 revealedValues={revealedValues}
                 onFlip={flipValue}
-                onShowCurrentMeter={() => setShowCurrentMeter(true)}
+                onShowCurrentMeter={() => {
+                  setShowDiameterView(false);
+                  setShowVoltageMeter(false);
+                  setShowCurrentMeter(true);
+                }}
+                onShowVoltageMeter={() => {
+                  setShowDiameterView(false);
+                  setShowCurrentMeter(false);
+                  setShowVoltageMeter(true);
+                }}
+                teacherMode={teacherMode}
               />
             </div>
 
@@ -853,36 +874,45 @@ function WireResistancePage() {
               />
             )}
 
-            <div className="summary-grid four">
-              <FlipValueBox
-                label="Resistance"
-                value={resistance.toFixed(2)}
-                unit="Ω"
-                revealed={revealedValues.resistance}
-                onFlip={() => flipValue("resistance")}
+            {showVoltageMeter && (
+              <VoltageMeterOverlay
+                voltage={testVoltage}
+                onClose={() => setShowVoltageMeter(false)}
               />
-              <FlipValueBox
-                label="Current"
-                value={(current * 1000).toFixed(1)}
-                unit="mA"
-                revealed={revealedValues.current}
-                onFlip={() => flipValue("current")}
-              />
-              <FlipValueBox
-                label="Area"
-                value={areaMm2.toFixed(3)}
-                unit="mm²"
-                revealed={revealedValues.area}
-                onFlip={() => flipValue("area")}
-              />
-              <FlipValueBox
-                label="Resistivity"
-                value={resistivityScale.toFixed(1)}
-                unit="×10⁻⁸ Ωm"
-                revealed={revealedValues.resistivity}
-                onFlip={() => flipValue("resistivity")}
-              />
-            </div>
+            )}
+
+            {teacherMode && (
+              <div className="summary-grid four">
+                <FlipValueBox
+                  label="Resistance"
+                  value={resistance.toFixed(2)}
+                  unit="Ω"
+                  revealed={revealedValues.resistance}
+                  onFlip={() => flipValue("resistance")}
+                />
+                <FlipValueBox
+                  label="Current"
+                  value={(current * 1000).toFixed(1)}
+                  unit="mA"
+                  revealed={revealedValues.current}
+                  onFlip={() => flipValue("current")}
+                />
+                <FlipValueBox
+                  label="Area"
+                  value={areaMm2.toFixed(3)}
+                  unit="mm²"
+                  revealed={revealedValues.area}
+                  onFlip={() => flipValue("area")}
+                />
+                <FlipValueBox
+                  label="Resistivity"
+                  value={resistivityScale.toFixed(1)}
+                  unit="×10⁻⁸ Ωm"
+                  revealed={revealedValues.resistivity}
+                  onFlip={() => flipValue("resistivity")}
+                />
+              </div>
+            )}
 
           </div>
         </div>
@@ -958,14 +988,41 @@ function WireResistancePage() {
             </div>
 
             {!showDiameterView && (
-              <button className="button-light full" onClick={() => setShowDiameterView(true)}>
+              <button
+                className="button-light full"
+                onClick={() => {
+                  setShowCurrentMeter(false);
+                  setShowVoltageMeter(false);
+                  setShowDiameterView(true);
+                }}
+              >
                 Show diameter grid
               </button>
             )}
 
             {!showCurrentMeter && (
-              <button className="button-light full" onClick={() => setShowCurrentMeter(true)}>
+              <button
+                className="button-light full"
+                onClick={() => {
+                  setShowDiameterView(false);
+                  setShowVoltageMeter(false);
+                  setShowCurrentMeter(true);
+                }}
+              >
                 Show current meter
+              </button>
+            )}
+
+            {!showVoltageMeter && (
+              <button
+                className="button-light full"
+                onClick={() => {
+                  setShowDiameterView(false);
+                  setShowCurrentMeter(false);
+                  setShowVoltageMeter(true);
+                }}
+              >
+                Show voltmeter
               </button>
             )}
 
@@ -1043,6 +1100,13 @@ function WireResistancePage() {
                 </p>
               </div>
             )}
+
+            <button
+              className={teacherMode ? "button-dark full teacher-mode-button" : "button-light full teacher-mode-button"}
+              onClick={() => setTeacherMode((currentMode) => !currentMode)}
+            >
+              {teacherMode ? "Hide teacher values" : "Teacher mode"}
+            </button>
           </div>
         </div>
       </aside>
@@ -1612,6 +1676,8 @@ function WireResistanceDiagram({
   revealedValues,
   onFlip,
   onShowCurrentMeter,
+  onShowVoltageMeter,
+  teacherMode,
 }) {
   const svgRef = useRef(null);
   const draggingClip = useRef(false);
@@ -1739,6 +1805,21 @@ function WireResistanceDiagram({
       </g>
 
       <g
+        onClick={onShowVoltageMeter}
+        onKeyDown={(event) => {
+          if (event.key === "Enter" || event.key === " ") onShowVoltageMeter();
+        }}
+        role="button"
+        tabIndex="0"
+        style={{ cursor: "pointer" }}
+      >
+        <path d={`M${rulerZeroX} 151 V214 H332`} fill="none" stroke="#17a9c4" strokeWidth="2.5" strokeLinecap="round" strokeDasharray="5 5" />
+        <path d={`M${clipX} 151 V214 H388`} fill="none" stroke="#f25f4c" strokeWidth="2.5" strokeLinecap="round" strokeDasharray="5 5" />
+        <circle cx="360" cy="214" r="28" fill="#ffffff" stroke="#1f2433" strokeWidth="4" />
+        <text x="360" y="223" textAnchor="middle" fill="#1f2433" fontSize="26" fontWeight="900">V</text>
+      </g>
+
+      <g
         onClick={onShowCurrentMeter}
         onKeyDown={(event) => {
           if (event.key === "Enter" || event.key === " ") onShowCurrentMeter();
@@ -1768,55 +1849,59 @@ function WireResistanceDiagram({
       <path d="M238 318 H420" stroke="#1f2433" strokeWidth="3" markerEnd="url(#arrowWire)" />
       <path d={`M${clipX + 22} 198 H${Math.min(clipX + 76, 710)}`} stroke="#1f2433" strokeWidth="3" markerEnd="url(#arrowWire)" />
 
-      <SvgInfoCard
-        x="616"
-        y="232"
-        width={150}
-        height={70}
-        label="Length"
-        value={length.toFixed(3)}
-        unit="m"
-        revealed={revealedValues.length}
-        onFlip={() => onFlip("length")}
-        compact
-        opacity={0.78}
-      />
-      <SvgInfoCard
-        x="616"
-        y="306"
-        width={150}
-        height={70}
-        label="Diameter"
-        value={diameter.toFixed(3)}
-        unit="mm"
-        revealed={revealedValues.diameter}
-        onFlip={() => onFlip("diameter")}
-        compact
-      />
+      {teacherMode && (
+        <>
+          <SvgInfoCard
+            x="616"
+            y="232"
+            width={150}
+            height={70}
+            label="Length"
+            value={length.toFixed(3)}
+            unit="m"
+            revealed={revealedValues.length}
+            onFlip={() => onFlip("length")}
+            compact
+            opacity={0.78}
+          />
+          <SvgInfoCard
+            x="616"
+            y="306"
+            width={150}
+            height={70}
+            label="Diameter"
+            value={diameter.toFixed(3)}
+            unit="mm"
+            revealed={revealedValues.diameter}
+            onFlip={() => onFlip("diameter")}
+            compact
+          />
 
-      <SvgInfoCard
-        x="248"
-        y="248"
-        width={132}
-        height={66}
-        label="Current"
-        value={currentA.toFixed(3)}
-        unit="A"
-        revealed={revealedValues.current}
-        onFlip={() => onFlip("current")}
-        compact
-      />
-      <SvgInfoCard
-        x="252"
-        y="168"
-        width={150}
-        height={78}
-        label="Resistance"
-        value={resistance.toFixed(2)}
-        unit="Ω"
-        revealed={revealedValues.resistance}
-        onFlip={() => onFlip("resistance")}
-      />
+          <SvgInfoCard
+            x="248"
+            y="248"
+            width={132}
+            height={66}
+            label="Current"
+            value={currentA.toFixed(3)}
+            unit="A"
+            revealed={revealedValues.current}
+            onFlip={() => onFlip("current")}
+            compact
+          />
+          <SvgInfoCard
+            x="252"
+            y="168"
+            width={150}
+            height={78}
+            label="Resistance"
+            value={resistance.toFixed(2)}
+            unit="Ω"
+            revealed={revealedValues.resistance}
+            onFlip={() => onFlip("resistance")}
+          />
+        </>
+      )}
     </svg>
   );
 }
@@ -1825,8 +1910,8 @@ function DiameterMeasureOverlay({ diameter, onClose }) {
   const gridStep = 24;
   const gridSize = 480;
   const circleRadius = (diameter * 10 * gridStep) / 2;
-  const centerX = 252;
-  const centerY = 254;
+  const centerX = 280;
+  const centerY = 304;
 
   return (
     <div className="diameter-overlay">
@@ -1925,19 +2010,100 @@ function CurrentMeterOverlay({ current, onClose }) {
             />
           );
         })}
-        <text x="122" y="232" textAnchor="middle" fill="#111827" fontSize="40" fontWeight="800">
+        <text x="104" y="246" textAnchor="middle" fill="#111827" fontSize="34" fontWeight="800">
           0
         </text>
         <text x="280" y="136" textAnchor="middle" fill="#111827" fontSize="40" fontWeight="800">
           {(meterMax / 2).toFixed(meterMax === 5 ? 1 : 0)}
         </text>
-        <text x="438" y="232" textAnchor="middle" fill="#111827" fontSize="40" fontWeight="800">
+        <text x="456" y="246" textAnchor="middle" fill="#111827" fontSize="34" fontWeight="800">
           {meterMax}
         </text>
         <line x1={pivotX} y1={pivotY} x2={needleTipX} y2={needleTipY} stroke="#f01818" strokeWidth="4" strokeLinecap="round" />
         <circle cx={pivotX} cy={pivotY} r="7" fill="#111827" />
         <text x="280" y="314" textAnchor="middle" fill="#b90f0f" fontSize="50" fontWeight="900">
           Amps
+        </text>
+        <text x="280" y="505" textAnchor="middle" fill="#111827" fontSize="17" fontFamily="Georgia, serif" fontWeight="700">
+          Precision Meter
+        </text>
+      </svg>
+    </div>
+  );
+}
+
+function VoltageMeterOverlay({ voltage, onClose }) {
+  const meterMax = 12;
+  const pivotX = 280;
+  const pivotY = 398;
+  const arcRadius = 230;
+  const startAngle = 215;
+  const endAngle = 325;
+  const needleAngle = getInstrumentNeedleAngle(voltage, meterMax);
+  const needleLength = 214;
+  const needleTipX = pivotX + Math.cos((needleAngle * Math.PI) / 180) * needleLength;
+  const needleTipY = pivotY + Math.sin((needleAngle * Math.PI) / 180) * needleLength;
+
+  function polarPoint(angle, radius = arcRadius) {
+    return {
+      x: pivotX + Math.cos((angle * Math.PI) / 180) * radius,
+      y: pivotY + Math.sin((angle * Math.PI) / 180) * radius,
+    };
+  }
+
+  const arcStart = polarPoint(startAngle);
+  const arcEnd = polarPoint(endAngle);
+
+  return (
+    <div className="current-overlay voltage-overlay">
+      <div className="current-meter-title">
+        Record Your Voltage for This Trial
+        <button className="current-close" onClick={onClose} aria-label="Close voltmeter">
+          ×
+        </button>
+      </div>
+      <svg viewBox="0 0 560 560" width="100%" height="100%" role="img" aria-label="Analog voltmeter">
+        <rect width="560" height="560" fill="rgba(0,0,0,0.78)" />
+        <circle cx="280" cy="312" r="246" fill="#ffffff" stroke="#111827" strokeWidth="3" />
+        <path
+          d={`M ${arcStart.x} ${arcStart.y} A ${arcRadius} ${arcRadius} 0 0 1 ${arcEnd.x} ${arcEnd.y}`}
+          fill="none"
+          stroke="#111827"
+          strokeWidth="5"
+          strokeLinecap="round"
+        />
+        {Array.from({ length: 13 }, (_, index) => {
+          const tickAngle = startAngle + (index / 12) * (endAngle - startAngle);
+          const major = index % 6 === 0;
+          const half = index % 3 === 0;
+          const outer = polarPoint(tickAngle, arcRadius + 4);
+          const inner = polarPoint(tickAngle, major ? arcRadius - 46 : half ? arcRadius - 34 : arcRadius - 24);
+          return (
+            <line
+              key={index}
+              x1={outer.x}
+              y1={outer.y}
+              x2={inner.x}
+              y2={inner.y}
+              stroke="#111827"
+              strokeWidth={major ? 5 : 4}
+              strokeLinecap="round"
+            />
+          );
+        })}
+        <text x="104" y="246" textAnchor="middle" fill="#111827" fontSize="34" fontWeight="800">
+          0
+        </text>
+        <text x="280" y="136" textAnchor="middle" fill="#111827" fontSize="40" fontWeight="800">
+          6
+        </text>
+        <text x="456" y="246" textAnchor="middle" fill="#111827" fontSize="34" fontWeight="800">
+          12
+        </text>
+        <line x1={pivotX} y1={pivotY} x2={needleTipX} y2={needleTipY} stroke="#17a9c4" strokeWidth="4" strokeLinecap="round" />
+        <circle cx={pivotX} cy={pivotY} r="7" fill="#111827" />
+        <text x="280" y="314" textAnchor="middle" fill="#115f73" fontSize="50" fontWeight="900">
+          Volts
         </text>
         <text x="280" y="505" textAnchor="middle" fill="#111827" fontSize="17" fontFamily="Georgia, serif" fontWeight="700">
           Precision Meter
@@ -2872,6 +3038,10 @@ function StyleBlock() {
         font-size: 16px;
         background: #fffaf0;
         border: 1px solid #cfe5df;
+      }
+
+      .teacher-mode-button {
+        margin-top: 12px;
       }
 
       .good {
