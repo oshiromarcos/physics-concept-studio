@@ -721,6 +721,8 @@ const wireMaterials = [
   { key: "steel", name: "Steel", resistivity: 1.4e-7, color: "#5e6b73" },
 ];
 
+const alligatorLeadResistance = 0.1;
+
 function randomWireDiameter() {
   return Number((0.32 + Math.random() * 0.54).toFixed(3));
 }
@@ -784,7 +786,9 @@ function WireResistancePage() {
   const material = wireMaterials.find((item) => item.key === materialKey) ?? wireMaterials[1];
   const area = Math.PI * ((diameter / 1000) / 2) ** 2;
   const resistance = material.resistivity * length / area;
-  const current = testVoltage / resistance;
+  const circuitResistance = resistance + alligatorLeadResistance;
+  const current = testVoltage / circuitResistance;
+  const wireVoltage = current * resistance;
   const areaMm2 = area * 1_000_000;
   const resistivityScale = material.resistivity / 1e-8;
   const wireGraphBottom = 428;
@@ -873,6 +877,7 @@ function WireResistancePage() {
                 resistance={resistance}
                 current={current}
                 testVoltage={testVoltage}
+                wireVoltage={wireVoltage}
                 revealedValues={revealedValues}
                 onFlip={flipValue}
                 onShowCurrentMeter={() => {
@@ -905,7 +910,7 @@ function WireResistancePage() {
 
             {showVoltageMeter && (
               <VoltageMeterOverlay
-                voltage={testVoltage}
+                voltage={wireVoltage}
                 onClose={() => setShowVoltageMeter(false)}
               />
             )}
@@ -925,6 +930,13 @@ function WireResistancePage() {
                   unit="mA"
                   revealed={revealedValues.current}
                   onFlip={() => flipValue("current")}
+                />
+                <FlipValueBox
+                  label="Wire p.d."
+                  value={wireVoltage.toFixed(2)}
+                  unit="V"
+                  revealed={revealedValues.voltage}
+                  onFlip={() => flipValue("voltage")}
                 />
                 <FlipValueBox
                   label="Area"
@@ -1535,7 +1547,7 @@ function WireLineGraph({ title, xLabel, yMax, points, activeX, activeY, color, x
         {[0, 1, 2, 3, 4, 5].map((n) => (
           <g key={n}>
             <line x1={48 + n * 83.6} y1={graphBottom} x2={48 + n * 83.6} y2={graphBottom + 5} stroke="#1f2433" />
-            <text x={48 + n * 83.6} y={graphBottom + 22} textAnchor="middle" fill="#5e6b73" fontSize="10">
+            <text x={48 + n * 83.6} y={graphBottom + 24} textAnchor="middle" fill="#5e6b73" fontSize="13" fontWeight="700">
               {xTick(n)}
             </text>
           </g>
@@ -1544,16 +1556,16 @@ function WireLineGraph({ title, xLabel, yMax, points, activeX, activeY, color, x
         {[0, 1, 2, 3, 4, 5].map((n) => (
           <g key={n}>
             <line x1="43" y1={graphBottom - n * (graphHeight / 5)} x2="48" y2={graphBottom - n * (graphHeight / 5)} stroke="#1f2433" />
-            <text x="34" y={graphBottom + 4 - n * (graphHeight / 5)} textAnchor="end" fill="#5e6b73" fontSize="10">
+            <text x="40" y={graphBottom + 4 - n * (graphHeight / 5)} textAnchor="end" fill="#5e6b73" fontSize="13" fontWeight="700">
               {formatGraphTick((yMax / 5) * n)}
             </text>
           </g>
         ))}
 
-        <text x="268" y="462" textAnchor="middle" fill="#1f2433" fontSize="12">
+        <text x="268" y="464" textAnchor="middle" fill="#1f2433" fontSize="15" fontWeight="700">
           {xLabel}
         </text>
-        <text x="14" y="240" textAnchor="middle" fill="#1f2433" fontSize="12" transform="rotate(-90 14 240)">
+        <text x="14" y="240" textAnchor="middle" fill="#1f2433" fontSize="15" fontWeight="700" transform="rotate(-90 14 240)">
           R / Ω
         </text>
 
@@ -1752,6 +1764,7 @@ function WireResistanceDiagram({
   resistance,
   current,
   testVoltage,
+  wireVoltage,
   revealedValues,
   onFlip,
   onShowCurrentMeter,
@@ -1989,6 +2002,18 @@ function WireResistanceDiagram({
             unit="Ω"
             revealed={revealedValues.resistance}
             onFlip={() => onFlip("resistance")}
+          />
+          <SvgInfoCard
+            x="410"
+            y="168"
+            width={132}
+            height={66}
+            label="Wire p.d."
+            value={wireVoltage.toFixed(2)}
+            unit="V"
+            revealed={revealedValues.voltage}
+            onFlip={() => onFlip("voltage")}
+            compact
           />
         </>
       )}
@@ -3170,7 +3195,7 @@ function StyleBlock() {
       .graph-title {
         padding: 10px 14px 0;
         color: #1f2433;
-        font-size: 16px;
+        font-size: 18px;
         font-weight: 900;
       }
 
