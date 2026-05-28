@@ -1,10 +1,10 @@
 import { useMemo, useRef, useState } from "react";
 
 const topics = [
+  { key: "wire-resistance", title: "Resistance of a Wire", subtitle: "R = ρL/A" },
   { key: "ohms-law", title: "Ohm’s Law", subtitle: "V, I and R" },
   { key: "series-parallel", title: "Series & Parallel", subtitle: "Resistor networks" },
   { key: "potential-divider", title: "Potential Dividers", subtitle: "Shared voltage" },
-  { key: "wire-resistance", title: "Resistance of a Wire", subtitle: "R = ρL/A" },
 ];
 
 const predictionSets = {
@@ -154,7 +154,7 @@ const wireRevealDefaults = {
 };
 
 export default function App() {
-  const [page, setPage] = useState("series-parallel");
+  const [page, setPage] = useState("wire-resistance");
 
   return (
     <div className="app">
@@ -743,6 +743,31 @@ function getInstrumentNeedleAngle(value, maxValue) {
   return startAngle + fraction * (endAngle - startAngle);
 }
 
+function getAutoWireGraphMax(samples) {
+  const maxValue = Math.max(...samples.map((point) => point.value), 1);
+  const target = maxValue * 1.15;
+  const exponent = Math.floor(Math.log10(target));
+  const base = 10 ** exponent;
+  const niceSteps = [1, 1.25, 1.5, 2, 2.5, 4, 5, 7.5, 10];
+  const niceMax = niceSteps.map((step) => step * base).find((candidate) => candidate >= target) ?? 10 * base;
+
+  return niceMax <= maxValue * 2 ? niceMax : maxValue * 1.5;
+}
+
+function scaleWireGraphPoints(samples, yMax, graphBottom, graphHeight) {
+  return samples.map((point) => ({
+    x: point.x,
+    y: graphBottom - (point.value / yMax) * graphHeight,
+  }));
+}
+
+function formatGraphTick(value) {
+  if (value >= 100) return value.toFixed(0);
+  if (value >= 10) return value.toFixed(value % 1 === 0 ? 0 : 1);
+  if (value >= 1) return value.toFixed(value % 1 === 0 ? 0 : 2);
+  return value.toPrecision(2);
+}
+
 function WireResistancePage() {
   const [length, setLength] = useState(1.2);
   const [diameter, setDiameter] = useState(randomWireDiameter);
@@ -762,22 +787,21 @@ function WireResistancePage() {
   const current = testVoltage / resistance;
   const areaMm2 = area * 1_000_000;
   const resistivityScale = material.resistivity / 1e-8;
-  const wireGraphMax = 100;
   const wireGraphBottom = 428;
   const wireGraphHeight = 360;
 
-  const lengthGraphPoints = useMemo(() => {
+  const lengthGraphSamples = useMemo(() => {
     return Array.from({ length: 25 }, (_, index) => {
       const sampleLength = 0.25 + (index / 24) * 5.75;
       const sampleResistance = material.resistivity * sampleLength / area;
       return {
         x: 48 + (index / 24) * 418,
-        y: wireGraphBottom - (sampleResistance / wireGraphMax) * wireGraphHeight,
+        value: sampleResistance,
       };
     });
   }, [area, material.resistivity]);
 
-  const diameterGraphPoints = useMemo(() => {
+  const diameterGraphSamples = useMemo(() => {
     return Array.from({ length: 21 }, (_, index) => {
       const sampleDiameter = 0.2 + index * 0.05;
       const sampleArea = Math.PI * ((sampleDiameter / 1000) / 2) ** 2;
@@ -785,10 +809,15 @@ function WireResistancePage() {
 
       return {
         x: 48 + (index / 20) * 418,
-        y: wireGraphBottom - (sampleResistance / wireGraphMax) * wireGraphHeight,
+        value: sampleResistance,
       };
     });
   }, [length, material.resistivity]);
+
+  const lengthGraphMax = getAutoWireGraphMax(lengthGraphSamples);
+  const diameterGraphMax = getAutoWireGraphMax(diameterGraphSamples);
+  const lengthGraphPoints = scaleWireGraphPoints(lengthGraphSamples, lengthGraphMax, wireGraphBottom, wireGraphHeight);
+  const diameterGraphPoints = scaleWireGraphPoints(diameterGraphSamples, diameterGraphMax, wireGraphBottom, wireGraphHeight);
 
   function flipValue(key) {
     setRevealedValues((currentValues) => ({
@@ -923,27 +952,27 @@ function WireResistancePage() {
           <div className="card-content">
             <h3>Live graphs: what changes the resistance?</h3>
             <p className="subtitle">
-              The y-axis stays fixed so the line itself shows how length and diameter change resistance.
+              The y-axis rescales to keep each curve readable while length and diameter change resistance.
             </p>
 
             <div className="wire-graphs">
               <WireLineGraph
                 title="R against length"
                 xLabel="Length / m"
-                yMax={wireGraphMax}
+                yMax={lengthGraphMax}
                 points={lengthGraphPoints}
                 activeX={48 + ((length - 0.25) / 5.75) * 418}
-                activeY={wireGraphBottom - (resistance / wireGraphMax) * wireGraphHeight}
+                activeY={wireGraphBottom - (resistance / lengthGraphMax) * wireGraphHeight}
                 color={material.color}
                 xTick={(n) => (n * 1.2).toFixed(1)}
               />
               <WireLineGraph
                 title="R against diameter"
                 xLabel="Diameter / mm"
-                yMax={wireGraphMax}
+                yMax={diameterGraphMax}
                 points={diameterGraphPoints}
                 activeX={48 + ((diameter - 0.2) / 1.0) * 418}
-                activeY={wireGraphBottom - (resistance / wireGraphMax) * wireGraphHeight}
+                activeY={wireGraphBottom - (resistance / diameterGraphMax) * wireGraphHeight}
                 color="#17a9c4"
                 xTick={(n) => (0.2 + n * 0.2).toFixed(1)}
               />
@@ -1516,7 +1545,7 @@ function WireLineGraph({ title, xLabel, yMax, points, activeX, activeY, color, x
           <g key={n}>
             <line x1="43" y1={graphBottom - n * (graphHeight / 5)} x2="48" y2={graphBottom - n * (graphHeight / 5)} stroke="#1f2433" />
             <text x="34" y={graphBottom + 4 - n * (graphHeight / 5)} textAnchor="end" fill="#5e6b73" fontSize="10">
-              {(yMax / 5) * n}
+              {formatGraphTick((yMax / 5) * n)}
             </text>
           </g>
         ))}
