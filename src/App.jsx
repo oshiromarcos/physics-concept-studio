@@ -151,6 +151,7 @@ const wireRevealDefaults = {
   length: false,
   diameter: false,
   voltage: false,
+  materialName: false,
 };
 
 export default function App() {
@@ -716,15 +717,26 @@ function PotentialDividerPage() {
 
 const wireMaterials = [
   { key: "copper", name: "Copper", resistivity: 1.68e-8, color: "#f25f4c" },
-  { key: "constantan", name: "Constantan", resistivity: 4.9e-7, color: "#17a9c4" },
-  { key: "nichrome", name: "Nichrome", resistivity: 1.1e-6, color: "#7c5cff" },
+  { key: "aluminum", name: "Aluminum", resistivity: 2.65e-8, color: "#5fc4df" },
+  { key: "tungsten", name: "Tungsten", resistivity: 5.6e-8, color: "#8b8f98" },
+  { key: "nickel", name: "Nickel", resistivity: 6.99e-8, color: "#6f9e75" },
+  { key: "iron", name: "Iron", resistivity: 9.71e-8, color: "#9b6f5a" },
   { key: "steel", name: "Steel", resistivity: 1.4e-7, color: "#5e6b73" },
+  { key: "constantan", name: "Constantan", resistivity: 4.9e-7, color: "#17a9c4" },
+  { key: "manganin", name: "Manganin", resistivity: 4.82e-7, color: "#b8832f" },
+  { key: "nichrome", name: "Nichrome", resistivity: 1.1e-6, color: "#7c5cff" },
+  { key: "graphite", name: "Graphite", resistivity: 1.0e-5, color: "#2f3640" },
 ];
 
 const alligatorLeadResistance = 0.1;
 
 function randomWireDiameter() {
   return Number((0.32 + Math.random() * 0.54).toFixed(3));
+}
+
+function getWireMaterialLabel(material) {
+  const index = wireMaterials.findIndex((item) => item.key === material.key);
+  return `Material ${index + 1}`;
 }
 
 function getAmmeterMax(current) {
@@ -784,6 +796,7 @@ function WireResistancePage() {
   const [teacherMode, setTeacherMode] = useState(false);
 
   const material = wireMaterials.find((item) => item.key === materialKey) ?? wireMaterials[1];
+  const materialLabel = getWireMaterialLabel(material);
   const area = Math.PI * ((diameter / 1000) / 2) ** 2;
   const resistance = material.resistivity * length / area;
   const circuitResistance = resistance + alligatorLeadResistance;
@@ -874,6 +887,7 @@ function WireResistancePage() {
                 setLength={setLength}
                 diameter={diameter}
                 material={material}
+                materialLabel={materialLabel}
                 resistance={resistance}
                 current={current}
                 testVoltage={testVoltage}
@@ -916,7 +930,14 @@ function WireResistancePage() {
             )}
 
             {teacherMode && (
-              <div className="summary-grid four">
+              <div className="summary-grid five">
+                <FlipValueBox
+                  label="Material"
+                  value={material.name}
+                  unit=""
+                  revealed={revealedValues.materialName}
+                  onFlip={() => flipValue("materialName")}
+                />
                 <FlipValueBox
                   label="Resistance"
                   value={resistance.toFixed(2)}
@@ -989,6 +1010,8 @@ function WireResistancePage() {
                 xTick={(n) => (0.2 + n * 0.2).toFixed(1)}
               />
             </div>
+
+            <MaterialReferenceList materials={wireMaterials} />
           </div>
         </div>
       </section>
@@ -1001,12 +1024,12 @@ function WireResistancePage() {
             <div className="control-group">
               <div className="control-label">
                 <span>Material</span>
-                <strong>{material.name}</strong>
+                <strong>{materialLabel}</strong>
               </div>
               <select value={materialKey} onChange={(event) => setMaterialKey(event.target.value)}>
                 {wireMaterials.map((item) => (
                   <option key={item.key} value={item.key}>
-                    {item.name}
+                    {getWireMaterialLabel(item)}
                   </option>
                 ))}
               </select>
@@ -1528,6 +1551,32 @@ function VoltageShareGraph({ title, yLabel, ratio, supplyVoltage, points, color 
   );
 }
 
+function MaterialReferenceList({ materials }) {
+  const sortedMaterials = [...materials].sort((a, b) => a.name.localeCompare(b.name));
+
+  return (
+    <div className="material-reference">
+      <div>
+        <h4>Reference resistivities</h4>
+        <p className="subtitle">Approximate values near room temperature for comparison after calculating ρ.</p>
+      </div>
+      <div className="material-reference-grid">
+        {sortedMaterials.map((material) => (
+          <div className="material-reference-row" key={material.key}>
+            <span>{material.name}</span>
+            <strong>{formatResistivity(material.resistivity)} Ω m</strong>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function formatResistivity(value) {
+  if (value < 1e-6) return `${(value / 1e-8).toFixed(value < 1e-7 ? 2 : 1)} × 10⁻⁸`;
+  return `${(value / 1e-6).toFixed(value < 1e-5 ? 2 : 1)} × 10⁻⁶`;
+}
+
 function WireLineGraph({ title, xLabel, yMax, points, activeX, activeY, color, xTick }) {
   const graphBottom = 428;
   const graphHeight = 360;
@@ -1761,6 +1810,7 @@ function WireResistanceDiagram({
   setLength,
   diameter,
   material,
+  materialLabel,
   resistance,
   current,
   testVoltage,
@@ -1842,7 +1892,7 @@ function WireResistanceDiagram({
       <rect width="850" height="390" fill="#fffaf0" />
 
       <text x="78" y="24" fill="#1f2433" fontSize="15" fontWeight="800">
-        {material.name} wire
+        {materialLabel} wire
       </text>
 
       <rect x={rulerX} y={rulerY} width={rulerWidth} height="72" fill="#ffd89a" stroke="#1f2433" strokeWidth="3" />
@@ -2088,8 +2138,6 @@ function CurrentMeterOverlay({ current, onClose }) {
 
   const arcStart = polarPoint(startAngle);
   const arcEnd = polarPoint(endAngle);
-  const startLabel = polarPoint(startAngle, arcRadius + 4);
-  const endLabel = polarPoint(endAngle, arcRadius + 4);
 
   return (
     <div className="current-overlay">
@@ -2109,32 +2157,19 @@ function CurrentMeterOverlay({ current, onClose }) {
           strokeWidth="5"
           strokeLinecap="round"
         />
-        {Array.from({ length: 11 }, (_, index) => {
-          const tickAngle = startAngle + (index / 10) * (endAngle - startAngle);
-          const major = index % 5 === 0;
-          const outer = polarPoint(tickAngle, arcRadius + 4);
-          const inner = polarPoint(tickAngle, major ? arcRadius - 46 : arcRadius - 24);
-          return (
-            <line
-              key={index}
-              x1={outer.x}
-              y1={outer.y}
-              x2={inner.x}
-              y2={inner.y}
-              stroke="#111827"
-              strokeWidth={major ? 5 : 4}
-              strokeLinecap="round"
-            />
-          );
-        })}
-        <text x={startLabel.x} y={startLabel.y - 20} textAnchor="middle" fill="#111827" fontSize="31" fontWeight="800">
-          0
-        </text>
+        <MeterScale
+          polarPoint={polarPoint}
+          startAngle={startAngle}
+          endAngle={endAngle}
+          arcRadius={arcRadius}
+          majorEvery={10}
+          halfEvery={5}
+          divisions={20}
+          startLabel="0"
+          endLabel={meterMax}
+        />
         <text x="280" y="136" textAnchor="middle" fill="#111827" fontSize="40" fontWeight="800">
           {(meterMax / 2).toFixed(meterMax === 5 ? 1 : 0)}
-        </text>
-        <text x={endLabel.x} y={endLabel.y - 20} textAnchor="middle" fill="#111827" fontSize="31" fontWeight="800">
-          {meterMax}
         </text>
         <line x1={pivotX} y1={pivotY} x2={needleTipX} y2={needleTipY} stroke="#f01818" strokeWidth="4" strokeLinecap="round" />
         <circle cx={pivotX} cy={pivotY} r="7" fill="#111827" />
@@ -2189,33 +2224,19 @@ function VoltageMeterOverlay({ voltage, onClose }) {
           strokeWidth="5"
           strokeLinecap="round"
         />
-        {Array.from({ length: 13 }, (_, index) => {
-          const tickAngle = startAngle + (index / 12) * (endAngle - startAngle);
-          const major = index % 6 === 0;
-          const half = index % 3 === 0;
-          const outer = polarPoint(tickAngle, arcRadius + 4);
-          const inner = polarPoint(tickAngle, major ? arcRadius - 46 : half ? arcRadius - 34 : arcRadius - 24);
-          return (
-            <line
-              key={index}
-              x1={outer.x}
-              y1={outer.y}
-              x2={inner.x}
-              y2={inner.y}
-              stroke="#111827"
-              strokeWidth={major ? 5 : 4}
-              strokeLinecap="round"
-            />
-          );
-        })}
-        <text x="104" y="246" textAnchor="middle" fill="#111827" fontSize="34" fontWeight="800">
-          0
-        </text>
+        <MeterScale
+          polarPoint={polarPoint}
+          startAngle={startAngle}
+          endAngle={endAngle}
+          arcRadius={arcRadius}
+          majorEvery={12}
+          halfEvery={6}
+          divisions={24}
+          startLabel="0"
+          endLabel="12"
+        />
         <text x="280" y="136" textAnchor="middle" fill="#111827" fontSize="40" fontWeight="800">
           6
-        </text>
-        <text x="456" y="246" textAnchor="middle" fill="#111827" fontSize="34" fontWeight="800">
-          12
         </text>
         <line x1={pivotX} y1={pivotY} x2={needleTipX} y2={needleTipY} stroke="#17a9c4" strokeWidth="4" strokeLinecap="round" />
         <circle cx={pivotX} cy={pivotY} r="7" fill="#111827" />
@@ -2227,6 +2248,41 @@ function VoltageMeterOverlay({ voltage, onClose }) {
         </text>
       </svg>
     </div>
+  );
+}
+
+function MeterScale({ polarPoint, startAngle, endAngle, arcRadius, majorEvery, halfEvery, divisions, startLabel, endLabel }) {
+  const startLabelPoint = polarPoint(startAngle, arcRadius + 8);
+  const endLabelPoint = polarPoint(endAngle, arcRadius + 8);
+
+  return (
+    <>
+      {Array.from({ length: divisions + 1 }, (_, index) => {
+        const tickAngle = startAngle + (index / divisions) * (endAngle - startAngle);
+        const major = index % majorEvery === 0;
+        const half = index % halfEvery === 0;
+        const outer = polarPoint(tickAngle, arcRadius + 4);
+        const inner = polarPoint(tickAngle, major ? arcRadius - 50 : half ? arcRadius - 36 : arcRadius - 22);
+        return (
+          <line
+            key={index}
+            x1={outer.x}
+            y1={outer.y}
+            x2={inner.x}
+            y2={inner.y}
+            stroke="#111827"
+            strokeWidth={major ? 5 : half ? 4 : 3}
+            strokeLinecap="round"
+          />
+        );
+      })}
+      <text x={startLabelPoint.x - 1} y={startLabelPoint.y - 10} textAnchor="end" fill="#111827" fontSize="31" fontWeight="800">
+        {startLabel}
+      </text>
+      <text x={endLabelPoint.x + 1} y={endLabelPoint.y - 10} textAnchor="start" fill="#111827" fontSize="31" fontWeight="800">
+        {endLabel}
+      </text>
+    </>
   );
 }
 
@@ -3199,6 +3255,51 @@ function StyleBlock() {
         font-weight: 900;
       }
 
+      .material-reference {
+        margin-top: 14px;
+        padding: 14px;
+        border: 1px solid #cfe5df;
+        border-radius: 8px;
+        background: #f8fffb;
+      }
+
+      .material-reference h4 {
+        margin: 0 0 2px;
+        font-size: 18px;
+        color: #1f2433;
+      }
+
+      .material-reference-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px 14px;
+        margin-top: 12px;
+      }
+
+      .material-reference-row {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 8px 10px;
+        border: 1px solid #dbeae5;
+        border-radius: 6px;
+        background: #fffaf0;
+        font-size: 14px;
+      }
+
+      .material-reference-row span {
+        font-weight: 800;
+        color: #1f2433;
+      }
+
+      .material-reference-row strong {
+        color: #31535a;
+        font-family: Arial, sans-serif;
+        font-size: 13px;
+        white-space: nowrap;
+      }
+
       .split-graphs {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -3255,7 +3356,8 @@ function StyleBlock() {
         .check-grid,
         .split-graphs,
         .tri-graphs,
-        .wire-graphs {
+        .wire-graphs,
+        .material-reference-grid {
           grid-template-columns: 1fr;
         }
 
